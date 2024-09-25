@@ -2,40 +2,48 @@
 
 using namespace std;
 
-template <typename anytype>
+template <typename T>
 
 struct Node
 {
-    anytype value;
+    T value;
     Node* next;
+    Node(T val) : value(val), next(nullptr) {}; // Конструктор для инициализации значения
 };
 
-template <typename AnytypeForFunction>
+template <typename T>
 
 class LinkedList
 {
 private:
-
-    Node* head{nullptr};
+    Node<T>* head{ nullptr };
 
 public:
 
-    void InsertToStart(AnytypeForFunction item)
+    void InsertToBack(T item)
     {
-        Node* newNode = new Node;
-        if(head == nullptr)
+        if (head == nullptr)
         {
-            newNode->value = item;
-            
+            head = new Node<T>(item);
+        }
+        else
+        {
+            Node<T>* current = head;
+            while (current ->next != nullptr)// бегаем по списку пока не наткнемся на конец
+            {
+                current = current->next;
+            }
+            current->next = new Node<T>(item);
         }
     }
 
+
 };
 
-void main()
+
+int main()
 {
-
-
-
+   
+  
+    return 0;
 }
-
