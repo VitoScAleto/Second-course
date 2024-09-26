@@ -18,13 +18,13 @@ struct LinkedList
 private:
 
     Node<T>* head{ nullptr };
-    int quantity = 0;
+    int sizeList = 0;
     int index = 0;
 
 public:
     int GetQuantity()
     {
-        return quantity;
+        return sizeList;
     }
     int GetIndex()
     {
@@ -35,18 +35,18 @@ public:
         if (head == nullptr)
         {
             head = new Node<T>(item);
-            quantity++;
+            sizeList++;
         }
         else
         {
             Node<T>* current = head;
-            while (current ->next != nullptr)// бегаем по списку пока не наткнемся на конец
+            while (current ->next != nullptr)
             {
                 current = current->next;
 
             }
             current->next = new Node<T>(item);
-            quantity++;
+            sizeList++;
         }
     }
     void InsertToStart(T item)
@@ -54,14 +54,14 @@ public:
         if (head == nullptr)
         {
             head = new Node<T>(item);
-            quantity++;
+            sizeList++;
         }
         else
         {
             Node<T>* newNode = new Node<T>(item); 
             newNode->next = head; 
             head = newNode; 
-            quantity++;
+            sizeList++;
         }
 
     }
@@ -72,25 +72,105 @@ public:
         {
             if (current->value == item) 
             {
-                cout << "Found value: " << current->value << endl;;
+                cout << "Found value: " << current->value <<"Index: " <<index<< endl;
                 return; 
             }
             current = current->next; 
             index++;
         }
-        throw runtime_error("Error: Item not found"); 
+        cerr <<"Error: Item not found"<<endl;
     }
+    void DeleteToBack()
+    {
+        Node<T>* currentPtr = head;
+        Node<T>* prevPtr = nullptr;
+        if (currentPtr == nullptr)
+        {
+            cerr << "Error. Empty list"<< endl;
+            return;
+        }
+        else if (currentPtr->next == nullptr)
+        {
+            delete currentPtr;
+            head = nullptr;
+            sizeList--;
+            return;
+        }
+        while (currentPtr->next != nullptr)
+        {
+            prevPtr = currentPtr;
+            currentPtr = currentPtr->next;
+        }
+        free(currentPtr);
+        prevPtr->next = nullptr;
+        sizeList--;
+    }
+    void DeleteToStart()
+    {
+        Node<T>* currentPtr = head;
+        Node<T>* nextHead = currentPtr->next;
+        if (currentPtr == nullptr)
+        {
+            cerr << "Error. Empty list" << endl;
+            return;
+        }
+        head = nextHead;
+        delete currentPtr;
+        sizeList--;
+    }
+    void DeleteByValue(T item)
+    {
+        Node<T>* currentPtr = head;
+        Node<T>* prevPtr = nullptr;
 
+        if (currentPtr == nullptr)
+        {
+            cerr << "Empty list" << endl;// список пуст
+            return;
+        }
+        else if (currentPtr->next == nullptr)// один элемент
+        {
+            delete head;
+            delete currentPtr;
+            sizeList--;
+            return;
+        }
+        while (currentPtr != nullptr)
+        {
+            if (currentPtr->value == item && currentPtr == head)// если значение голова списка
+            {
+                DeleteToStart();
+                sizeList--;
+                return;
+            }
+            else if(currentPtr->value == item)
+            {
+                prevPtr->next = currentPtr->next;
+                delete currentPtr; 
+                sizeList--;
+                return;
+
+            }
+            prevPtr = currentPtr;
+            currentPtr = currentPtr->next;
+        }
+
+    }
     void PrintList()
     {
         Node<T>* current = head;
+        if (current == nullptr)
+        {
+            cout << "Empty list" << endl;
+           
+        }
         while (current != nullptr)
         {
             cout << current->value << " ";
             current = current->next;
             
         }
-
+        cout << endl;
     }
 
 };
@@ -98,7 +178,18 @@ public:
 
 int main()
 {
-    LinkedList<int> intList;
+    LinkedList <int> intList;
     
+    intList.InsertToStart(5);
+    intList.InsertToStart(6);
+    intList.InsertToStart(7);
+    intList.InsertToStart(8);
+    intList.InsertToStart(9);
+    intList.InsertToStart(10);
+    intList.InsertToStart(11);
+    intList.PrintList();
+    intList.DeleteByValue(11);
+    intList.PrintList();
+   
     return 0;
 }
