@@ -22,7 +22,7 @@ private:
     int index = 0;
 
 public:
-    int GetQuantity()
+    int getSize()
     {
         return sizeList;
     }
@@ -30,7 +30,7 @@ public:
     {
         return index;
     }
-    void InsertToBack(T item)
+    void push_back(T item)
     {
         if (head == nullptr)
         {
@@ -40,7 +40,7 @@ public:
         else
         {
             Node<T>* current = head;
-            while (current ->next != nullptr)
+            while (current->next != nullptr)
             {
                 current = current->next;
 
@@ -49,7 +49,7 @@ public:
             sizeList++;
         }
     }
-    void InsertToStart(T item)
+    void push_front(T item)
     {
         if (head == nullptr)
         {
@@ -58,35 +58,34 @@ public:
         }
         else
         {
-            Node<T>* newNode = new Node<T>(item); 
-            newNode->next = head; 
-            head = newNode; 
+            Node<T>* newNode = new Node<T>(item);
+            newNode->next = head;
+            head = newNode;
             sizeList++;
         }
 
     }
-    void SearchByValue(T item)
+    void search_by_value(T item)
     {
         Node<T>* current = head;
-        while (current != nullptr) 
+        while (current != nullptr)
         {
-            if (current->value == item) 
+            if (current->value == item)
             {
-                cout << "Found value: " << current->value <<"Index: " <<index<< endl;
-                return; 
+                cout << "Found value: " << current->value << "Index: " << index << endl;
             }
-            current = current->next; 
+            current = current->next;
             index++;
         }
-        cerr <<"Error: Item not found"<<endl;
+
     }
-    void DeleteToBack()
+    void pop_back()
     {
         Node<T>* currentPtr = head;
         Node<T>* prevPtr = nullptr;
         if (currentPtr == nullptr)
         {
-            cerr << "Error. Empty list"<< endl;
+            cerr << "Error. Empty list" << endl;
             return;
         }
         else if (currentPtr->next == nullptr)
@@ -105,7 +104,7 @@ public:
         prevPtr->next = nullptr;
         sizeList--;
     }
-    void DeleteToStart()
+    void pop_front()
     {
         Node<T>* currentPtr = head;
         Node<T>* nextHead = currentPtr->next;
@@ -118,7 +117,8 @@ public:
         delete currentPtr;
         sizeList--;
     }
-    void DeleteByValue(T item)
+
+    void delete_by_value(T item)
     {
         Node<T>* currentPtr = head;
         Node<T>* prevPtr = nullptr;
@@ -139,14 +139,14 @@ public:
         {
             if (currentPtr->value == item && currentPtr == head)// если значение голова списка
             {
-                DeleteToStart();
+                pop_front();
                 sizeList--;
                 return;
             }
-            else if(currentPtr->value == item)
+            else if (currentPtr->value == item)
             {
                 prevPtr->next = currentPtr->next;
-                delete currentPtr; 
+                delete currentPtr;
                 sizeList--;
                 return;
 
@@ -156,19 +156,19 @@ public:
         }
 
     }
-    void PrintList()
+    void printList()
     {
         Node<T>* current = head;
         if (current == nullptr)
         {
             cout << "Empty list" << endl;
-           
+
         }
         while (current != nullptr)
         {
             cout << current->value << " ";
             current = current->next;
-            
+
         }
         cout << endl;
     }
@@ -179,17 +179,75 @@ public:
 int main()
 {
     LinkedList <int> intList;
-    
-    intList.InsertToStart(5);
-    intList.InsertToStart(6);
-    intList.InsertToStart(7);
-    intList.InsertToStart(8);
-    intList.InsertToStart(9);
-    intList.InsertToStart(10);
-    intList.InsertToStart(11);
-    intList.PrintList();
-    intList.DeleteByValue(11);
-    intList.PrintList();
-   
+
+    char c;
+
+    while (true)
+    {
+        cout << "0 - exit, 1 - print list, 2 - push_front, 3 - push_back, 4 - pop_back, 5 - pop_front, 6 - search by value, 7 - delete by value, 8 - get size\n<<< ";
+        cin >> c;
+
+        switch (c)
+        {
+        case '1':
+            intList.printList();
+            cout << endl;
+            break;
+        case '2':
+        {
+            int valueInList;
+            cout << "Enter value\n<<< ";
+            cin >> valueInList;
+            intList.push_front(valueInList);
+            cout << endl;
+            break;
+        }
+        case '3':
+        {
+            int valueInList;
+            cout << "Enter value\n<<< ";
+            cin >> valueInList;
+            intList.push_back(valueInList);
+            cout << endl;
+            break;
+        }
+        case '4':
+            intList.pop_back();
+            cout << endl;
+            break;
+        case '5':
+            intList.pop_front();
+            cout << endl;
+            break;
+        case '6':
+        {
+            int valueInList;
+            cout << "Enter value to search\n<<< ";
+            cin >> valueInList;
+            intList.search_by_value(valueInList);
+            cout << endl;
+            break;
+        }
+        case '7':
+        {
+            int valueInList;
+            cout << "Enter value to delete\n<<< ";
+            cin >> valueInList;
+            intList.delete_by_value(valueInList);
+            cout << endl;
+            break;
+        }
+        case '8':
+            intList.getSize();
+            cout << endl;
+            break;
+        case '0':
+            return 0;
+        default:
+            cout << "Unknown command. Re-enter" << endl;
+            break;
+        }
+    }
+
     return 0;
 }
