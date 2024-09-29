@@ -4,17 +4,17 @@ using namespace std;
 
 template <typename T>
 
-struct Node
+struct Node 
 {
     T value;
     Node* next;
     Node* prevToNode;
-    Node(T val) : value(val), next(nullptr), prevToNode(nullptr) {}; // Конструктор для инициализации значения
+    Node(T val) : value(val), next(nullptr), prevToNode(nullptr) {}; // Constructor for initializing value
 };
 
 template <typename T>
 
-struct DLinkedList
+struct DLinkedList 
 {
 private:
 
@@ -24,144 +24,273 @@ private:
     int sizeList = 0;
     int index = 0;
 
+    bool isValidValue(T item)
+    {
+        
+        Node<T>* currentPtr = head;
+
+        while (currentPtr != nullptr)
+        {
+            if (currentPtr->value == item)
+            {
+                return true;
+            }
+            currentPtr = currentPtr->next;
+        }
+        return false;
+    }
+
 public:
-    void getSize()
+
+    void getSize() 
     {
         cout << sizeList << endl;
     }
-    void push_back(T item)
+
+    void push_back(T item) 
     {
         Node<T>* currentPtr = new Node<T>(item);
-        if (head == nullptr)
+        if (head == nullptr) 
         {
             head = currentPtr;
-            sizeList++;
+            tail = currentPtr; 
         }
-        else if (tail == nullptr)
+        else 
         {
-            tail = currentPtr;
-            head->next = tail;
-            tail->prevToNode = head;
-            sizeList++;
+            tail->next = currentPtr;
+            currentPtr->prevToNode = tail;
+            tail = currentPtr; 
         }
-        else
-        {
-            Node<T>* prevPtr = tail;
-            tail = currentPtr;
-            prevPtr->next = tail;
-            tail->prevToNode = prevPtr;
-            sizeList++;
-        }
-    }  
-    
-    void push_front(T item)
+        sizeList++;
+    }
+
+    void push_front(T item) 
     {
         Node<T>* currentPtr = new Node<T>(item);
 
-        if (tail == nullptr)
-        {
-            tail = currentPtr;
-            sizeList++;
-        }
-        else if (head == nullptr)
+        if (head == nullptr)
         {
             head = currentPtr;
-            head->next = tail;
-            tail->prevToNode = head;
-            sizeList++;
+            tail = currentPtr; 
         }
-        else
+        else 
         {
-            Node<T>* prevPtr = head;
-            head = currentPtr;
-            prevPtr->prevToNode = head;
-            head->next = prevPtr;
-            sizeList++;
+            currentPtr->next = head;
+            head->prevToNode = currentPtr;
+            head = currentPtr; 
         }
+        sizeList++;
     }
 
     void pop_back()
     {
-        if (sizeList == 0)
-        {
-            cerr << "Error. Empty list" << endl;
-            sizeList--;
-            return;
-        }
-        if (head == nullptr)
-        {
-            delete tail;
-            sizeList--;
-            return;
-        }
         if (tail == nullptr)
         {
-            delete head;
-            sizeList--;
+            cerr << "Error. Empty list" << endl;
             return;
         }
-        if (sizeList == 2)
+
+        if (tail == head)
         {
             delete tail;
-            sizeList--;
-            return;
+            head = nullptr;  
+            tail = nullptr;  
+        }
+        else
+        {
+            Node<T>* currentPtr = tail;  
+            tail = tail->prevToNode;
+            tail->next = nullptr;  
+            delete currentPtr;  
+        }
+        sizeList--;
+    }
 
+    void pop_front()
+    {
+        
+        if (tail == nullptr)
+        {
+            cerr << "Error. Empty list" << endl;
+            return;
+        }
+
+        if (tail == head)
+        {
+            delete tail;
+            head = nullptr;
+            tail = nullptr;
         }
         else
         {
             Node<T>* currentPtr = head;
-            Node<T>* prevPtr = nullptr;
+            head = head->next;
+            head->prevToNode = nullptr;
+            delete currentPtr;
+        }
+        sizeList--;
 
-            while (currentPtr->next == nullptr)
+
+    }
+
+    
+    void delete_by_value(T item) 
+    {
+        if (isValidValue(item) == false)
+        {
+            cerr << "Error. Value not found" << endl;
+            return;
+        }
+       
+        Node<T>* currentPtr = head;
+
+  
+        while (currentPtr != nullptr)
+        {
+            if (currentPtr->value == item)
+            {
+                
+                if (currentPtr->prevToNode)
+                {
+                    currentPtr->prevToNode->next = currentPtr->next;
+                }
+                else 
+                {
+                    head = currentPtr->next;
+                }
+                if (currentPtr->next)
+                {
+                    currentPtr->next->prevToNode = currentPtr->prevToNode;
+                }
+                Node<T>* toDelete = currentPtr;
+                currentPtr = currentPtr->next;
+                delete toDelete;
+            }
+            else 
             {
                 currentPtr = currentPtr->next;
             }
-            prevPtr = currentPtr->prevToNode;
-
-            delete tail;
-
-            tail = prevPtr;
         }
+        
+       
     }
 
-    void printListFront()
+    void printList()
     {
+        if (head == nullptr)
+        {
+            cerr << "Error. Empty list" << endl;
+            return;  
+        }
+
         Node<T>* currentPtr = head;
+
         while (currentPtr != nullptr)
         {
-            cout << currentPtr->value <<" ";
+            cout << currentPtr->value << " ";
             currentPtr = currentPtr->next;
         }
         cout << endl;
     }
-    void printListBack()
+
+    void search_by_value(T item)
     {
-        Node<T>* currentPtr = tail;
+        if (isValidValue(item) == false)
+        {
+            cerr << "Error. Value not found" << endl;
+            return;
+        }
+
+        Node<T>* currentPtr = head;
+
         while (currentPtr != nullptr)
         {
-            cout << currentPtr->value << " ";
-            currentPtr = currentPtr->prevToNode;
+            if (currentPtr->value == item)
+            {
+                cout << "Value: " << currentPtr->value << " index: " << index;
+                cout << endl;
+            }
+            
+            currentPtr = currentPtr->next;
+            index++;
         }
-        cout << endl;
     }
+
+
 };
 
-
-
-int main()
+int main() 
 {
-    DLinkedList<int> DList;
-    DList.push_front(5);
-    DList.printListFront();
-    DList.push_front(6);
-    DList.printListFront();
-    DList.push_front(7);
-    DList.printListFront();
-    DList.push_front(8);
-    DList.printListFront();
-    DList.push_front(9);
-    DList.printListFront();
-    DList.push_front(10);
-    DList.printListFront();
+    DLinkedList <int> DList;
+
+    char c;
+
+    while (true) 
+    {
+        cout << "0 - exit, 1 - print list, 2 - push_front, 3 - push_back, 4 - pop_back, 5 - pop_front, 6 - search by value, 7 - delete by value, 8 - get size\n<<< ";
+        cin >> c;
+
+        switch (c) 
+        {
+        case '1':
+            DList.printList();
+            cout << endl;
+            break;
+        case '2': 
+        {
+            int valueInList;
+            cout << "Enter value\n<<< ";
+            cin >> valueInList;
+            DList.push_front(valueInList);
+            cout << endl;
+            break;
+        }
+        case '3': 
+        {
+            int valueInList;
+            cout << "Enter value\n<<< ";
+            cin >> valueInList;
+            DList.push_back(valueInList);
+            cout << endl;
+            break;
+        }
+        case '4':
+            DList.pop_back();
+            cout << endl;
+            break;
+        case '5':
+            DList.pop_front();
+            cout << endl;
+            break;
+        case '6': 
+            {
+            int valueInList;
+            cout << "Enter value to search\n<<< ";
+            cin >> valueInList;
+            DList.search_by_value(valueInList);
+            cout << endl;
+            break;
+        }
+        case '7': 
+            {
+            int valueInList;
+            cout << "Enter value to delete\n<<< ";
+            cin >> valueInList;
+            DList.delete_by_value(valueInList);
+            cout << endl;
+            break;
+        }
+        case '8':
+            DList.getSize();
+            cout << endl;
+            break;
+        case '0':
+            return 0;
+        default:
+            cout << "Unknown command. Re-enter" << endl;
+            break;
+        }
+    }
+
     return 0;
 }
