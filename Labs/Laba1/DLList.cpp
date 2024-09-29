@@ -80,6 +80,49 @@ public:
         }
     }
 
+    void pop_back()
+    {
+        if (sizeList == 0)
+        {
+            cerr << "Error. Empty list" << endl;
+            sizeList--;
+            return;
+        }
+        if (head == nullptr)
+        {
+            delete tail;
+            sizeList--;
+            return;
+        }
+        if (tail == nullptr)
+        {
+            delete head;
+            sizeList--;
+            return;
+        }
+        if (sizeList == 2)
+        {
+            delete tail;
+            sizeList--;
+            return;
+
+        }
+        else
+        {
+            Node<T>* currentPtr = head;
+            Node<T>* prevPtr = nullptr;
+
+            while (currentPtr->next == nullptr)
+            {
+                currentPtr = currentPtr->next;
+            }
+            prevPtr = currentPtr->prevToNode;
+
+            delete tail;
+
+            tail = prevPtr;
+        }
+    }
 
     void printListFront()
     {
@@ -108,7 +151,17 @@ public:
 int main()
 {
     DLinkedList<int> DList;
-  
-   
+    DList.push_front(5);
+    DList.printListFront();
+    DList.push_front(6);
+    DList.printListFront();
+    DList.push_front(7);
+    DList.printListFront();
+    DList.push_front(8);
+    DList.printListFront();
+    DList.push_front(9);
+    DList.printListFront();
+    DList.push_front(10);
+    DList.printListFront();
     return 0;
 }
