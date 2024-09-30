@@ -159,9 +159,9 @@ public:
         sizeList--;
     }
 
-    void delete_by_value(T item) 
+    void delete_by_value(T item)
     {
-        if (!isValidValue(item)) 
+        if (!isValidValue(item))
         {
             cerr << "Error. Value not found" << endl;
             return;
@@ -170,36 +170,36 @@ public:
         Node<T>* currentPtr = head;
         Node<T>* prevPtr = nullptr;
 
-        if (currentPtr == nullptr) 
+        if (currentPtr == nullptr)
         {
-            cerr << "Empty list" << endl; 
+            cerr << "Empty list" << endl;
             return;
         }
 
-        while (currentPtr != nullptr && currentPtr->value == item) 
+        while (currentPtr != nullptr && currentPtr->value == item)
         {
             Node<T>* temp = currentPtr;
             currentPtr = currentPtr->next;
             delete temp;
-            head = currentPtr; 
+            head = currentPtr;
             sizeList--;
         }
 
-        
-        prevPtr = head; 
-        while (currentPtr != nullptr) 
+
+        prevPtr = head;
+        while (currentPtr != nullptr)
         {
-            if (currentPtr->value == item) 
+            if (currentPtr->value == item)
             {
-                prevPtr->next = currentPtr->next; 
-                delete currentPtr; 
-                currentPtr = prevPtr->next; 
+                prevPtr->next = currentPtr->next;
+                delete currentPtr;
+                currentPtr = prevPtr->next;
                 sizeList--;
             }
-            else 
+            else
             {
-                prevPtr = currentPtr; 
-                currentPtr = currentPtr->next; 
+                prevPtr = currentPtr;
+                currentPtr = currentPtr->next;
             }
         }
     }
@@ -229,6 +229,8 @@ int main()
     LinkedList <int> intList;
 
     char c;
+    cout << "--------------------------------- Linked List ---------------------------------" << endl;
+    cout << endl;
 
     while (true)
     {
@@ -238,15 +240,17 @@ int main()
         switch (c)
         {
         case '1':
+            cout << endl;
             intList.printList();
             cout << endl;
             break;
         case '2':
         {
+            cout << endl;
             int valueInList;
             do
             {
-                cout << "Enter value\n<<< ";
+                cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
             } while (intList.isIntegerInput(valueInList) == false);
@@ -256,10 +260,11 @@ int main()
         }
         case '3':
         {
+            cout << endl;
             int valueInList;
             do
             {
-                cout << "Enter value\n<<< ";
+                cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
             } while (intList.isIntegerInput(valueInList) == false);
@@ -268,19 +273,22 @@ int main()
             break;
         }
         case '4':
+            cout << endl;
             intList.pop_back();
             cout << endl;
             break;
         case '5':
+            cout << endl;
             intList.pop_front();
             cout << endl;
             break;
         case '6':
         {
+            cout << endl;
             int valueInList;
             do
             {
-                cout << "Enter value\n<<< ";
+                cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
             } while (intList.isIntegerInput(valueInList) == false);
@@ -290,10 +298,11 @@ int main()
         }
         case '7':
         {
+            cout << endl;
             int valueInList;
             do
             {
-                cout << "Enter value\n<<< ";
+                cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
             } while (intList.isIntegerInput(valueInList) == false);
@@ -302,13 +311,14 @@ int main()
             break;
         }
         case '8':
+            cout << endl;
             cout << "Size list: " << intList.getSize() << endl;
             cout << endl;
             break;
         case '0':
             return 0;
         default:
-            cout << "Unknown command. Re-enter" << endl;
+            cout << "Unknown command. Re-enter\n" << endl;
             break;
         }
     }
