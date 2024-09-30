@@ -4,7 +4,7 @@ using namespace std;
 
 template <typename T>
 
-struct Node 
+struct Node
 {
     T value;
     Node* next;
@@ -14,7 +14,7 @@ struct Node
 
 template <typename T>
 
-struct DLinkedList 
+struct DLinkedList
 {
 private:
 
@@ -26,7 +26,7 @@ private:
 
     bool isValidValue(T item)
     {
-        
+
         Node<T>* currentPtr = head;
 
         while (currentPtr != nullptr)
@@ -42,42 +42,55 @@ private:
 
 public:
 
-    void getSize() 
+    bool isIntegerInput(int number)
     {
-        cout << sizeList << endl;
+        if (cin.fail())
+        {
+
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            return false;
+        }
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        return true;
     }
 
-    void push_back(T item) 
+    void getSize()
+    {
+        cout <<"Size list: " << sizeList << endl;
+    }
+
+    void push_back(T item)
     {
         Node<T>* currentPtr = new Node<T>(item);
-        if (head == nullptr) 
+        if (head == nullptr)
         {
             head = currentPtr;
-            tail = currentPtr; 
+            tail = currentPtr;
         }
-        else 
+        else
         {
             tail->next = currentPtr;
             currentPtr->prevToNode = tail;
-            tail = currentPtr; 
+            tail = currentPtr;
         }
         sizeList++;
     }
 
-    void push_front(T item) 
+    void push_front(T item)
     {
         Node<T>* currentPtr = new Node<T>(item);
 
         if (head == nullptr)
         {
             head = currentPtr;
-            tail = currentPtr; 
+            tail = currentPtr;
         }
-        else 
+        else
         {
             currentPtr->next = head;
             head->prevToNode = currentPtr;
-            head = currentPtr; 
+            head = currentPtr;
         }
         sizeList++;
     }
@@ -93,22 +106,22 @@ public:
         if (tail == head)
         {
             delete tail;
-            head = nullptr;  
-            tail = nullptr;  
+            head = nullptr;
+            tail = nullptr;
         }
         else
         {
-            Node<T>* currentPtr = tail;  
+            Node<T>* currentPtr = tail;
             tail = tail->prevToNode;
-            tail->next = nullptr;  
-            delete currentPtr;  
+            tail->next = nullptr;
+            delete currentPtr;
         }
         sizeList--;
     }
 
     void pop_front()
     {
-        
+
         if (tail == nullptr)
         {
             cerr << "Error. Empty list" << endl;
@@ -133,28 +146,28 @@ public:
 
     }
 
-    
-    void delete_by_value(T item) 
+
+    void delete_by_value(T item)
     {
         if (isValidValue(item) == false)
         {
             cerr << "Error. Value not found" << endl;
             return;
         }
-       
+
         Node<T>* currentPtr = head;
 
-  
+
         while (currentPtr != nullptr)
         {
             if (currentPtr->value == item)
             {
-                
+
                 if (currentPtr->prevToNode)
                 {
                     currentPtr->prevToNode->next = currentPtr->next;
                 }
-                else 
+                else
                 {
                     head = currentPtr->next;
                 }
@@ -165,14 +178,15 @@ public:
                 Node<T>* toDelete = currentPtr;
                 currentPtr = currentPtr->next;
                 delete toDelete;
+                sizeList--;
             }
-            else 
+            else
             {
                 currentPtr = currentPtr->next;
             }
         }
-        
-       
+
+
     }
 
     void printList()
@@ -180,7 +194,7 @@ public:
         if (head == nullptr)
         {
             cerr << "Error. Empty list" << endl;
-            return;  
+            return;
         }
 
         Node<T>* currentPtr = head;
@@ -210,7 +224,7 @@ public:
                 cout << "Value: " << currentPtr->value << " index: " << index;
                 cout << endl;
             }
-            
+
             currentPtr = currentPtr->next;
             index++;
         }
@@ -219,37 +233,45 @@ public:
 
 };
 
-int main() 
+int main()
 {
     DLinkedList <int> DList;
 
     char c;
 
-    while (true) 
+    while (true)
     {
         cout << "0 - exit, 1 - print list, 2 - push_front, 3 - push_back, 4 - pop_back, 5 - pop_front, 6 - search by value, 7 - delete by value, 8 - get size\n<<< ";
         cin >> c;
 
-        switch (c) 
+        switch (c)
         {
         case '1':
             DList.printList();
             cout << endl;
             break;
-        case '2': 
+        case '2':
         {
             int valueInList;
-            cout << "Enter value\n<<< ";
-            cin >> valueInList;
+            do
+            {
+                cout << "Enter value\n<<< ";
+                cin >> valueInList;
+
+            } while (DList.isIntegerInput(valueInList) == false);
             DList.push_front(valueInList);
             cout << endl;
             break;
         }
-        case '3': 
+        case '3':
         {
             int valueInList;
-            cout << "Enter value\n<<< ";
-            cin >> valueInList;
+            do
+            {
+                cout << "Enter value\n<<< ";
+                cin >> valueInList;
+
+            } while (DList.isIntegerInput(valueInList) == false);
             DList.push_back(valueInList);
             cout << endl;
             break;
@@ -262,20 +284,28 @@ int main()
             DList.pop_front();
             cout << endl;
             break;
-        case '6': 
-            {
+        case '6':
+        {
             int valueInList;
-            cout << "Enter value to search\n<<< ";
-            cin >> valueInList;
+            do
+            {
+                cout << "Enter value\n<<< ";
+                cin >> valueInList;
+
+            } while (DList.isIntegerInput(valueInList) == false);
             DList.search_by_value(valueInList);
             cout << endl;
             break;
         }
-        case '7': 
-            {
+        case '7':
+        {
             int valueInList;
-            cout << "Enter value to delete\n<<< ";
-            cin >> valueInList;
+            do
+            {
+                cout << "Enter value\n<<< ";
+                cin >> valueInList;
+
+            } while (DList.isIntegerInput(valueInList) == false);
             DList.delete_by_value(valueInList);
             cout << endl;
             break;
