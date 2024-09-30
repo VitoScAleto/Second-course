@@ -57,7 +57,7 @@ public:
 
     void getSize()
     {
-        cout <<"Size list: " << sizeList << endl;
+        cout << "Size list: " << sizeList << endl;
     }
 
     void push_back(T item)
@@ -239,23 +239,28 @@ int main()
 
     char c;
 
+    cout << "\t\t--------------------------Doubly Linked List--------------------------" << endl;
+    cout << endl;
+
     while (true)
     {
-        cout << "0 - exit, 1 - print list, 2 - push_front, 3 - push_back, 4 - pop_back, 5 - pop_front, 6 - search by value, 7 - delete by value, 8 - get size\n<<< ";
+        cout << "0 - exit, 1 - print list, 2 - push_front, 3 - push_back, 4 - pop_back, 5 - pop_front, 6 - search by value, 7 - delete by value, 8 - get size\n\n<<< ";
         cin >> c;
 
         switch (c)
         {
         case '1':
+            cout << endl;
             DList.printList();
             cout << endl;
             break;
         case '2':
         {
+            cout << endl;
             int valueInList;
             do
             {
-                cout << "Enter value\n<<< ";
+                cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
             } while (DList.isIntegerInput(valueInList) == false);
@@ -265,10 +270,11 @@ int main()
         }
         case '3':
         {
+            cout << endl;
             int valueInList;
             do
             {
-                cout << "Enter value\n<<< ";
+                cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
             } while (DList.isIntegerInput(valueInList) == false);
@@ -277,19 +283,22 @@ int main()
             break;
         }
         case '4':
+            cout << endl;
             DList.pop_back();
             cout << endl;
             break;
         case '5':
+            cout << endl;
             DList.pop_front();
             cout << endl;
             break;
         case '6':
         {
+            cout << endl;
             int valueInList;
             do
             {
-                cout << "Enter value\n<<< ";
+                cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
             } while (DList.isIntegerInput(valueInList) == false);
@@ -299,10 +308,11 @@ int main()
         }
         case '7':
         {
+            cout << endl;
             int valueInList;
             do
             {
-                cout << "Enter value\n<<< ";
+                cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
             } while (DList.isIntegerInput(valueInList) == false);
@@ -311,13 +321,14 @@ int main()
             break;
         }
         case '8':
+            cout << endl;
             DList.getSize();
             cout << endl;
             break;
         case '0':
             return 0;
         default:
-            cout << "Unknown command. Re-enter" << endl;
+            cout << "Unknown command. Re-enter\n" << endl;
             break;
         }
     }
