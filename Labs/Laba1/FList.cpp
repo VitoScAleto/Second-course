@@ -18,18 +18,52 @@ struct LinkedList
 private:
 
     Node<T>* head{ nullptr };
+
     int sizeList = 0;
     int index = 0;
 
+    bool isValidValue(T item)
+    {
+
+        Node<T>* currentPtr = head;
+
+        while (currentPtr != nullptr)
+        {
+            if (currentPtr->value == item)
+            {
+                return true;
+            }
+            currentPtr = currentPtr->next;
+        }
+        return false;
+    }
+
+
 public:
+
+    bool isIntegerInput(int number)
+    {
+        if (std::cin.fail())
+        {
+
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            return false;
+        }
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        return true;
+    }
+
     int getSize()
     {
         return sizeList;
     }
+
     int GetIndex()
     {
         return index;
     }
+
     void push_back(T item)
     {
         if (head == nullptr)
@@ -67,6 +101,13 @@ public:
     }
     void search_by_value(T item)
     {
+
+        if (isValidValue(item) == false)
+        {
+            cerr << "Error. Value not found" << endl;
+            return;
+        }
+
         Node<T>* current = head;
         while (current != nullptr)
         {
@@ -118,47 +159,54 @@ public:
         sizeList--;
     }
 
-    void delete_by_value(T item)
+    void delete_by_value(T item) 
     {
+        if (!isValidValue(item)) 
+        {
+            cerr << "Error. Value not found" << endl;
+            return;
+        }
+
         Node<T>* currentPtr = head;
         Node<T>* prevPtr = nullptr;
 
-        if (currentPtr == nullptr)
+        if (currentPtr == nullptr) 
         {
-            cerr << "Empty list" << endl;// список пуст
+            cerr << "Empty list" << endl; 
             return;
         }
-        else if (currentPtr->next == nullptr)// один элемент
-        {
-            delete head;
-            delete currentPtr;
-            sizeList--;
-            return;
-        }
-        while (currentPtr != nullptr)
-        {
-            if (currentPtr->value == item && currentPtr == head)// если значение голова списка
-            {
-                pop_front();
-                sizeList--;
-                return;
-            }
-            else if (currentPtr->value == item)
-            {
-                prevPtr->next = currentPtr->next;
-                delete currentPtr;
-                sizeList--;
-                return;
 
-            }
-            prevPtr = currentPtr;
+        while (currentPtr != nullptr && currentPtr->value == item) 
+        {
+            Node<T>* temp = currentPtr;
             currentPtr = currentPtr->next;
+            delete temp;
+            head = currentPtr; 
+            sizeList--;
         }
 
+        
+        prevPtr = head; 
+        while (currentPtr != nullptr) 
+        {
+            if (currentPtr->value == item) 
+            {
+                prevPtr->next = currentPtr->next; 
+                delete currentPtr; 
+                currentPtr = prevPtr->next; 
+                sizeList--;
+            }
+            else 
+            {
+                prevPtr = currentPtr; 
+                currentPtr = currentPtr->next; 
+            }
+        }
     }
     void printList()
     {
         Node<T>* current = head;
+
         if (current == nullptr)
         {
             cout << "Empty list" << endl;
@@ -196,8 +244,12 @@ int main()
         case '2':
         {
             int valueInList;
-            cout << "Enter value\n<<< ";
-            cin >> valueInList;
+            do
+            {
+                cout << "Enter value\n<<< ";
+                cin >> valueInList;
+
+            } while (intList.isIntegerInput(valueInList) == false);
             intList.push_front(valueInList);
             cout << endl;
             break;
@@ -205,8 +257,12 @@ int main()
         case '3':
         {
             int valueInList;
-            cout << "Enter value\n<<< ";
-            cin >> valueInList;
+            do
+            {
+                cout << "Enter value\n<<< ";
+                cin >> valueInList;
+
+            } while (intList.isIntegerInput(valueInList) == false);
             intList.push_back(valueInList);
             cout << endl;
             break;
@@ -222,8 +278,12 @@ int main()
         case '6':
         {
             int valueInList;
-            cout << "Enter value to search\n<<< ";
-            cin >> valueInList;
+            do
+            {
+                cout << "Enter value\n<<< ";
+                cin >> valueInList;
+
+            } while (intList.isIntegerInput(valueInList) == false);
             intList.search_by_value(valueInList);
             cout << endl;
             break;
@@ -231,14 +291,18 @@ int main()
         case '7':
         {
             int valueInList;
-            cout << "Enter value to delete\n<<< ";
-            cin >> valueInList;
+            do
+            {
+                cout << "Enter value\n<<< ";
+                cin >> valueInList;
+
+            } while (intList.isIntegerInput(valueInList) == false);
             intList.delete_by_value(valueInList);
             cout << endl;
             break;
         }
         case '8':
-            intList.getSize();
+            cout << "Size list: " << intList.getSize() << endl;
             cout << endl;
             break;
         case '0':
