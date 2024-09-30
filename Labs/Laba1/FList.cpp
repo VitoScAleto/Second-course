@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -148,12 +149,14 @@ public:
     void pop_front()
     {
         Node<T>* currentPtr = head;
-        Node<T>* nextHead = currentPtr->next;
+
         if (currentPtr == nullptr)
         {
             cerr << "Error. Empty list" << endl;
             return;
         }
+        Node<T>* nextHead = currentPtr->next;
+
         head = nextHead;
         delete currentPtr;
         sizeList--;
@@ -221,12 +224,53 @@ public:
         cout << endl;
     }
 
+    void readingConfiguration(string nameFile)
+    {
+        int valueConfiguration = 0;
+
+        ifstream inputFile(nameFile);
+
+        if (!inputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+        while (inputFile >> valueConfiguration)
+        {
+            push_back(valueConfiguration);
+        }
+
+        inputFile.close();
+    }
+
+    void writeToConfiguration(string nameFile)
+    {
+        ofstream outputFile(nameFile);
+
+        if (!outputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+
+        Node<T>* currentPtr = head;
+
+        while (currentPtr != nullptr)
+        {
+            outputFile << currentPtr->value << " ";
+            currentPtr = currentPtr->next;
+
+        }
+
+        outputFile.close();
+    }
+
 };
 
 
 int main()
 {
     LinkedList <int> intList;
+
+    intList.readingConfiguration("test.txt");
 
     char c;
     cout << "--------------------------------- Linked List ---------------------------------" << endl;
@@ -316,6 +360,7 @@ int main()
             cout << endl;
             break;
         case '0':
+            intList.writeToConfiguration("test.txt");
             return 0;
         default:
             cout << "Unknown command. Re-enter\n" << endl;

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -113,12 +114,53 @@ public:
         cout << endl;
     }
 
+    void readingConfiguration(string nameFile)
+    {
+        int valueConfiguration = 0;
+
+        ifstream inputFile(nameFile);
+
+        if (!inputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+        while (inputFile >> valueConfiguration)
+        {
+            push_front(valueConfiguration);
+        }
+
+        inputFile.close();
+    }
+
+    void writeToConfiguration(string nameFile)
+    {
+        ofstream outputFile(nameFile);
+
+        if (!outputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+
+        Node<T>* currentPtr = head;
+
+        while (currentPtr != nullptr)
+        {
+            outputFile << currentPtr->value << " ";
+            currentPtr = currentPtr->next;
+
+        }
+
+        outputFile.close();
+    }
+
 };
 
 
 int main()
 {
-    LinkedList <int> intList;
+    LinkedList <int> intStack;
+
+    intStack.readingConfiguration("test.txt");
 
     char c;
     cout << "--------------------------------- Stack ---------------------------------" << endl;
@@ -133,7 +175,7 @@ int main()
         {
         case '1':
             cout << endl;
-            intList.printStack();
+            intStack.printStack();
             cout << endl;
             break;
         case '2':
@@ -145,24 +187,25 @@ int main()
                 cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
-            } while (intList.isIntegerInput(valueInList) == false);
-            intList.push_front(valueInList);
+            } while (intStack.isIntegerInput(valueInList) == false);
+            intStack.push_front(valueInList);
             cout << endl;
             break;
         }
 
         case '3':
             cout << endl;
-            intList.pop_front();
+            intStack.pop_front();
             cout << endl;
             break;
 
         case '4':
             cout << endl;
-            cout << "Size stack: " << intList.getSize() << endl;
+            cout << "Size stack: " << intStack.getSize() << endl;
             cout << endl;
             break;
         case '0':
+            intStack.writeToConfiguration("test.txt");
             return 0;
         default:
             cout << "Unknown command. Re-enter\n" << endl;

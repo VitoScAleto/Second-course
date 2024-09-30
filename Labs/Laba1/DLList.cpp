@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -230,12 +231,51 @@ public:
         }
     }
 
+    void readingConfiguration(string nameFile)
+    {
+        int valueConfiguration = 0;
 
+        ifstream inputFile(nameFile);
+
+        if (!inputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+        while (inputFile >> valueConfiguration)
+        { 
+            push_back(valueConfiguration);
+        }
+
+        inputFile.close();
+    }
+
+    void writeToConfiguration(string nameFile)
+    {
+        ofstream outputFile(nameFile);
+
+        if (!outputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+
+        Node<T>* currentPtr = head;
+
+        while (currentPtr != nullptr)
+        {
+            outputFile << currentPtr->value << " ";
+            currentPtr = currentPtr->next;
+
+        }
+
+        outputFile.close();
+    }
 };
 
 int main()
 {
     DLinkedList <int> DList;
+
+    DList.readingConfiguration("test.txt");
 
     char c;
 
@@ -326,12 +366,15 @@ int main()
             cout << endl;
             break;
         case '0':
+            DList.writeToConfiguration("test.txt");
             return 0;
         default:
             cout << "Unknown command. Re-enter\n" << endl;
             break;
         }
     }
+
+   
 
     return 0;
 }

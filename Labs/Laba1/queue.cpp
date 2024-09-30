@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -20,7 +21,6 @@ private:
     Node<T>* head{ nullptr };
 
     int sizeList = 0;
-    int index = 0;
 
     bool isValidValue(T item)
     {
@@ -59,12 +59,6 @@ public:
         return sizeList;
     }
 
-    int GetIndex()
-    {
-        return index;
-    }
-
-    
     void push_front(T item)
     {
         if (head == nullptr)
@@ -81,7 +75,7 @@ public:
         }
 
     }
-    
+
     void pop_back()
     {
         Node<T>* currentPtr = head;
@@ -107,8 +101,8 @@ public:
         prevPtr->next = nullptr;
         sizeList--;
     }
-  
-   
+
+
     void printQueue()
     {
         Node<T>* current = head;
@@ -127,12 +121,53 @@ public:
         cout << endl;
     }
 
+    void readingConfiguration(string nameFile)
+    {
+        int valueConfiguration = 0;
+
+        ifstream inputFile(nameFile);
+
+        if (!inputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+        while (inputFile >> valueConfiguration)
+        {
+            push_front(valueConfiguration);
+        }
+
+        inputFile.close();
+    }
+
+    void writeToConfiguration(string nameFile)
+    {
+        ofstream outputFile(nameFile);
+
+        if (!outputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+
+        Node<T>* currentPtr = head;
+
+        while (currentPtr != nullptr)
+        {
+            outputFile << currentPtr->value << " ";
+            currentPtr = currentPtr->next;
+
+        }
+
+        outputFile.close();
+    }
+
 };
 
 
 int main()
 {
     Queue <int> intQueue;
+
+    intQueue.readingConfiguration("test.txt");
 
     char c;
     cout << "--------------------------------- Queue ---------------------------------" << endl;
@@ -177,6 +212,7 @@ int main()
             cout << endl;
             break;
         case '0':
+            intQueue.writeToConfiguration("test.txt");
             return 0;
         default:
             cout << "Unknown command. Re-enter\n" << endl;
