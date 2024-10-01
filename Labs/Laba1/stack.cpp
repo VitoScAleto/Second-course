@@ -42,18 +42,7 @@ private:
 
 public:
 
-    bool isIntegerInput(int number)
-    {
-        if (std::cin.fail())
-        {
-
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            return false;
-        }
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        return true;
-    }
+   
 
     int getSize()
     {
@@ -116,7 +105,7 @@ public:
 
     void readingConfiguration(string nameFile)
     {
-        int valueConfiguration = 0;
+        string valueConfiguration;
 
         ifstream inputFile(nameFile);
 
@@ -158,9 +147,9 @@ public:
 
 int main()
 {
-    LinkedList <int> intStack;
+    LinkedList <string> Stack;
 
-    intStack.readingConfiguration("test.txt");
+    Stack.readingConfiguration("test.txt");
 
     char c;
     cout << "--------------------------------- Stack ---------------------------------" << endl;
@@ -175,43 +164,40 @@ int main()
         {
         case '1':
             cout << endl;
-            intStack.printStack();
+            Stack.printStack();
             cout << endl;
             break;
         case '2':
         {
             cout << endl;
-            int valueInList;
-            do
-            {
+            string valueInList;
+            
                 cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
-            } while (intStack.isIntegerInput(valueInList) == false);
-            intStack.push_front(valueInList);
+            
+            Stack.push_front(valueInList);
             cout << endl;
             break;
         }
 
         case '3':
             cout << endl;
-            intStack.pop_front();
+            Stack.pop_front();
             cout << endl;
             break;
 
         case '4':
             cout << endl;
-            cout << "Size stack: " << intStack.getSize() << endl;
+            cout << "Size stack: " << Stack.getSize() << endl;
             cout << endl;
             break;
         case '0':
-            intStack.writeToConfiguration("test.txt");
+            Stack.writeToConfiguration("test.txt");
             return 0;
         default:
             cout << "Unknown command. Re-enter\n" << endl;
             break;
         }
     }
-
-    return 0;
 }

@@ -41,19 +41,7 @@ private:
 
 public:
 
-    bool isIntegerInput(int number)
-    {
-        if (std::cin.fail())
-        {
-
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            return false;
-        }
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        return true;
-    }
-
+    
     int getSize()
     {
         return sizeList;
@@ -73,7 +61,7 @@ public:
             head = newNode;
             sizeList++;
         }
-
+        
     }
 
     void pop_back()
@@ -123,7 +111,7 @@ public:
 
     void readingConfiguration(string nameFile)
     {
-        int valueConfiguration = 0;
+        string valueConfiguration;
 
         ifstream inputFile(nameFile);
 
@@ -165,9 +153,9 @@ public:
 
 int main()
 {
-    Queue <int> intQueue;
+    Queue <string> Queue;
 
-    intQueue.readingConfiguration("test.txt");
+    Queue.readingConfiguration("test.txt");
 
     char c;
     cout << "--------------------------------- Queue ---------------------------------" << endl;
@@ -182,37 +170,36 @@ int main()
         {
         case '1':
             cout << endl;
-            intQueue.printQueue();
+            Queue.printQueue();
             cout << endl;
             break;
         case '2':
         {
             cout << endl;
-            int valueInList;
-            do
-            {
+            string valueInList;
+          
                 cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
-            } while (intQueue.isIntegerInput(valueInList) == false);
-            intQueue.push_front(valueInList);
+            
+            Queue.push_front(valueInList);
             cout << endl;
             break;
         }
         case '3':
         {
             cout << endl;
-            intQueue.pop_back();
+            Queue.pop_back();
             cout << endl;
             break;
         }
         case '4':
             cout << endl;
-            cout << "Size queue: " << intQueue.getSize() << endl;
+            cout << "Size queue: " << Queue.getSize() << endl;
             cout << endl;
             break;
         case '0':
-            intQueue.writeToConfiguration("test.txt");
+            Queue.writeToConfiguration("test.txt");
             return 0;
         default:
             cout << "Unknown command. Re-enter\n" << endl;
@@ -220,5 +207,4 @@ int main()
         }
     }
 
-    return 0;
 }

@@ -191,20 +191,112 @@ public:
         
     }
 
+     
+void readingConfiguration(string nameFile)
+    {
+        string valueConfiguration;
+
+        ifstream inputFile(nameFile);
+
+        if (!inputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+        while (inputFile >> valueConfiguration)
+        {
+            push(valueConfiguration);
+        }
+
+        inputFile.close();
+    }
+
+    void writeToConfiguration(string nameFile)
+    {
+        ofstream outputFile(nameFile);
+
+        if (!outputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+        clearingTheQueue();
+
+        queue.push_front(root);
+
+        while (queue.getSize() != 0) 
+        {
+
+            NodeTree<T>* currentPtr = queue.getFront(); // Получаем указатель на текущий узел
+            queue.pop_back(); // Удаляем его из очереди
+      
+            outputFile << currentPtr->value << " "; // Печатаем значение текущего узла
+            
+            // Если у текущего узла есть левый потомок, добавляем его в очередь
+            if (currentPtr->left != nullptr) 
+            {
+                queue.push_front(currentPtr->left);
+            }
+
+            // Если у текущего узла есть правый потомок, добавляем его в очередь
+            if (currentPtr->right != nullptr) 
+            {
+                queue.push_front(currentPtr->right);
+            }
+        }
+      
+
+        outputFile.close();
+    }
+    
+
 };
 
 
 int main()
 {
-    ComBinTree <int> tree;
-    tree.push(5);
-    tree.push(6);
-    tree.push(7);
-    tree.push(8);
-    tree.push(9);
-    tree.push(10);
+    ComBinTree <string> tree;
+  
+    tree.readingConfiguration("test.txt");
 
-    tree.print();
+    char c;
 
-    return 0;
+    cout << "\t\t-------------------------- Complete Binary Tree -------------------------" << endl;
+    cout << endl;
+
+    while (true)
+    {
+        cout << "0 - exit, 1 - print tree, 2 - push\n\n<<< ";
+        cin >> c;
+
+        switch (c)
+        {
+        case '1':
+            cout << endl;
+            tree.print();
+            cout << endl;
+            break;
+        case '2':
+        {
+            cout << endl;
+            string valueInList;
+            
+                cout << "Enter value\n\n<<< ";
+                cin >> valueInList;
+
+          
+            tree.push(valueInList);
+            cout << endl;
+            break;
+        }
+        case '3':
+            
+            break;
+        case '0':
+            tree.writeToConfiguration("test.txt");
+            return 0;
+        default:
+            cout << "Unknown command. Re-enter\n" << endl;
+            break;
+        
+        }
+    } 
 }

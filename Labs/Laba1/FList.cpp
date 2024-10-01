@@ -42,19 +42,7 @@ private:
 
 public:
 
-    bool isIntegerInput(int number)
-    {
-        if (std::cin.fail())
-        {
-
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            return false;
-        }
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        return true;
-    }
-
+   
     int getSize()
     {
         return sizeList;
@@ -226,7 +214,7 @@ public:
 
     void readingConfiguration(string nameFile)
     {
-        int valueConfiguration = 0;
+        string valueConfiguration;
 
         ifstream inputFile(nameFile);
 
@@ -268,9 +256,9 @@ public:
 
 int main()
 {
-    LinkedList <int> intList;
+    LinkedList <string> List;
 
-    intList.readingConfiguration("test.txt");
+    List.readingConfiguration("test.txt");
 
     char c;
     cout << "--------------------------------- Linked List ---------------------------------" << endl;
@@ -285,82 +273,77 @@ int main()
         {
         case '1':
             cout << endl;
-            intList.printList();
+            List.printList();
             cout << endl;
             break;
         case '2':
         {
             cout << endl;
-            int valueInList;
-            do
-            {
+            string valueInList;
+            
                 cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
-            } while (intList.isIntegerInput(valueInList) == false);
-            intList.push_front(valueInList);
+            List.push_front(valueInList);
             cout << endl;
             break;
         }
         case '3':
         {
             cout << endl;
-            int valueInList;
-            do
-            {
+            string valueInList;
+        
                 cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
-            } while (intList.isIntegerInput(valueInList) == false);
-            intList.push_back(valueInList);
+            
+            List.push_back(valueInList);
             cout << endl;
             break;
         }
         case '4':
             cout << endl;
-            intList.pop_back();
+            List.pop_back();
             cout << endl;
             break;
         case '5':
             cout << endl;
-            intList.pop_front();
+            List.pop_front();
             cout << endl;
             break;
         case '6':
         {
             cout << endl;
-            int valueInList;
-            do
-            {
+            string valueInList;
+            
                 cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
-            } while (intList.isIntegerInput(valueInList) == false);
-            intList.search_by_value(valueInList);
+            
+            List.search_by_value(valueInList);
             cout << endl;
             break;
         }
         case '7':
         {
             cout << endl;
-            int valueInList;
-            do
-            {
+            string valueInList;
+            
                 cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
-            } while (intList.isIntegerInput(valueInList) == false);
-            intList.delete_by_value(valueInList);
+            
+            List.delete_by_value(valueInList);
             cout << endl;
             break;
         }
         case '8':
             cout << endl;
-            cout << "Size list: " << intList.getSize() << endl;
+            cout << "Size list: " << List.getSize() << endl;
             cout << endl;
             break;
         case '0':
-            intList.writeToConfiguration("test.txt");
+            List.writeToConfiguration("test.txt");
             return 0;
         default:
             cout << "Unknown command. Re-enter\n" << endl;
@@ -368,5 +351,5 @@ int main()
         }
     }
 
-    return 0;
+    
 }

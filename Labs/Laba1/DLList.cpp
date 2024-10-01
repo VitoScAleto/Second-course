@@ -43,18 +43,6 @@ private:
 
 public:
 
-    bool isIntegerInput(int number)
-    {
-        if (cin.fail())
-        {
-
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            return false;
-        }
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        return true;
-    }
 
     void getSize()
     {
@@ -233,7 +221,7 @@ public:
 
     void readingConfiguration(string nameFile)
     {
-        int valueConfiguration = 0;
+        string valueConfiguration;
 
         ifstream inputFile(nameFile);
 
@@ -273,7 +261,7 @@ public:
 
 int main()
 {
-    DLinkedList <int> DList;
+    DLinkedList <string> DList;
 
     DList.readingConfiguration("test.txt");
 
@@ -297,13 +285,12 @@ int main()
         case '2':
         {
             cout << endl;
-            int valueInList;
-            do
-            {
+            string valueInList;
+            
                 cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
-            } while (DList.isIntegerInput(valueInList) == false);
+          
             DList.push_front(valueInList);
             cout << endl;
             break;
@@ -311,13 +298,13 @@ int main()
         case '3':
         {
             cout << endl;
-            int valueInList;
-            do
-            {
+            string valueInList;
+            
+            
                 cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
-            } while (DList.isIntegerInput(valueInList) == false);
+      
             DList.push_back(valueInList);
             cout << endl;
             break;
@@ -335,13 +322,12 @@ int main()
         case '6':
         {
             cout << endl;
-            int valueInList;
-            do
-            {
+            string valueInList;
+           
                 cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
-            } while (DList.isIntegerInput(valueInList) == false);
+           
             DList.search_by_value(valueInList);
             cout << endl;
             break;
@@ -349,13 +335,12 @@ int main()
         case '7':
         {
             cout << endl;
-            int valueInList;
-            do
-            {
+            string valueInList;
+           
                 cout << "Enter value\n\n<<< ";
                 cin >> valueInList;
 
-            } while (DList.isIntegerInput(valueInList) == false);
+            
             DList.delete_by_value(valueInList);
             cout << endl;
             break;
@@ -374,7 +359,4 @@ int main()
         }
     }
 
-   
-
-    return 0;
 }
