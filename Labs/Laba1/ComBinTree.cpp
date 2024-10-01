@@ -155,11 +155,11 @@ public:
         }
     }
 
-    void print() 
+    void print()
     {
         clearingTheQueue();
 
-        if (root == nullptr) 
+        if (root == nullptr)
         {
             cout << "Tree empty" << endl;
             return;
@@ -167,32 +167,32 @@ public:
 
         queue.push_front(root); // Начинаем с корня
 
-        while (queue.getSize() != 0) 
+        while (queue.getSize() != 0)
         {
 
             NodeTree<T>* currentPtr = queue.getFront(); // Получаем указатель на текущий узел
             queue.pop_back(); // Удаляем его из очереди
-      
+
             cout << currentPtr->value << " "; // Печатаем значение текущего узла
-            
-           
+
+
             // Если у текущего узла есть левый потомок, добавляем его в очередь
-            if (currentPtr->left != nullptr) 
+            if (currentPtr->left != nullptr)
             {
                 queue.push_front(currentPtr->left);
             }
 
             // Если у текущего узла есть правый потомок, добавляем его в очередь
-            if (currentPtr->right != nullptr) 
+            if (currentPtr->right != nullptr)
             {
                 queue.push_front(currentPtr->right);
             }
         }
-        
+
     }
 
-     
-void readingConfiguration(string nameFile)
+
+    void readingConfiguration(string nameFile)
     {
         string valueConfiguration;
 
@@ -222,31 +222,98 @@ void readingConfiguration(string nameFile)
 
         queue.push_front(root);
 
-        while (queue.getSize() != 0) 
+        while (queue.getSize() != 0)
         {
 
             NodeTree<T>* currentPtr = queue.getFront(); // Получаем указатель на текущий узел
             queue.pop_back(); // Удаляем его из очереди
-      
+
             outputFile << currentPtr->value << " "; // Печатаем значение текущего узла
-            
+
             // Если у текущего узла есть левый потомок, добавляем его в очередь
-            if (currentPtr->left != nullptr) 
+            if (currentPtr->left != nullptr)
             {
                 queue.push_front(currentPtr->left);
             }
 
             // Если у текущего узла есть правый потомок, добавляем его в очередь
+            if (currentPtr->right != nullptr)
+            {
+                queue.push_front(currentPtr->right);
+            }
+        }
+
+
+        outputFile.close();
+    }
+    bool isComplete() 
+    {
+        if (root == nullptr) return true;
+
+        Queue<NodeTree<T>*> queue;
+        queue.push_front(root);
+        bool end = false;
+
+        while (queue.getSize() != 0) 
+        {
+            NodeTree<T>* currentPtr = queue.getFront();
+            queue.pop_back();
+
+            if (currentPtr->left != nullptr) 
+            {
+                if (end) return false; // Если уже встретили узел без потомков
+                queue.push_front(currentPtr->left);
+            }
+            else 
+            {
+                end = true; // Нет левого потомка, значит, все последующие должны быть листьями
+            }
+
+            if (currentPtr->right) 
+            {
+                if (end) return false; // Если уже встретили узел без потомков
+                queue.push_front(currentPtr->right);
+            }
+            else 
+            {
+                end = true; // Нет правого потомка
+            }
+        }
+
+        return true;
+    }
+    int find(T item) 
+    {
+        clearingTheQueue();
+        if (root == nullptr) 
+        {
+            return -1; // Дерево пустое
+        }
+        queue.push_front(root);
+        int index = 0; 
+        while (queue.getSize() != 0) 
+        {
+            NodeTree<T>* currentPtr = queue.getFront();
+            queue.pop_back();
+
+            if (currentPtr->value == item) 
+            {
+                return index; // Возвращаем индекс найденного элемента
+            }
+            index++;
+
+            if (currentPtr->left != nullptr) 
+            {
+                queue.push_front(currentPtr->left);
+            }
             if (currentPtr->right != nullptr) 
             {
                 queue.push_front(currentPtr->right);
             }
         }
-      
-
-        outputFile.close();
+        return -1; // Элемент не найден
     }
-    
+
 
 };
 
@@ -254,8 +321,8 @@ void readingConfiguration(string nameFile)
 int main()
 {
     ComBinTree <string> tree;
-  
-    tree.readingConfiguration("test.txt");
+
+    tree.readingConfiguration("test1.txt");
 
     char c;
 
@@ -264,7 +331,7 @@ int main()
 
     while (true)
     {
-        cout << "0 - exit, 1 - print tree, 2 - push\n\n<<< ";
+        cout << "0 - exit, 1 - print tree, 2 - push, 3 - complete tree, 4 - search value\n\n<<< ";
         cin >> c;
 
         switch (c)
@@ -278,25 +345,50 @@ int main()
         {
             cout << endl;
             string valueInList;
-            
-                cout << "Enter value\n\n<<< ";
-                cin >> valueInList;
 
-          
+            cout << "Enter value\n\n<<< ";
+            cin >> valueInList;
+
+
             tree.push(valueInList);
             cout << endl;
             break;
         }
         case '3':
-            
+            cout << endl;
+            if (tree.isComplete() == true)
+            {
+                cout << "Tree is  complete" << endl;
+            }
+            else
+            {
+                cout << "Tree is not complete" << endl;
+            }
+            break;
+        case '4':
+        {
+            cout << endl;
+            string valueInList;
+            cout << "Enter value\n\n<<< ";
+            cin >> valueInList;
+
+            if (tree.find(valueInList) == -1)
+            {
+                cout << "Value not found" << endl;
+            }
+            else
+            {
+                cout << "Index: " << tree.find(valueInList) << endl;
+            }
+        }
             break;
         case '0':
-            tree.writeToConfiguration("test.txt");
+            tree.writeToConfiguration("test1.txt");
             return 0;
         default:
             cout << "Unknown command. Re-enter\n" << endl;
             break;
-        
+
         }
-    } 
+    }
 }
