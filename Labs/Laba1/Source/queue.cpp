@@ -1,73 +1,77 @@
-#include <iostream>
-#include <fstream>
+#include "../Headers/queue.h"
 
-using namespace std;
 
-template <typename T>
 
-struct Node
-{
-    T value;
-    Node* next;
-    Node(T val) : value(val), next(nullptr) {}; // Конструктор для инициализации значения
-};
 
 template <typename T>
 
-struct Queue
-{
-private:
-
-    Node<T>* head{ nullptr };
-
-    int sizeList = 0;
-
-    bool isValidValue(T item)
+void Queue<T>::writeToConfiguration(string nameFile)
     {
+        ofstream outputFile(nameFile);
 
-        Node<T>* currentPtr = head;
+        if (!outputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+
+        NodeQueue* currentPtr = head;
 
         while (currentPtr != nullptr)
         {
-            if (currentPtr->value == item)
-            {
-                return true;
-            }
+            outputFile << currentPtr->value << " ";
             currentPtr = currentPtr->next;
+
         }
-        return false;
+
+        outputFile.close();
     }
 
+template <typename T>
 
-public:
-
-    
-    int getSize()
+void Queue<T>::readingConfiguration(string nameFile)
     {
-        return sizeList;
-    }
+        string valueConfiguration;
 
-    void push_front(T item)
-    {
-        if (head == nullptr)
+        ifstream inputFile(nameFile);
+
+        if (!inputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+        while (inputFile >> valueConfiguration)
         {
-            head = new Node<T>(item);
-            sizeList++;
+            push_front(valueConfiguration);
         }
-        else
-        {
-            Node<T>* newNode = new Node<T>(item);
-            newNode->next = head;
-            head = newNode;
-            sizeList++;
-        }
-        
+
+        inputFile.close();
     }
 
-    void pop_back()
+template <typename T>
+
+void Queue<T>::printQueue()
     {
-        Node<T>* currentPtr = head;
-        Node<T>* prevPtr = nullptr;
+        NodeQueue* current = head;
+
+        if (current == nullptr)
+        {
+            cout << "Empty queue" << endl;
+
+        }
+        while (current != nullptr)
+        {
+            cout << current->value << " ";
+            current = current->next;
+
+        }
+        cout << endl;
+    }
+
+template <typename T>
+
+void Queue<T>::pop_back()
+    {
+        NodeQueue* currentPtr = head;
+        NodeQueue* prevPtr = nullptr;
         if (currentPtr == nullptr)
         {
             cerr << "Error. Empty queue" << endl;
@@ -91,67 +95,56 @@ public:
     }
 
 
-    void printQueue()
+template <typename T>
+
+void Queue<T>::push_front(T item)
     {
-        Node<T>* current = head;
-
-        if (current == nullptr)
+        if (head == nullptr)
         {
-            cout << "Empty queue" << endl;
-
+            head = new NodeQueue(item);
+            sizeList++;
         }
-        while (current != nullptr)
+        else
         {
-            cout << current->value << " ";
-            current = current->next;
-
+            NodeQueue* newNodeQueue = new NodeQueue(item);
+            newNodeQueue->next = head;
+            head = newNodeQueue;
+            sizeList++;
         }
-        cout << endl;
+        
     }
 
-    void readingConfiguration(string nameFile)
+template <typename T>
+
+int Queue<T>:: getSize()
     {
-        string valueConfiguration;
-
-        ifstream inputFile(nameFile);
-
-        if (!inputFile) {
-            cerr << "Не удалось открыть файл!" << endl;
-            return;
-        }
-        while (inputFile >> valueConfiguration)
-        {
-            push_front(valueConfiguration);
-        }
-
-        inputFile.close();
+        return sizeList;
     }
 
-    void writeToConfiguration(string nameFile)
+
+template <typename T>
+
+bool Queue<T>::isValidValue(T item)
     {
-        ofstream outputFile(nameFile);
 
-        if (!outputFile) {
-            cerr << "Не удалось открыть файл!" << endl;
-            return;
-        }
-
-        Node<T>* currentPtr = head;
+        NodeQueue* currentPtr = head;
 
         while (currentPtr != nullptr)
         {
-            outputFile << currentPtr->value << " ";
+            if (currentPtr->value == item)
+            {
+                return true;
+            }
             currentPtr = currentPtr->next;
-
         }
-
-        outputFile.close();
+        return false;
     }
 
-};
 
 
-int main()
+
+
+int FunQueue()
 {
     Queue <string> Queue;
 

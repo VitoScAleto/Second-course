@@ -1,142 +1,55 @@
-#include <iostream>
-#include <fstream>
-
-using namespace std;
+#include "../Headers/DLList.h"
 
 template <typename T>
 
-struct Node
-{
-    T value;
-    Node* next;
-    Node* prevToNode;
-    Node(T val) : value(val), next(nullptr), prevToNode(nullptr) {}; // Constructor for initializing value
-};
+DLinkedList<T>::DLinkedList() : sizeList(0), head{nullptr}, tail{nullptr} {};
+
 
 template <typename T>
 
-struct DLinkedList
-{
-private:
-
-    Node<T>* head{ nullptr };
-    Node<T>* tail{ nullptr };
-
-    int sizeList = 0;
-    int index = 0;
-
-    bool isValidValue(T item)
+void DLinkedList<T>::writeToConfiguration(string nameFile)
     {
+        ofstream outputFile(nameFile);
 
-        Node<T>* currentPtr = head;
+        if (!outputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
+            return;
+        }
+
+        NodeDLL* currentPtr = head;
 
         while (currentPtr != nullptr)
         {
-            if (currentPtr->value == item)
-            {
-                return true;
-            }
+            outputFile << currentPtr->value << " ";
             currentPtr = currentPtr->next;
+
         }
-        return false;
+
+        outputFile.close();
     }
 
-public:
+template <typename T>
 
-
-    void getSize()
+void DLinkedList<T>::readingConfiguration(string nameFile)
     {
-        cout << "Size list: " << sizeList << endl;
-    }
+        string valueConfiguration;
 
-    void push_back(T item)
-    {
-        Node<T>* currentPtr = new Node<T>(item);
-        if (head == nullptr)
-        {
-            head = currentPtr;
-            tail = currentPtr;
-        }
-        else
-        {
-            tail->next = currentPtr;
-            currentPtr->prevToNode = tail;
-            tail = currentPtr;
-        }
-        sizeList++;
-    }
+        ifstream inputFile(nameFile);
 
-    void push_front(T item)
-    {
-        Node<T>* currentPtr = new Node<T>(item);
-
-        if (head == nullptr)
-        {
-            head = currentPtr;
-            tail = currentPtr;
-        }
-        else
-        {
-            currentPtr->next = head;
-            head->prevToNode = currentPtr;
-            head = currentPtr;
-        }
-        sizeList++;
-    }
-
-    void pop_back()
-    {
-        if (tail == nullptr)
-        {
-            cerr << "Error. Empty list" << endl;
+        if (!inputFile) {
+            cerr << "Не удалось открыть файл!" << endl;
             return;
         }
+        while (inputFile >> valueConfiguration)
+        { 
+            push_back(valueConfiguration);
+        }
 
-        if (tail == head)
-        {
-            delete tail;
-            head = nullptr;
-            tail = nullptr;
-        }
-        else
-        {
-            Node<T>* currentPtr = tail;
-            tail = tail->prevToNode;
-            tail->next = nullptr;
-            delete currentPtr;
-        }
-        sizeList--;
+        inputFile.close();
     }
+template <typename T>
 
-    void pop_front()
-    {
-
-        if (tail == nullptr)
-        {
-            cerr << "Error. Empty list" << endl;
-            return;
-        }
-
-        if (tail == head)
-        {
-            delete tail;
-            head = nullptr;
-            tail = nullptr;
-        }
-        else
-        {
-            Node<T>* currentPtr = head;
-            head = head->next;
-            head->prevToNode = nullptr;
-            delete currentPtr;
-        }
-        sizeList--;
-
-
-    }
-
-
-    void delete_by_value(T item)
+void DLinkedList<T>::search_by_value(T item)
     {
         if (isValidValue(item) == false)
         {
@@ -144,7 +57,50 @@ public:
             return;
         }
 
-        Node<T>* currentPtr = head;
+        NodeDLL* currentPtr = head;
+
+        while (currentPtr != nullptr)
+        {
+            if (currentPtr->value == item)
+            {
+                cout << "Value: " << currentPtr->value << " index: " << index;
+                cout << endl;
+            }
+
+            currentPtr = currentPtr->next;
+            index++;
+        }
+    }
+template <typename T>
+
+void DLinkedList<T>::printList()
+    {
+        if (head == nullptr)
+        {
+            cerr << "Error. Empty list" << endl;
+            return;
+        }
+
+        NodeDLL* currentPtr = head;
+
+        while (currentPtr != nullptr)
+        {
+            cout << currentPtr->value << " ";
+            currentPtr = currentPtr->next;
+        }
+        cout << endl;
+    }
+template <typename T>
+
+void DLinkedList<T>::delete_by_value(T item)
+    {
+        if (isValidValue(item) == false)
+        {
+            cerr << "Error. Value not found" << endl;
+            return;
+        }
+
+        NodeDLL* currentPtr = head;
 
 
         while (currentPtr != nullptr)
@@ -164,7 +120,7 @@ public:
                 {
                     currentPtr->next->prevToNode = currentPtr->prevToNode;
                 }
-                Node<T>* toDelete = currentPtr;
+                NodeDLL* toDelete = currentPtr;
                 currentPtr = currentPtr->next;
                 delete toDelete;
                 sizeList--;
@@ -177,89 +133,123 @@ public:
 
 
     }
+template <typename T>
 
-    void printList()
+void DLinkedList<T>::pop_front()
     {
-        if (head == nullptr)
+
+        if (tail == nullptr)
         {
             cerr << "Error. Empty list" << endl;
             return;
         }
 
-        Node<T>* currentPtr = head;
-
-        while (currentPtr != nullptr)
+        if (tail == head)
         {
-            cout << currentPtr->value << " ";
-            currentPtr = currentPtr->next;
+            delete tail;
+            head = nullptr;
+            tail = nullptr;
         }
-        cout << endl;
-    }
-
-    void search_by_value(T item)
-    {
-        if (isValidValue(item) == false)
+        else
         {
-            cerr << "Error. Value not found" << endl;
+            NodeDLL* currentPtr = head;
+            head = head->next;
+            head->prevToNode = nullptr;
+            delete currentPtr;
+        }
+        sizeList--;
+
+
+    }
+template <typename T>
+
+void DLinkedList<T>::pop_back()
+    {
+        if (tail == nullptr)
+        {
+            cerr << "Error. Empty list" << endl;
             return;
         }
 
-        Node<T>* currentPtr = head;
+        if (tail == head)
+        {
+            delete tail;
+            head = nullptr;
+            tail = nullptr;
+        }
+        else
+        {
+            NodeDLL* currentPtr = tail;
+            tail = tail->prevToNode;
+            tail->next = nullptr;
+            delete currentPtr;
+        }
+        sizeList--;
+    }
+template <typename T>
+
+void DLinkedList<T>::push_front(T item)
+    {
+        NodeDLL* currentPtr = new NodeDLL(item);
+
+        if (head == nullptr)
+        {
+            head = currentPtr;
+            tail = currentPtr;
+        }
+        else
+        {
+            currentPtr->next = head;
+            head->prevToNode = currentPtr;
+            head = currentPtr;
+        }
+        sizeList++;
+    }
+template <typename T>
+
+void DLinkedList<T>::push_back(T item)
+    {
+        NodeDLL* currentPtr = new NodeDLL(item);
+        if (head == nullptr)
+        {
+            head = currentPtr;
+            tail = currentPtr;
+        }
+        else
+        {
+            tail->next = currentPtr;
+            currentPtr->prevToNode = tail;
+            tail = currentPtr;
+        }
+        sizeList++;
+    }
+template <typename T>
+
+void DLinkedList<T>::getSize()
+    {
+        cout << "Size list: " << sizeList << endl;
+    }
+template <typename T>
+
+bool DLinkedList<T>::isValidValue(T item)
+    {
+
+        NodeDLL* currentPtr = head;
 
         while (currentPtr != nullptr)
         {
             if (currentPtr->value == item)
             {
-                cout << "Value: " << currentPtr->value << " index: " << index;
-                cout << endl;
+                return true;
             }
-
             currentPtr = currentPtr->next;
-            index++;
         }
+        return false;
     }
 
-    void readingConfiguration(string nameFile)
-    {
-        string valueConfiguration;
 
-        ifstream inputFile(nameFile);
 
-        if (!inputFile) {
-            cerr << "Не удалось открыть файл!" << endl;
-            return;
-        }
-        while (inputFile >> valueConfiguration)
-        { 
-            push_back(valueConfiguration);
-        }
-
-        inputFile.close();
-    }
-
-    void writeToConfiguration(string nameFile)
-    {
-        ofstream outputFile(nameFile);
-
-        if (!outputFile) {
-            cerr << "Не удалось открыть файл!" << endl;
-            return;
-        }
-
-        Node<T>* currentPtr = head;
-
-        while (currentPtr != nullptr)
-        {
-            outputFile << currentPtr->value << " ";
-            currentPtr = currentPtr->next;
-
-        }
-
-        outputFile.close();
-    }
-};
-
-int main()
+int FunDLList()
 {
     DLinkedList <string> DList;
 

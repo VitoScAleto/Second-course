@@ -1,19 +1,21 @@
-#include <iostream>
-#include <fstream>
-#include <limits>
-
-using namespace std;
+#include "../Headers/Array.h"
 
 template <typename T>
 
-class MyArray
+MyArray<T>::MyArray(size_t init_capacity) : size(0), capacity(init_capacity)
 {
-private:
-    T* arr;
-    size_t size;
-    size_t capacity;
-    void resize(size_t new_capacity)
-    {
+        if (init_capacity == 0)
+        {
+            cerr << "length error" << endl;
+            return;
+        }
+        arr = new T[init_capacity]();
+    }
+
+template <typename T>
+
+void MyArray<T>::resize(size_t new_capacity)
+{
         if (new_capacity < size)
         {
             cerr << "New capacity is smaller than current size" << endl;
@@ -27,37 +29,34 @@ private:
         delete[] arr;
         arr = newArr;
         capacity = new_capacity;
-    }
-public:
+}
 
-    MyArray(size_t init_capacity) : size(0), capacity(init_capacity)
-    {
-        if (init_capacity == 0)
-        {
-            cerr << "length error" << endl;
-            return;
-        }
-        arr = new T[init_capacity]();
-    }
-    T& operator[](size_t index)
-    {
+template <typename T>
+
+T& MyArray<T>::operator[](size_t index)
+{
         if (index >= size)
         {
             cerr << "Index out of bounds" << endl;
 
         }
         return arr[index];
-    }
-    void push_back(T element)
-    {
+}
+
+template <typename T>
+
+void MyArray<T>::push_back(T element)
+{
         if (size == capacity)
         {
             resize(capacity * 2);
         }
         arr[size] = element;
         size++;
-    }
-    void insert(size_t indexInput, T element)
+}
+template <typename T>
+
+void MyArray<T>::insert(size_t indexInput, T element)
     {
         if (indexInput > size)
         {
@@ -75,7 +74,9 @@ public:
         arr[indexInput] = element;
         size++;
     }
-    void delete_by_index(size_t indexInput)
+template <typename T>
+
+void MyArray<T>::delete_by_index(size_t indexInput)
     {
         if (indexInput >= size)
         {
@@ -88,7 +89,9 @@ public:
         }
         size--;
     }
-    void replace_by_index(size_t indexInput, T element)
+template <typename T>
+
+void MyArray<T>::replace_by_index(size_t indexInput, T element)
     {
         if (indexInput >= size)
         {
@@ -97,11 +100,15 @@ public:
         }
         arr[indexInput] = element;
     }
-    size_t getSize() const
+template <typename T>
+
+size_t MyArray<T>::getSize() 
     {
         return size;
     }
-    void print()
+template <typename T>
+
+void MyArray<T>::print()
     {
         if (size == 0) cerr << "Array empty" << endl;
         for (size_t i = 0; i < size; i++)
@@ -110,7 +117,9 @@ public:
         }
         cout << endl;
     }
-    void readingConfiguration(string nameFile)
+template <typename T>
+
+void MyArray<T>::readingConfiguration(string nameFile)
     {
         string valueConfiguration;
         ifstream inputFile(nameFile);
@@ -125,7 +134,10 @@ public:
         }
         inputFile.close();
     }
-    void writeToConfiguration(string nameFile)
+
+template <typename T>
+
+void MyArray<T>::writeToConfiguration(string nameFile)
     {
         ofstream outputFile(nameFile);
         if (!outputFile)
@@ -139,10 +151,13 @@ public:
         }
         outputFile.close();
     }
-};
-int main()
+
+
+    int FunArray()
 {
+
     MyArray<string> intArr{ 5 };
+
     intArr.readingConfiguration("test.txt");
     char c;
     cout << "--------------------------------- Array ---------------------------------" << endl;
