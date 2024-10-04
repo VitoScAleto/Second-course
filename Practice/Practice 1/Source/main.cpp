@@ -1,12 +1,11 @@
 #include "../Headers/Headers.h"
-
+#include "../Headers/WorkWithFiles.h"
 
 int main()
 {
-    ifstream f("../JSON/schema.json");
-    json data = json::parse(f);
+    ReadingConfigurationJSON();
 
-    cout<<data<<endl;
+
 
     return 0;
 }
