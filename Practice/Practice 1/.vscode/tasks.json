@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "g++", // Или "clang++" для macOS
+      "args": [
+        "-g", // Включает отладочную информацию
+        "${file}", // Текущий открытый файл
+        "-o",
+        "${workspaceFolder}/your_program_name" // Имя выходного файла
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"],
+      "detail": "Generated task by Debugger."
+    }
+  ]
+}

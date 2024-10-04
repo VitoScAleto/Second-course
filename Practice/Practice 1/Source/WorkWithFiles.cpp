@@ -1,15 +1,46 @@
 #include "../Headers/WorkWithFiles.h"
 
+string ReturnNameObjectFromStructure(int indexObj, json& j)
+{
+    string nameObj;
+
+    json structureField = j["structure"];
+
+    auto it = structureField.items().begin();
+
+    advance(it,indexObj);
+
+    nameObj = it.key();
+
+    return nameObj;
+}
+
+void WorkWithCSVFile(fs::path pathCSV, json& j)
+{
+    ofstream outFile(pathCSV);
+
+    if (outFile.is_open()) 
+    {
+        outFile << "Hello, World!\n";
+        outFile.close();
+        
+        cout << "Файл успешно создан: "<< endl;
+    } else {
+        cerr << "Ошибка при создании файла." << endl;
+    }
+
+
+}
 
 
 
 void ReadingConfigurationJSON()
 {
-    string filePath = "/home/pushk/VSCODE/Second-course/Practice/Practice 1/JSON/schema.json";
+    string pathFileSchemaJson = "/home/pushk/VSCODE/Second-course/Practice/Practice 1/JSON/schema.json";
 
     json j;
 
-    ifstream file(filePath);
+    ifstream file(pathFileSchemaJson);
     if (file.is_open()) 
     {
         // Парсим содержимое файла
@@ -20,46 +51,53 @@ void ReadingConfigurationJSON()
     } 
     else 
     {
-        cerr << "Не удалось открыть файл: " << filePath << endl;
+        cerr << "Не удалось открыть файл: " << pathFileSchemaJson << endl;
         return; // Возвращаем код ошибки
     }
-
-
+    
 
     string jsonField = j["name"];
 
     fs::path mainDir = jsonField;
 
-    jsonField = j["structure"];
+    fs::path table1 = mainDir/ReturnNameObjectFromStructure(0, j);
 
-    fs::path table1 = mainDir/"jsonField";
+    fs::path table2 = mainDir/ReturnNameObjectFromStructure(1, j);
 
-    jsonField = j["structure"]["Таблица2"];
-
-    fs::path table2 = mainDir/"jsonField";
-
-    try {
-        // Создание главной директории
-        if (fs::create_directory(mainDir)) {
-            std::cout << "Директория '" << mainDir << "' успешно создана.\n";
-        } else {
-            std::cout << "Директория '" << mainDir << "' уже существует.\n";
+    WorkWithCSVFile(table1, j);
+    WorkWithCSVFile(table2, j);
+    
+    try 
+    {
+        
+        if (fs::create_directory(mainDir)) 
+        {
+            cout << "Директория '" << mainDir << "' успешно создана.\n";
+        } else 
+        {
+            cout << "Директория '" << mainDir << "' уже существует.\n";
         }
 
-        // Создание поддиректорий
-        if (fs::create_directory(table1)) {
-            std::cout << "Директория '" << table1 << "' успешно создана.\n";
-        } else {
-            std::cout << "Директория '" << table1 << "' уже существует.\n";
+        
+        if (fs::create_directory(table1)) 
+        {
+            cout << "Директория '" << table1 << "' успешно создана.\n";
+        } else 
+        {
+            cout << "Директория '" << table1 << "' уже существует.\n";
         }
 
-        if (fs::create_directory(table2)) {
-            std::cout << "Директория '" << table2 << "' успешно создана.\n";
-        } else {
-            std::cout << "Директория '" << table2 << "' уже существует.\n";
+        if (fs::create_directory(table2)) 
+        {
+            cout << "Директория '" << table2 << "' успешно создана.\n";
+        } else 
+        {
+            cout << "Директория '" << table2 << "' уже существует.\n";
         }
-    } catch (const fs::filesystem_error& e) {
-        std::cerr << "Ошибка: " << e.what() << '\n';
+    } 
+    catch (const fs::filesystem_error& e) 
+    {
+        cerr << "Ошибка: " << e.what() << '\n';
     }
 }
 
