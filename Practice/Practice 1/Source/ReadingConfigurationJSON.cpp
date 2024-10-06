@@ -15,26 +15,13 @@ string ReturnNameObjectFromStructure(int indexObj, json& j)
     return nameObj;
 }
 
-void ConfigurationForCSVFile(json& j)
+
+
+
+void CreationCSVFile(fs::path pathToDir, json& j, const string& tableName)
 {
     json structure = j["structure"];
 
-    for(auto& table : structure.items())
-    {
-        for(auto& column : table.value())
-        {
-            cout<<column.get<string>()<<" ";
-        }
-    }
-
-
-}
-
-
-
-void CreationCSVFile(fs::path pathToDir)
-{
-    
     string fileCSVName = "1.csv";
     
     fs::path filePathCSV =  pathToDir/fileCSVName;
@@ -43,7 +30,14 @@ void CreationCSVFile(fs::path pathToDir)
 
     if (outFile.is_open()) 
     {
-       
+        if (structure.contains(tableName))
+        {
+            for (auto& column : structure[tableName])
+            {
+                outFile << column.get<string>() << ",";
+            }
+           
+        }
         outFile.close();
         
         cout << "Файл CSV успешно создан: "<< endl;
@@ -78,7 +72,6 @@ void ReadingConfigurationJSON()
         return; // Возвращаем код ошибки
     }
     
-    ConfigurationForCSVFile(j);
 
     string jsonField = j["name"];
 
@@ -121,7 +114,10 @@ void ReadingConfigurationJSON()
         cerr << "Ошибка: " << e.what() << '\n';
     }
 
-    CreationCSVFile(table1);
-    CreationCSVFile(table2);
+    CreationCSVFile(table1,j,"Таблица1");
+    CreationCSVFile(table2,j,"Таблица2");
+
+
+
 }
 
