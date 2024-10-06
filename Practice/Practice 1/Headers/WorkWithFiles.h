@@ -5,12 +5,12 @@
 #include "Queue.h"
 
 
-void InsertToCSV(string data, string pathToCSV);
+void InsertToCSV(string data, string nameTable);
 
 template <typename T>
 Queue<T> extractDataFromQuery(string input);
 
-int WorkWithFile_pk_sequence(fs::path nameTable);
+void WorkWithFile_pk_sequence(fs::path nameTable);
 
 
 

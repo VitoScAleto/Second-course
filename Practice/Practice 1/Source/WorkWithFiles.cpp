@@ -21,7 +21,7 @@ Queue<T> extractDataFromQuery(string input)
         if (nextEnd == std::string::npos) break; // Если нет закрывающей кавычки
 
         // Извлечь значение между кавычками
-        queue.push_front(input.substr(end + 1, nextEnd - end - 1));
+        queue.push_back(input.substr(end + 1, nextEnd - end - 1));
         // Обновить start для поиска следующего значения
         end = input.find(",", nextEnd + 1);
         if (end == std::string::npos) break; // Если нет запятой, выходим из цикла
@@ -35,7 +35,7 @@ Queue<T> extractDataFromQuery(string input)
 
 
 
-void InsertToCSV(string data, string pathToCSV)
+void InsertToCSV(string data, string nameTable)
 {
     Queue<string> queueCSV = extractDataFromQuery<string>(data);
 
@@ -45,13 +45,13 @@ void InsertToCSV(string data, string pathToCSV)
     fs::path firstPart = firstPartPathToCSV;
     fs::path secondPart = secondPartPathToCSVf;
 
-    fs::path CSVFile = firstPart/pathToCSV/secondPart;
+    fs::path CSVFile = firstPart/nameTable/secondPart;
 
     ofstream outFile(CSVFile, ios::app);
 
     if (outFile.is_open()) 
     {
-        if(pathToCSV == "Таблица1")
+        if(nameTable == "Таблица1")
         {
             while(queueCSV.getSize() != 0)
             {
@@ -59,23 +59,25 @@ void InsertToCSV(string data, string pathToCSV)
                 for(int i = 0; i < 4; i++)
                 {
                 outFile << queueCSV.getFront()<<",";
-                WorkWithFile_pk_sequence(pathToCSV);
-                queueCSV.pop_back();
+                WorkWithFile_pk_sequence(nameTable);
+                queueCSV.pop_front();
+                if(queueCSV.getSize() == 0) return;
                 }
             }
 
         }
       
-        if(pathToCSV == "Таблица2")
+        if(nameTable == "Таблица2")
         {
             while(queueCSV.getSize() != 0)
             {
-                outFile << WorkWithFile_pk_sequence(pathToCSV) <<"\n" << " "<<",";
+                outFile <<"\n" << " "<<",";
                 for(int i = 0; i < 2; i++)
                 {
                 outFile << queueCSV.getFront()<<",";
-                WorkWithFile_pk_sequence(pathToCSV);
-                queueCSV.pop_back();
+                WorkWithFile_pk_sequence(nameTable);
+                queueCSV.pop_front();
+                if(queueCSV.getSize() == 0) return;
                 }
 
 
@@ -93,47 +95,54 @@ void InsertToCSV(string data, string pathToCSV)
 
 }
 
-int WorkWithFile_pk_sequence(fs::path nameTable)
+void WorkWithFile_pk_sequence(fs::path nameTable)
 {
     string firstPartPath = "../Source/Схема 1";
     string pk_sequence = "pk_sequence.txt";
     
-    fs::path nameFile = firstPartPath/nameTable/pk_sequence;
+    fs::path nameFile = firstPartPath / nameTable / pk_sequence;
 
-    ofstream outFile(nameFile);
-
+    // Проверяем, существует ли файл
     ifstream inFile(nameFile);
 
-    if (!inFile.is_open()) 
-    {
-        cerr << "Не удалось открыть файл "<< nameFile << endl;
-        return -1; 
-    }
-
     int lineCount = 0;
-    string line;
-
     
-    while (getline(inFile, line)) 
+    // Если файл существует, подсчитываем строки
+    if (inFile.is_open()) 
     {
-        lineCount++;
+        string line;
+        while (getline(inFile, line)) 
+        {
+            lineCount++;
+        }
+        inFile.close(); 
+    }
+    else 
+    {
+        // Если файл не существует, создаем его
+        ofstream outFile(nameFile);
+        if (outFile.is_open()) 
+        {
+            outFile << 0; // Записываем 0, если файла не было
+            outFile.close();
+            cerr << "Файл создан: " << nameFile << endl;
+        }
+        else 
+        {
+            cerr << "Не удалось создать файл " << nameFile << endl;
+            return;
+        }
     }
 
-    inFile.close(); 
-
-
-
+    // Открываем файл для записи количества строк
+    ofstream outFile(nameFile);
     if (outFile.is_open()) 
     {
-        outFile << lineCount;
+        outFile << lineCount; // Записываем количество строк
         outFile.close();
-        
     } 
     else
     {
-        cerr<<"File"<< nameFile <<"is not open"<<endl;
-
+        cerr << "Файл " << nameFile << " не открыт для записи" << endl;
     }
-
-    return lineCount;
 }

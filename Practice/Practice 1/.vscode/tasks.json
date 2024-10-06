@@ -9,7 +9,7 @@
         "-g", // Включает отладочную информацию
         "${file}", // Текущий открытый файл
         "-o",
-        "${workspaceFolder}/your_program_name" // Имя выходного файла
+        "${fileDirname}/your_program_name" // Имя выходного файла
       ],
       "group": {
         "kind": "build",
@@ -17,6 +17,14 @@
       },
       "problemMatcher": ["$gcc"],
       "detail": "Generated task by Debugger."
+    },
+    {
+      "label": "clean",
+      "type": "shell",
+      "command": "rm", // Для Windows используйте "del"
+      "args": ["${fileDirname}/your_program_name"],
+      "group": "clean",
+      "problemMatcher": []
     }
   ]
 }

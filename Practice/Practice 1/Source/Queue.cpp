@@ -1,74 +1,47 @@
 #include "../Headers/Queue.h"
 
-
 template <typename T>
-
-void Queue<T>::pop_back()
-    {
-        NodeQueue* currentPtr = head;
-        NodeQueue* prevPtr = nullptr;
-        if (currentPtr == nullptr)
-        {
-            cerr << "Error. Empty queue" << endl;
-            return;
-        }
-        else if (currentPtr->next == nullptr)
-        {
-            delete currentPtr;
-            head = nullptr;
-            sizeList--;
-            return;
-        }
-        while (currentPtr->next != nullptr)
-        {
-            prevPtr = currentPtr;
-            currentPtr = currentPtr->next;
-        }
-        free(currentPtr);
-        prevPtr->next = nullptr;
-        sizeList--;
+void Queue<T>::push_back(T item)
+{
+    NodeQueue* newNode = new NodeQueue(item);
+    if (tail == nullptr) {
+        head = tail = newNode; // Если очередь пуста, новый узел становится и головой, и хвостом
+    } else {
+        tail->next = newNode; // Текущий хвост указывает на новый узел
+        tail = newNode; // Новый узел становится хвостом
     }
+    sizeList++;
+}
 
 template <typename T>
+T Queue<T>::pop_front()
+{
+    if (head == nullptr) {
+        cerr << "Ошибка. Очередь пуста." << endl;
+    }
+    NodeQueue* temp = head; // Сохраняем указатель на голову
+    T value = head->value; // Сохраняем значение для возврата
+    head = head->next; // Перемещаем голову на следующий узел
+    delete temp; // Освобождаем память
+    sizeList--;
+    if (head == nullptr) {
+        tail = nullptr; // Если очередь пуста, сбрасываем хвост
+    }
+    return value; // Возвращаем значение
+}
 
+template <typename T>
 T Queue<T>::getFront()
-   {
-        NodeQueue* currentPtr = head;
-        NodeQueue* prevPtr = nullptr;
-
-        while (currentPtr->next != nullptr)
-        {
-            currentPtr = currentPtr->next;
-        }
-        return currentPtr->value;
+{
+    if (head == nullptr) {
+        cerr << "Ошибка. Очередь пуста." << endl;
+        throw std::runtime_error("Очередь пуста");
     }
-
+    return head->value; // Возвращаем значение переднего узла
+}
 
 template <typename T>
-
-void Queue<T>::push_front(T item)
-    {
-        if (head == nullptr)
-        {
-            head = new NodeQueue(item);
-            sizeList++;
-        }
-        else
-        {
-            NodeQueue* newNode = new NodeQueue(item);
-            newNode->next = head;
-            head = newNode;
-            sizeList++;
-        }
-
-    }
-
-
-
-
-template <typename T>
-
 int Queue<T>::getSize()
-    {
-        return sizeList;
-    }
+{
+    return sizeList; // Возвращаем размер очереди
+}
