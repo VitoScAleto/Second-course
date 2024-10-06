@@ -2,10 +2,16 @@
 #define WORK_WITH_FILES_H
 
 #include "Headers.h"
+#include "Queue.h"
 
-namespace fs = filesystem;
 
-void ReadingConfigurationJSON();
+void InsertToCSV(string data, string pathToCSV);
+
+template <typename T>
+Queue<T> extractDataFromQuery(string input);
+
+
+
 
 
 #include "../Source/WorkWithFiles.cpp"

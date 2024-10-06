@@ -16,8 +16,6 @@ string ReturnNameObjectFromStructure(int indexObj, json& j)
 }
 
 
-
-
 void CreationCSVFile(fs::path pathToDir, json& j, const string& tableName)
 {
     json structure = j["structure"];
@@ -30,6 +28,7 @@ void CreationCSVFile(fs::path pathToDir, json& j, const string& tableName)
 
     if (outFile.is_open()) 
     {
+        outFile<< tableName <<"_pk,";
         if (structure.contains(tableName))
         {
             for (auto& column : structure[tableName])
@@ -116,8 +115,6 @@ void ReadingConfigurationJSON()
 
     CreationCSVFile(table1,j,"Таблица1");
     CreationCSVFile(table2,j,"Таблица2");
-
-
 
 }
 
