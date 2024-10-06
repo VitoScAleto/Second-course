@@ -1,4 +1,4 @@
-#include "../Headers/WorkWithFiles.h"
+#include "../Headers/ReadingConfigurationJSON.h"
 
 string ReturnNameObjectFromStructure(int indexObj, json& j)
 {
@@ -15,18 +15,41 @@ string ReturnNameObjectFromStructure(int indexObj, json& j)
     return nameObj;
 }
 
-void WorkWithCSVFile(fs::path pathCSV, json& j)
+void ConfigurationForCSVFile(json& j)
 {
-    ofstream outFile(pathCSV);
+    json structure = j["structure"];
+
+    for(auto& table : structure.items())
+    {
+        for(auto& column : table.value())
+        {
+            cout<<column.get<string>()<<" ";
+        }
+    }
+
+
+}
+
+
+
+void CreationCSVFile(fs::path pathToDir)
+{
+    
+    string fileCSVName = "1.csv";
+    
+    fs::path filePathCSV =  pathToDir/fileCSVName;
+
+    ofstream outFile(filePathCSV);
 
     if (outFile.is_open()) 
     {
-        outFile << "Hello, World!\n";
+       
         outFile.close();
         
-        cout << "Файл успешно создан: "<< endl;
-    } else {
-        cerr << "Ошибка при создании файла." << endl;
+        cout << "Файл CSV успешно создан: "<< endl;
+    } else 
+    {
+        cerr << "Ошибка при создании файла CSV." << endl;
     }
 
 
@@ -55,6 +78,7 @@ void ReadingConfigurationJSON()
         return; // Возвращаем код ошибки
     }
     
+    ConfigurationForCSVFile(j);
 
     string jsonField = j["name"];
 
@@ -64,9 +88,6 @@ void ReadingConfigurationJSON()
 
     fs::path table2 = mainDir/ReturnNameObjectFromStructure(1, j);
 
-    WorkWithCSVFile(table1, j);
-    WorkWithCSVFile(table2, j);
-    
     try 
     {
         
@@ -99,5 +120,8 @@ void ReadingConfigurationJSON()
     {
         cerr << "Ошибка: " << e.what() << '\n';
     }
+
+    CreationCSVFile(table1);
+    CreationCSVFile(table2);
 }
 

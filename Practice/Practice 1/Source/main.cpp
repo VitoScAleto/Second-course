@@ -1,5 +1,5 @@
 #include "../Headers/Headers.h"
-#include "../Headers/WorkWithFiles.h"
+#include "../Headers/ReadingConfigurationJSON.h"
 
 int main()
 {
