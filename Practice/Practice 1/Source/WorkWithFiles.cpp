@@ -39,36 +39,101 @@ void InsertToCSV(string data, string pathToCSV)
 {
     Queue<string> queueCSV = extractDataFromQuery<string>(data);
 
-    string ff = "../Source/Схема 1";
-    string fff = "1.csv";
+    string firstPartPathToCSV = "../Source/Схема 1";
+    string secondPartPathToCSVf = "1.csv";
 
-    fs::path f1 = ff;
-    fs::path f2 = fff;
-    fs::path CSVFile = f1/pathToCSV/f2;
+    fs::path firstPart = firstPartPathToCSV;
+    fs::path secondPart = secondPartPathToCSVf;
+
+    fs::path CSVFile = firstPart/pathToCSV/secondPart;
 
     ofstream outFile(CSVFile, ios::app);
 
     if (outFile.is_open()) 
     {
-       while(queueCSV.getSize() != 0)
-       {
-            outFile <<"\n" << " ";
-            for(int i = 0; i < 4; i++)
+        if(pathToCSV == "Таблица1")
+        {
+            while(queueCSV.getSize() != 0)
             {
-            outFile << queueCSV.getFront()<<",";
-            queueCSV.pop_back();
+                outFile <<"\n" << " "<<",";
+                for(int i = 0; i < 4; i++)
+                {
+                outFile << queueCSV.getFront()<<",";
+                WorkWithFile_pk_sequence(pathToCSV);
+                queueCSV.pop_back();
+                }
             }
-            
 
-       }
+        }
+      
+        if(pathToCSV == "Таблица2")
+        {
+            while(queueCSV.getSize() != 0)
+            {
+                outFile << WorkWithFile_pk_sequence(pathToCSV) <<"\n" << " "<<",";
+                for(int i = 0; i < 2; i++)
+                {
+                outFile << queueCSV.getFront()<<",";
+                WorkWithFile_pk_sequence(pathToCSV);
+                queueCSV.pop_back();
+                }
+
+
+            }
+
+        }
         outFile.close();
         
     } 
     else
     {
-        cerr<<"File is not open"<<endl;
+        cerr<<"File"<< CSVFile <<"is not open"<<endl;
 
     }
 
+}
 
+int WorkWithFile_pk_sequence(fs::path nameTable)
+{
+    string firstPartPath = "../Source/Схема 1";
+    string pk_sequence = "pk_sequence.txt";
+    
+    fs::path nameFile = firstPartPath/nameTable/pk_sequence;
+
+    ofstream outFile(nameFile);
+
+    ifstream inFile(nameFile);
+
+    if (!inFile.is_open()) 
+    {
+        cerr << "Не удалось открыть файл "<< nameFile << endl;
+        return -1; 
+    }
+
+    int lineCount = 0;
+    string line;
+
+    
+    while (getline(inFile, line)) 
+    {
+        lineCount++;
+    }
+
+    inFile.close(); 
+
+
+
+    if (outFile.is_open()) 
+    {
+        outFile << lineCount;
+        outFile.close();
+        
+    } 
+    else
+    {
+        cerr<<"File"<< nameFile <<"is not open"<<endl;
+
+    }
+
+    return lineCount;
 }

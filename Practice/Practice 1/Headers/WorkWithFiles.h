@@ -10,7 +10,7 @@ void InsertToCSV(string data, string pathToCSV);
 template <typename T>
 Queue<T> extractDataFromQuery(string input);
 
-
+int WorkWithFile_pk_sequence(fs::path nameTable);
 
 
 

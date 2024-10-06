@@ -6,7 +6,7 @@
 
 
 void SYBD();
-void InsertInto(string nameTable, string insertTable);
+void InsertInto(string nameTable, string values);
 
 
 

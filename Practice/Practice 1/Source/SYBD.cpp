@@ -1,31 +1,37 @@
 #include "../Headers/SYBD.h"
 
 
-void InsertInto(string nameTable, string insertTable)
+void InsertInto(string nameTable, string values)
 {
-    stringstream strStream(insertTable);
-
-    string action;
-
-    strStream >> action;
-
-    if(action == "VALUES")
+    if(nameTable == "Таблица1" || nameTable == "Таблица2")
     {
-        string remainingCommand;
-        strStream >> remainingCommand;
+        stringstream strStream(values);
 
-        getline(strStream,remainingCommand);
+        string action;
 
-        InsertToCSV(remainingCommand, nameTable);
+        strStream >> action;
+
+        if(action == "VALUES")
+        {
+            string remainingCommand;
+            strStream >> remainingCommand;
+
+            getline(strStream,remainingCommand);
+
+            InsertToCSV(remainingCommand, nameTable);
+
+        }
+        else 
+        {
+            cerr<<"Unknown command"<<endl;
+            return;
+        }
 
     }
     else 
     {
-        cerr<<"Unknown command"<<endl;
-        return;
+        cerr<<"Такой таблицы нет"<<endl;
     }
-
-
 }
 
 
