@@ -7,6 +7,7 @@
 #include <fstream>
 #include <filesystem>
 #include <sstream>
+#include <stdexcept>
 
 using namespace std;
 

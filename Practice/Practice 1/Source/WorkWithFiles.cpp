@@ -8,23 +8,25 @@ Queue<T> extractDataFromQuery(string input)
     size_t start = 0, end = 0;
 
     // Найти первую открывающую скобку
-    if (input.front() != '(' || input.back() != ')') {
-        throw std::invalid_argument("Input must start with '(' and end with ')'");
+    if (input.front() != '(' || input.back() != ')') 
+    {
+        throw invalid_argument("Input must start with '(' and end with ')'");
     }
 
     // Пропустить первую и последнюю скобки
     start = 1;
     end = input.find("'", start);
 
-    while (end != std::string::npos) {
+    while (end != string::npos) 
+    {
         size_t nextEnd = input.find("'", end + 1);
-        if (nextEnd == std::string::npos) break; // Если нет закрывающей кавычки
+        if (nextEnd == string::npos) break; // Если нет закрывающей кавычки
 
         // Извлечь значение между кавычками
         queue.push_back(input.substr(end + 1, nextEnd - end - 1));
         // Обновить start для поиска следующего значения
         end = input.find(",", nextEnd + 1);
-        if (end == std::string::npos) break; // Если нет запятой, выходим из цикла
+        if (end == string::npos) break; // Если нет запятой, выходим из цикла
         start = end + 1; // Пропускаем запятую
         end = input.find("'", start);
     }
@@ -34,115 +36,196 @@ Queue<T> extractDataFromQuery(string input)
 }
 
 
-
-void InsertToCSV(string data, string nameTable)
+int ConfigurationForArrayFromJSON()
 {
-    Queue<string> queueCSV = extractDataFromQuery<string>(data);
+    string pathFileSchemaJson = "/home/pushk/VSCODE/Second-course/Practice/Practice 1/JSON/schema.json";
 
-    string firstPartPathToCSV = "../Source/Схема 1";
-    string secondPartPathToCSVf = "1.csv";
+    json j;
 
-    fs::path firstPart = firstPartPathToCSV;
-    fs::path secondPart = secondPartPathToCSVf;
-
-    fs::path CSVFile = firstPart/nameTable/secondPart;
-
-    ofstream outFile(CSVFile, ios::app);
-
-    if (outFile.is_open()) 
+    ifstream file(pathFileSchemaJson);
+    if (file.is_open()) 
     {
-        if(nameTable == "Таблица1")
-        {
-            while(queueCSV.getSize() != 0)
-            {
-                outFile <<"\n" << " "<<",";
-                for(int i = 0; i < 4; i++)
-                {
-                outFile << queueCSV.getFront()<<",";
-                WorkWithFile_pk_sequence(nameTable);
-                queueCSV.pop_front();
-                if(queueCSV.getSize() == 0) return;
-                }
-            }
+        // Парсим содержимое файла
+        j = json::parse(file);
 
+    
+        file.close();
+    } 
+    else 
+    {
+        cerr << "Не удалось открыть файл: " << pathFileSchemaJson << endl;
+        return 0; // Возвращаем код ошибки
+    }
+
+    int tuples_limit = j["tuples_limit"];
+    
+    return tuples_limit;
+}
+
+template <typename T>
+
+DoubDynArray<T>ReadingCSVFileIntoArray(string data, string nameTable)
+{
+    if(nameTable == "Таблица1")
+    {
+        string pathToCSV = "../Source/Схема 1/" + nameTable + "/1.csv";
+
+        DoubDynArray <string> FromCSVArray(ConfigurationForArrayFromJSON(),5);
+
+        ifstream outFile(pathToCSV);
+        if(!outFile.is_open())
+        {
+        cerr << "Error: Could not open the file " << pathToCSV << endl;
+        throw ios_base::failure("Failed to open file: " + pathToCSV);
         }
-      
-        if(nameTable == "Таблица2")
+
+        string line;
+        while (std::getline(outFile, line)) 
         {
-            while(queueCSV.getSize() != 0)
+            std::stringstream ss(line);
+            std::string item;
+
+            while (std::getline(ss, item, ',')) 
             {
-                outFile <<"\n" << " "<<",";
-                for(int i = 0; i < 2; i++)
-                {
-                outFile << queueCSV.getFront()<<",";
-                WorkWithFile_pk_sequence(nameTable);
-                queueCSV.pop_front();
-                if(queueCSV.getSize() == 0) return;
-                }
-
-
+                FromCSVArray.push_back(item);
             }
 
         }
         outFile.close();
-        
-    } 
-    else
-    {
-        cerr<<"File"<< CSVFile <<"is not open"<<endl;
+        return FromCSVArray;
 
     }
+
+    if(nameTable == "Таблица2")
+    {
+        string pathToCSV = "../Source/Схема 1/" + nameTable + "/1.csv";
+
+        DoubDynArray <string> FromCSVArray(ConfigurationForArrayFromJSON(),3);
+
+        ifstream outFile(pathToCSV);
+        if(!outFile.is_open())
+        {
+        cerr << "Error: Could not open the file " << pathToCSV << endl;
+        throw ios_base::failure("Failed to open file: " + pathToCSV);
+        }
+
+        string line;
+        while (std::getline(outFile, line)) 
+        {
+            std::stringstream ss(line);
+            std::string item;
+
+            while (std::getline(ss, item, ',')) 
+            {
+                FromCSVArray.push_back(item);
+            }
+
+        }
+        outFile.close();
+        return FromCSVArray;
+    }
+    throw invalid_argument("Invalid table name: " + nameTable);
+}
+
+
+void WriteToCSVFileIntoArray(string data, string nameTable)
+{
+    Queue <string> queueForArray = extractDataFromQuery<string>(data);
+
+    if(nameTable == "Таблица1")
+    {
+        string pathToCSV = "../Source/Схема 1/" + nameTable + "/1.csv";
+
+        DoubDynArray <string> ArrayToInsert = ReadingCSVFileIntoArray<string>(data, nameTable);
+
+        ofstream outFile(pathToCSV);
+        
+        if(!outFile.is_open())
+        {
+        cerr << "Error: Could not open the file " << pathToCSV << endl;
+        throw ios_base::failure("Failed to open file: " + pathToCSV);
+        }
+
+
+
+
+       
+
+    }
+
+    if(nameTable == "Таблица2")
+    {
+        string pathToCSV = "../Source/Схема 1/" + nameTable + "/1.csv";
+
+        DoubDynArray <string> ArrayToInsert = ReadingCSVFileIntoArray<string>(data, nameTable);
+
+        ofstream outFile(pathToCSV);
+
+        if(!outFile.is_open())
+        {
+            cerr << "Error: Could not open the file " << pathToCSV << endl;
+            throw ios_base::failure("Failed to open file: " + pathToCSV);
+        }
+
+
+
+    }
+
+
+
+
+
 
 }
 
-void WorkWithFile_pk_sequence(fs::path nameTable)
+void WorkWithCSV(string data, string nameTable)
 {
-    string firstPartPath = "../Source/Схема 1";
-    string pk_sequence = "pk_sequence.txt";
     
-    fs::path nameFile = firstPartPath / nameTable / pk_sequence;
+    WriteToCSVFileIntoArray(data, nameTable);
 
-    // Проверяем, существует ли файл
-    ifstream inFile(nameFile);
 
-    int lineCount = 0;
-    
-    // Если файл существует, подсчитываем строки
-    if (inFile.is_open()) 
+
+
+
+
+
+}
+
+
+
+
+
+void WorkWithFile_pk_sequence(string nameTable)
+{
+    string pkFilePath = "../Source/Схема 1/" + nameTable +"/" + nameTable + "_pk_sequence.txt";
+
+    int currentPk = 0;
+
+    ifstream pkFile(pkFilePath);
+
+    if (pkFile.is_open()) 
     {
-        string line;
-        while (getline(inFile, line)) 
-        {
-            lineCount++;
-        }
-        inFile.close(); 
-    }
+        pkFile >> currentPk; 
+        pkFile.close();
+    } 
     else 
     {
-        // Если файл не существует, создаем его
-        ofstream outFile(nameFile);
-        if (outFile.is_open()) 
-        {
-            outFile << 0; // Записываем 0, если файла не было
-            outFile.close();
-            cerr << "Файл создан: " << nameFile << endl;
-        }
-        else 
-        {
-            cerr << "Не удалось создать файл " << nameFile << endl;
-            return;
-        }
+        cerr << "File " << pkFilePath << " is not open. Initializing primary key to 0." << endl;
     }
 
-    // Открываем файл для записи количества строк
-    ofstream outFile(nameFile);
-    if (outFile.is_open()) 
+    
+    currentPk++;
+
+    ofstream outPkFile(pkFilePath);
+    if (outPkFile.is_open()) 
     {
-        outFile << lineCount; // Записываем количество строк
-        outFile.close();
+        outPkFile << currentPk; 
+        outPkFile.close();
     } 
-    else
+    else 
     {
-        cerr << "Файл " << nameFile << " не открыт для записи" << endl;
+        cerr << "File " << pkFilePath << " is not open for writing." << endl;
     }
+
+  
 }

@@ -18,7 +18,7 @@ void InsertInto(string nameTable, string values)
 
             getline(strStream,remainingCommand);
 
-            InsertToCSV(remainingCommand, nameTable);
+            WorkWithCSV(remainingCommand, nameTable);
 
         }
         else 

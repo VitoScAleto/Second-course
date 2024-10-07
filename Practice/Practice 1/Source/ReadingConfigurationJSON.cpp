@@ -16,15 +16,13 @@ string ReturnNameObjectFromStructure(int indexObj, json& j)
 }
 
 
-void CreationCSVFile(fs::path pathToDir, json& j, const string& tableName)
+void CreationCSVFile(string pathToDir, json& j,  string tableName)
 {
     json structure = j["structure"];
 
-    string fileCSVName = "1.csv";
+    string fileCSVName = pathToDir + "/1.csv";
     
-    fs::path filePathCSV =  pathToDir/fileCSVName;
-
-    ofstream outFile(filePathCSV);
+    ofstream outFile(fileCSVName);
 
     if (outFile.is_open()) 
     {
@@ -86,7 +84,8 @@ void ReadingConfigurationJSON()
         if (fs::create_directory(mainDir)) 
         {
             cout << "Директория '" << mainDir << "' успешно создана.\n";
-        } else 
+        } 
+        else 
         {
             cout << "Директория '" << mainDir << "' уже существует.\n";
         }
@@ -95,7 +94,8 @@ void ReadingConfigurationJSON()
         if (fs::create_directory(table1)) 
         {
             cout << "Директория '" << table1 << "' успешно создана.\n";
-        } else 
+        } 
+        else 
         {
             cout << "Директория '" << table1 << "' уже существует.\n";
         }
@@ -103,7 +103,8 @@ void ReadingConfigurationJSON()
         if (fs::create_directory(table2)) 
         {
             cout << "Директория '" << table2 << "' успешно создана.\n";
-        } else 
+        } 
+        else 
         {
             cout << "Директория '" << table2 << "' уже существует.\n";
         }
