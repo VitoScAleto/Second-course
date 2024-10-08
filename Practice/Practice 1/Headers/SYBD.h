@@ -4,8 +4,10 @@
 #include "Headers.h"
 #include "WorkWithFiles.h"
 
+string TruncateInputCommand(stringstream& ss);
 
 void SYBD();
+
 void InsertInto(string nameTable, string values);
 
 

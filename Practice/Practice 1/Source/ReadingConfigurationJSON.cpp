@@ -1,6 +1,6 @@
 #include "../Headers/ReadingConfigurationJSON.h"
 
-string ReturnNameObjectFromStructure(int indexObj, json& j)
+string ReadingJSON::ReturnNameObjectFromStructure(int indexObj, json& j)
 {
     string nameObj;
 
@@ -16,67 +16,30 @@ string ReturnNameObjectFromStructure(int indexObj, json& j)
 }
 
 
-void CreationCSVFile(string pathToDir, json& j,  string tableName)
-{
-    json structure = j["structure"];
-
-    string fileCSVName = pathToDir + "/1.csv";
-    
-    ofstream outFile(fileCSVName);
-
-    if (outFile.is_open()) 
-    {
-        outFile<< tableName <<"_pk,";
-        if (structure.contains(tableName))
-        {
-            for (auto& column : structure[tableName])
-            {
-                outFile << column.get<string>() << ",";
-            }
-           
-        }
-        outFile.close();
-        
-        cout << "Файл CSV успешно создан: "<< endl;
-    } else 
-    {
-        cerr << "Ошибка при создании файла CSV." << endl;
-    }
-
-
-}
-
 
 
 void ReadingConfigurationJSON()
 {
-    string pathFileSchemaJson = "/home/pushk/VSCODE/Second-course/Practice/Practice 1/JSON/schema.json";
 
-    json j;
 
-    ifstream file(pathFileSchemaJson);
-    if (file.is_open()) 
-    {
-        // Парсим содержимое файла
-        j = json::parse(file);
+    ReadingJSON classReadingJSON;
 
+    json j = ParseJSON();
+
+    classReadingJSON.CreateMainDir(j);
+    classReadingJSON.CreateTable1(j);
+    classReadingJSON.CreateTable2(j);
+    classReadingJSON.CreateCSVFile(j, 1);
+    classReadingJSON.CreateCSVFile(j,2);
+  
+}
+
+
+void ReadingJSON::CreateMainDir(json& j)
+{
+    name = j["name"];
     
-        file.close();
-    } 
-    else 
-    {
-        cerr << "Не удалось открыть файл: " << pathFileSchemaJson << endl;
-        return; // Возвращаем код ошибки
-    }
-    
-
-    string jsonField = j["name"];
-
-    fs::path mainDir = jsonField;
-
-    fs::path table1 = mainDir/ReturnNameObjectFromStructure(0, j);
-
-    fs::path table2 = mainDir/ReturnNameObjectFromStructure(1, j);
+    fs::path mainDir = name;
 
     try 
     {
@@ -88,9 +51,27 @@ void ReadingConfigurationJSON()
         else 
         {
             cout << "Директория '" << mainDir << "' уже существует.\n";
-        }
+        } 
+    }
+    catch (const fs::filesystem_error& e) 
+    {
+        cerr << "Ошибка создания: " << mainDir << e.what() << '\n';
+    }
 
-        
+}
+
+void ReadingJSON::CreateTable1(json& j)
+{
+    name = j["name"];
+    
+    fs::path mainDir = name;
+
+    nameTable1 = ReturnNameObjectFromStructure(0, j);
+
+    fs::path table1 = mainDir/ReturnNameObjectFromStructure(0, j);
+
+    try
+    {
         if (fs::create_directory(table1)) 
         {
             cout << "Директория '" << table1 << "' успешно создана.\n";
@@ -99,7 +80,25 @@ void ReadingConfigurationJSON()
         {
             cout << "Директория '" << table1 << "' уже существует.\n";
         }
+    }
+    catch (const fs::filesystem_error& e) 
+    {
+        cerr << "Ошибка создание директории: "<< table1 << e.what() << '\n';
+    }
+}
 
+void ReadingJSON::CreateTable2(json& j)
+{
+    name = j["name"];
+    
+    fs::path mainDir = name;
+
+    nameTable2 = ReturnNameObjectFromStructure(1, j);
+
+    fs::path table2 = mainDir/ReturnNameObjectFromStructure(1, j);
+
+    try
+    {
         if (fs::create_directory(table2)) 
         {
             cout << "Директория '" << table2 << "' успешно создана.\n";
@@ -108,14 +107,89 @@ void ReadingConfigurationJSON()
         {
             cout << "Директория '" << table2 << "' уже существует.\n";
         }
-    } 
+    }
     catch (const fs::filesystem_error& e) 
     {
-        cerr << "Ошибка: " << e.what() << '\n';
+        cerr << "Ошибка создание директории: " << table2 << e.what() << '\n';
+    }
+    
+    
+}
+
+void ReadingJSON::CreateCSVFile(json& j, int n)
+{
+    json structure = j["structure"];
+
+    string nameTable;
+
+    if(n == 1)
+    {
+        nameTable = nameTable1;
+    }
+    else if(n == 2)
+    {
+        nameTable = nameTable2;
+
+    }
+    else
+    {
+        throw invalid_argument("This table not found");
+    }
+    string fileCSVName = "../Source/Схема 1/" + nameTable + "/1.csv";
+    
+    ifstream inFile(fileCSVName);
+    if(inFile.is_open())
+    {
+        return;
     }
 
-    CreationCSVFile(table1,j,"Таблица1");
-    CreationCSVFile(table2,j,"Таблица2");
+
+    ofstream outFile(fileCSVName);
+
+    if (outFile.is_open()) 
+    {
+        outFile<< nameTable <<"_pk,";
+        if (structure.contains(nameTable))
+        {
+            for (auto& column : structure[nameTable])
+            {
+                outFile << column.get<string>() << ",";
+            }
+           
+        }
+        outFile.close();
+        
+        cout << "Файл CSV успешно создан: "<< endl;
+    } else 
+    {
+        throw ios_base::failure("Failed to create file: " + fileCSVName );
+    }
 
 }
 
+
+
+json ParseJSON()
+{
+    string pathFileSchemaJson = "/home/pushk/VSCODE/Second-course/Practice/Practice 1/JSON/schema.json";
+
+    json j;
+
+    ifstream file(pathFileSchemaJson);
+
+    if (file.is_open()) 
+    {
+        // Парсим содержимое файла
+        j = json::parse(file);
+
+    
+        file.close();
+    } 
+    else 
+    {
+        throw ios_base::failure("Failed to open file: " + pathFileSchemaJson );
+    }
+    
+
+    return j;
+}

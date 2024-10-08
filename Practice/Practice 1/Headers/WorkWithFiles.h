@@ -3,10 +3,9 @@
 
 #include "Headers.h"
 #include "Queue.h"
-#include "DoubDynArray.h"
+#include "FList.h"
 
 
-void WriteToCSVFileIntoArray(string data, string nameTable);
 
 void WorkWithFile_pk_sequence(string nameTable);
 
@@ -16,9 +15,26 @@ template <typename T>
 Queue<T> extractDataFromQuery(string input);
 
 
-template <typename T>
+class CSV
+{
+    private:
 
-DoubDynArray<T> ReadingCSVFileIntoArray(string data, string nameTable);
+    int numberColumns;
+
+    string value;
+
+    int max_tuples;
+
+    public:
+
+    CSV();
+
+    void WriteToCSV(string data, string nameTable);
+    int CountElementInCSV(string nameTable);
+    int WorkWithFile_pk_sequence(string nameTable);
+    
+};
+
 
 
 #include "../Source/WorkWithFiles.cpp"

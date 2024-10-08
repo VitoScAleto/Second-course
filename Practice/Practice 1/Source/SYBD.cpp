@@ -13,13 +13,8 @@ void InsertInto(string nameTable, string values)
 
         if(action == "VALUES")
         {
-            string remainingCommand;
-            strStream >> remainingCommand;
-
-            getline(strStream,remainingCommand);
-
-            WorkWithCSV(remainingCommand, nameTable);
-
+            
+            WorkWithCSV(TruncateInputCommand(strStream), nameTable);
         }
         else 
         {
@@ -35,7 +30,16 @@ void InsertInto(string nameTable, string values)
 }
 
 
+string TruncateInputCommand(stringstream& ss)
+{
+    string remainingCommand;
 
+    getline(ss,remainingCommand);
+
+    remainingCommand.erase(0, remainingCommand.find_first_not_of(' '));
+
+    return remainingCommand;
+}
 
 
 void SYBD()
@@ -51,9 +55,6 @@ void SYBD()
     string action;
     ss >> action; 
 
-   
-
-    
     if (action == "SELECT")
     {
         cout << "Обработка команды SELECT..." << endl;
@@ -65,11 +66,10 @@ void SYBD()
         ss >> insertAction; // Получаем вторую часть команды (INTO)
         if (insertAction == "INTO")
         {
-            string remainingCommand;
             string nameTable;  
             ss >> nameTable;
-            getline(ss,remainingCommand);
-            InsertInto(nameTable, remainingCommand);
+           
+            InsertInto(nameTable, TruncateInputCommand(ss));
         }
         else
         {

@@ -21,16 +21,20 @@ private:
 public:
     Queue() = default;
     
-    ~Queue() {
-        while (head != nullptr) {
+    ~Queue() 
+    {
+        while (head != nullptr) 
+        {
             pop_front(); // Освобождаем память при разрушении очереди
         }
     }
 
     int getSize();
-   
+
     void push_back(T item);
+
     T pop_front();
+    
     T getFront();
 };
 

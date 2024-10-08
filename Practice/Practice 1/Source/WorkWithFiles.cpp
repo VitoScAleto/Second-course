@@ -36,109 +36,24 @@ Queue<T> extractDataFromQuery(string input)
 }
 
 
-int ConfigurationForArrayFromJSON()
+void WorkWithCSV(string data, string nameTable)
 {
-    string pathFileSchemaJson = "/home/pushk/VSCODE/Second-course/Practice/Practice 1/JSON/schema.json";
+    CSV csv;
+    csv.WriteToCSV(data, nameTable);
 
-    json j;
 
-    ifstream file(pathFileSchemaJson);
-    if (file.is_open()) 
-    {
-        // Парсим содержимое файла
-        j = json::parse(file);
-
-    
-        file.close();
-    } 
-    else 
-    {
-        cerr << "Не удалось открыть файл: " << pathFileSchemaJson << endl;
-        return 0; // Возвращаем код ошибки
-    }
-
-    int tuples_limit = j["tuples_limit"];
-    
-    return tuples_limit;
-}
-
-template <typename T>
-
-DoubDynArray<T>ReadingCSVFileIntoArray(string data, string nameTable)
-{
-    if(nameTable == "Таблица1")
-    {
-        string pathToCSV = "../Source/Схема 1/" + nameTable + "/1.csv";
-
-        DoubDynArray <string> FromCSVArray(ConfigurationForArrayFromJSON(),5);
-
-        ifstream outFile(pathToCSV);
-        if(!outFile.is_open())
-        {
-        cerr << "Error: Could not open the file " << pathToCSV << endl;
-        throw ios_base::failure("Failed to open file: " + pathToCSV);
-        }
-
-        string line;
-        while (std::getline(outFile, line)) 
-        {
-            std::stringstream ss(line);
-            std::string item;
-
-            while (std::getline(ss, item, ',')) 
-            {
-                FromCSVArray.push_back(item);
-            }
-
-        }
-        outFile.close();
-        return FromCSVArray;
-
-    }
-
-    if(nameTable == "Таблица2")
-    {
-        string pathToCSV = "../Source/Схема 1/" + nameTable + "/1.csv";
-
-        DoubDynArray <string> FromCSVArray(ConfigurationForArrayFromJSON(),3);
-
-        ifstream outFile(pathToCSV);
-        if(!outFile.is_open())
-        {
-        cerr << "Error: Could not open the file " << pathToCSV << endl;
-        throw ios_base::failure("Failed to open file: " + pathToCSV);
-        }
-
-        string line;
-        while (std::getline(outFile, line)) 
-        {
-            std::stringstream ss(line);
-            std::string item;
-
-            while (std::getline(ss, item, ',')) 
-            {
-                FromCSVArray.push_back(item);
-            }
-
-        }
-        outFile.close();
-        return FromCSVArray;
-    }
-    throw invalid_argument("Invalid table name: " + nameTable);
 }
 
 
-void WriteToCSVFileIntoArray(string data, string nameTable)
+void CSV::WriteToCSV(string data, string nameTable)
 {
-    Queue <string> queueForArray = extractDataFromQuery<string>(data);
+    Queue <string> queueQuery = extractDataFromQuery<string>(data);
 
     if(nameTable == "Таблица1")
     {
         string pathToCSV = "../Source/Схема 1/" + nameTable + "/1.csv";
 
-        DoubDynArray <string> ArrayToInsert = ReadingCSVFileIntoArray<string>(data, nameTable);
-
-        ofstream outFile(pathToCSV);
+        ofstream outFile(pathToCSV, ios::app);
         
         if(!outFile.is_open())
         {
@@ -146,58 +61,159 @@ void WriteToCSVFileIntoArray(string data, string nameTable)
         throw ios_base::failure("Failed to open file: " + pathToCSV);
         }
 
+        while(queueQuery.getSize() != 0)
+        {    
+            outFile.close();
+            ofstream outFile(pathToCSV, ios::app);
 
+            int quantityElementInCSVFileT1 = CountElementInCSV(nameTable);
 
+            quantityElementInCSVFileT1 %= 5;
 
-       
+            if(quantityElementInCSVFileT1 == 0)
+            {
+                outFile<<"\n"<<WorkWithFile_pk_sequence(nameTable)<<",";
+                quantityElementInCSVFileT1++;
+            }
+            for(int i = 0; i < 5 - quantityElementInCSVFileT1 && queueQuery.getSize() != 0; i++)
+            {
+                outFile << queueQuery.getFront()<<",";
+                queueQuery.pop_front();
+                
+            }
 
+        }
+
+        outFile.close();
+        return;
     }
+    
+    if(nameTable == "Таблица2")
+    {
 
+        string pathToCSV = "../Source/Схема 1/" + nameTable + "/1.csv";
+
+        ofstream outFile(pathToCSV, ios::app);
+        if(!outFile.is_open())
+        {
+        cerr << "Error: Could not open the file " << pathToCSV << endl;
+        throw ios_base::failure("Failed to open file: " + pathToCSV);
+        }
+
+        while(queueQuery.getSize() != 0)
+        {   
+            outFile.close();// для обновления файла
+            ofstream outFile(pathToCSV, ios::app);// для обновления файла
+
+            int quantityElementInCSVFileT2 = CountElementInCSV(nameTable);
+
+            quantityElementInCSVFileT2 %= 3;
+
+            if(quantityElementInCSVFileT2 == 0)
+            {
+               outFile<<"\n"<<WorkWithFile_pk_sequence(nameTable)<<",";
+               quantityElementInCSVFileT2++;
+            }
+            
+            for(int i = 0; i < 3 - quantityElementInCSVFileT2 && queueQuery.getSize() != 0; i++)
+            {
+               
+                outFile << queueQuery.getFront()<<",";
+                queueQuery.pop_front();
+            }
+            quantityElementInCSVFileT2 = 0;
+
+        }
+      
+
+        outFile.close();
+        return;
+    }
+    throw invalid_argument("Invalid table name: " + nameTable);
+
+
+
+}
+
+int CSV::CountElementInCSV(string nameTable)
+{
+    numberColumns = 0;
+    if(nameTable == "Таблица1")
+    {
+        string pathToCSV = "../Source/Схема 1/" + nameTable + "/1.csv";
+
+        ifstream outFile(pathToCSV);
+        
+        if(!outFile.is_open())
+        {
+        cerr << "Error: Could not open the file " << pathToCSV << endl;
+        throw ios_base::failure("Failed to open file: " + pathToCSV);
+        }
+
+        string line;
+
+        while (std::getline(outFile, line)) 
+        {
+           stringstream ss(line);
+           string item;
+
+            while (std::getline(ss, item, ',')) 
+            {
+                numberColumns++;
+            }
+
+        }
+        outFile.close();
+        return numberColumns;
+    }
+    
     if(nameTable == "Таблица2")
     {
         string pathToCSV = "../Source/Схема 1/" + nameTable + "/1.csv";
 
-        DoubDynArray <string> ArrayToInsert = ReadingCSVFileIntoArray<string>(data, nameTable);
-
-        ofstream outFile(pathToCSV);
-
+       
+        ifstream outFile(pathToCSV);
         if(!outFile.is_open())
         {
-            cerr << "Error: Could not open the file " << pathToCSV << endl;
-            throw ios_base::failure("Failed to open file: " + pathToCSV);
+        cerr << "Error: Could not open the file " << pathToCSV << endl;
+        throw ios_base::failure("Failed to open file: " + pathToCSV);
         }
 
 
+        string line;
 
+        while (std::getline(outFile, line)) 
+        {
+           stringstream ss(line);
+           string item;
+
+            while (std::getline(ss, item, ',')) 
+            {
+                numberColumns++;
+            }
+
+        }
+
+        outFile.close();
+        return numberColumns;
     }
-
-
-
-
+    throw invalid_argument("Invalid table name: " + nameTable);
 
 
 }
 
-void WorkWithCSV(string data, string nameTable)
+CSV::CSV()
 {
-    
-    WriteToCSVFileIntoArray(data, nameTable);
-
-
-
-
-
-
+    numberColumns = 0;
 
 }
 
 
 
 
-
-void WorkWithFile_pk_sequence(string nameTable)
+int CSV::WorkWithFile_pk_sequence(string nameTable)
 {
-    string pkFilePath = "../Source/Схема 1/" + nameTable +"/" + nameTable + "_pk_sequence.txt";
+    string pkFilePath = "../Source/Схема 1/" + nameTable + "/" + nameTable + "_pk_sequence.txt";
 
     int currentPk = 0;
 
@@ -210,10 +226,18 @@ void WorkWithFile_pk_sequence(string nameTable)
     } 
     else 
     {
-        cerr << "File " << pkFilePath << " is not open. Initializing primary key to 0." << endl;
+        ofstream createFile(pkFilePath);
+        if (createFile.is_open()) 
+        {
+            createFile << currentPk; // Записываем начальное значение
+            createFile.close();
+        }
+        else 
+        {
+             throw ios_base::failure("Failed to сreate file: " + pkFilePath);
+        }
     }
 
-    
     currentPk++;
 
     ofstream outPkFile(pkFilePath);
@@ -226,6 +250,7 @@ void WorkWithFile_pk_sequence(string nameTable)
     {
         cerr << "File " << pkFilePath << " is not open for writing." << endl;
     }
-
-  
+    return currentPk;
 }
+
+
