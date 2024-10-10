@@ -1,7 +1,7 @@
 INSERT INTO Таблица1 VALUES ('FSFSF','dfdfdf','FSFSF','dfdfdf','FSFSF','dfdfdf','FSFSF','dfdfdf')
-INSERT INTO Таблица2 VALUES ('a','b','c','d','f','j','k','q')
+INSERT INTO Таблица2 VALUES ('a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh')
 
-DELETE FROM Таблица1 WHERE Таблица1.колонка1 = 'cvcc'
+DELETE FROM Таблица2 WHERE Таблица2.колонка1 = 'q'
 
 
 DELETE FROM Таблица2 WHERE Таблица2.колонка1 = 'FSFSF'

@@ -1,5 +1,24 @@
 #include "../Headers/FList.h"
 
+
+
+template <typename T>
+LinkedList<T>::~LinkedList() 
+{
+    Node* current = head;
+    while (current != nullptr) 
+    {
+        Node* next = current->next; 
+        delete current;              
+        current = next;              
+    }
+    head = nullptr; 
+    sizeList = 0;   
+}
+
+
+
+
 template <typename T>
 
 T LinkedList<T>::getHead()
@@ -10,10 +29,6 @@ T LinkedList<T>::getHead()
         }
         return head->value; 
 }
-
-
-
-
 
 template <typename T>
 

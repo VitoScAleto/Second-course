@@ -24,7 +24,10 @@ private:
 
     bool isValidValue(T item);
     
+
 public:
+    ~LinkedList();
+    
     T getHead();
     int getSize();
     int GetIndex();
