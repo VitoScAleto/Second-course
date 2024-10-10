@@ -2,43 +2,43 @@
 
 template <typename T>
 
-void LinkedList<T>::readingConfiguration(string nameFile)
-    {
-        string valueConfiguration;
-
-        ifstream inputFile(nameFile);
-
-        if (!inputFile) {
-            cerr << "Не удалось открыть файл!" << endl;
-            return;
-        }
-        while (inputFile >> valueConfiguration)
+T LinkedList<T>::getHead()
+ {
+        if (head == nullptr) 
         {
-            push_back(valueConfiguration);
+            throw std::runtime_error("List is empty"); 
         }
+        return head->value; 
+}
 
-        inputFile.close();
-    }
+
+
+
 
 template <typename T>
 
-void LinkedList<T>::writeToConfiguration(string nameFile)
+void LinkedList<T>::Replace_by_index(int indexValue, T newValue)
 {
-        string valueConfiguration;
-
-        ifstream inputFile(nameFile);
-
-        if (!inputFile) {
-            cerr << "Не удалось открыть файл!" << endl;
-            return;
-        }
-        while (inputFile >> valueConfiguration)
-        {
-            push_back(valueConfiguration);
-        }
-
-        inputFile.close();
+    if (head == nullptr) 
+    {
+        cout << "List is empty" << endl;
+        return;
     }
+
+    Node* current = head;
+
+    for (int i = 0; i < getSize(); i++)
+    {
+        if (i == indexValue)
+        {
+
+            current->value = newValue; 
+            return; 
+        }
+        current = current->next; 
+    }
+
+}
 
 template <typename T>
 
@@ -156,26 +156,20 @@ void LinkedList<T>::pop_back()
 
 template <typename T>
 
-void LinkedList<T>::search_by_value(T item)
+int LinkedList<T>::search_by_value(T item)
     {
-
-        if (isValidValue(item) == false)
-        {
-            cerr << "Error. Value not found" << endl;
-            return;
-        }
 
         Node* current = head;
         while (current != nullptr)
         {
             if (current->value == item)
             {
-                cout << "Found value: " << current->value << "Index: " << index << endl;
+               return index;
             }
             current = current->next;
             index++;
         }
-
+        return index;
     }
 
 template <typename T>

@@ -25,18 +25,17 @@ private:
     bool isValidValue(T item);
     
 public:
-
+    T getHead();
     int getSize();
     int GetIndex();
     void push_back(T item);
     void push_front(T item);
-    void search_by_value(T item);
+    int search_by_value(T item);
     void pop_back();
     void pop_front();
     void delete_by_value(T item);
     void printList();
-    void readingConfiguration(string nameFile);
-    void writeToConfiguration(string nameFile);
+    void Replace_by_index(int indexValue, T newValue);
 };
 
 

@@ -1,0 +1,290 @@
+#include "../Headers/CSVInsert.h"
+
+
+CSVInsert::CSVInsert(ReadingJSON& JSON) : JSON(JSON) 
+{
+    numberElementInCSV = 0;
+}
+
+string TruncateInputCommand(stringstream& stream)
+{
+    string remainingCommand;
+
+    getline(stream,remainingCommand);
+
+    remainingCommand.erase(0, remainingCommand.find_first_not_of(' '));
+
+    return remainingCommand;
+}
+
+void CSVInsert::GetNameTableFromQuery(string nameTable)
+{
+    nameTableFromQuery = nameTable;
+}
+
+template <typename T>
+
+Queue<T> CSVInsert::extractDataFromQuery(string input) 
+{
+    Queue <string> queue;
+    size_t start = 0, end = 0;
+
+    // Найти первую открывающую скобку
+    if (input.front() != '(' || input.back() != ')') 
+    {
+
+        throw invalid_argument("Function(extractDataFromQuery()) -> Input must start with '(' and end with ')'");
+    }
+
+    // Пропустить первую и последнюю скобки
+    start = 1;
+    end = input.find("'", start);
+
+    while (end != string::npos) 
+    {
+        size_t nextEnd = input.find("'", end + 1);
+        if (nextEnd == string::npos) break; // Если нет закрывающей кавычки
+
+        // Извлечь значение между кавычками
+        queue.push_back(input.substr(end + 1, nextEnd - end - 1));
+        // Обновить start для поиска следующего значения
+        end = input.find(",", nextEnd + 1);
+        if (end == string::npos) break; // Если нет запятой, выходим из цикла
+        start = end + 1; // Пропускаем запятую
+        end = input.find("'", start);
+    }
+
+    
+    return queue;
+}
+
+
+void CSVInsert:: WriteToCSV(stringstream& stream)
+{
+    string nameTable;
+
+    stream >> nameTable;
+
+    if(nameTable == JSON.GetNameTable1JSON() || nameTable == JSON.GetNameTable2JSON()) GetNameTableFromQuery(nameTable);
+    else
+    {
+        cerr<<"Unknown table"<<endl;
+        return;
+    }
+
+    string action;
+    stream >> action;
+
+    if(action == "VALUES");
+    else
+    {
+        cerr<<"Ожидалась команда VALUES, получена "<< action <<endl;
+        return;
+    }
+    
+    InsertValuesFromQuery(TruncateInputCommand(stream));
+}
+
+
+
+void CSVInsert::InsertValuesFromQuery(string data)
+{
+    Queue <string> queueQuery = extractDataFromQuery<string>(data);
+
+    if(nameTableFromQuery == JSON.GetNameTable1JSON())
+    {
+        Queue <string> ColumnsFromJSON = JSON.GetColumnsFromSchema<string>(nameTableFromQuery);
+
+        string pathToCSVInsert = JSON.GetPathToTable1JSON() + "/1.csv";
+
+        ofstream outFile(pathToCSVInsert, ios::app);
+        
+        if(!outFile.is_open())
+        {
+        throw ios_base::failure("Function(WriteToCSVInsert()) -> Failed to open file: " + pathToCSVInsert);
+        }
+
+        while(queueQuery.getSize() != 0)
+        {    
+            outFile.close();
+            ofstream outFile(pathToCSVInsert, ios::app);
+
+            int quantityElementInCSVInsertFileT1 = CountElementInCSV(nameTableFromQuery);
+
+            quantityElementInCSVInsertFileT1 %= ColumnsFromJSON.getSize();
+
+            if(quantityElementInCSVInsertFileT1 == 0)
+            {
+                outFile<<"\n"<<WorkWithFile_pk_sequence(nameTableFromQuery)<<",";
+                quantityElementInCSVInsertFileT1++;
+            }
+            for(int i = 0; i < ColumnsFromJSON.getSize() - quantityElementInCSVInsertFileT1 && queueQuery.getSize() != 0; i++)
+            {
+                outFile << queueQuery.getFront()<<",";
+                queueQuery.pop_front();
+                
+            }
+
+        }
+
+        outFile.close();
+        return;
+    }
+    
+    if(nameTableFromQuery == JSON.GetNameTable2JSON())
+    {
+        Queue <string> ColumnsFromJSON = JSON.GetColumnsFromSchema<string>(nameTableFromQuery);
+        
+        string pathToCSVInsert = JSON.GetPathToTable2JSON() + "/1.csv";
+
+        ofstream outFile(pathToCSVInsert, ios::app);
+        if(!outFile.is_open())
+        {
+        
+        throw ios_base::failure("Function(WriteToCSVInsert()) -> Failed to open file: " + pathToCSVInsert);
+        }
+
+        while(queueQuery.getSize() != 0)
+        {   
+            outFile.close();// для обновления файла
+            ofstream outFile(pathToCSVInsert, ios::app);// для обновления файла
+
+            int quantityElementInCSVInsertFileT2 = CountElementInCSV(nameTableFromQuery);
+
+            quantityElementInCSVInsertFileT2 %= ColumnsFromJSON.getSize();
+
+            if(quantityElementInCSVInsertFileT2 == 0)
+            {
+               outFile<<"\n"<<WorkWithFile_pk_sequence(nameTableFromQuery)<<",";
+               quantityElementInCSVInsertFileT2++;
+            }
+            
+            for(int i = 0; i < ColumnsFromJSON.getSize() - quantityElementInCSVInsertFileT2 && queueQuery.getSize() != 0; i++)
+            {
+               
+                outFile << queueQuery.getFront()<<",";
+                queueQuery.pop_front();
+            }
+            quantityElementInCSVInsertFileT2 = 0;
+
+        }
+      
+
+        outFile.close();
+        return;
+    }
+    throw invalid_argument("Function(WriteToCSVInsert()) -> Invalid table name: " + nameTableFromQuery);
+
+
+
+}
+
+int CSVInsert::CountElementInCSV(string nameTable)
+{
+    numberElementInCSV = 0;
+    if(nameTable == JSON.GetNameTable1JSON())
+    {
+        string pathToCSVInsert = JSON.GetPathToTable1JSON() + "/1.csv";
+
+        ifstream outFile(pathToCSVInsert);
+        
+        if(!outFile.is_open())
+        {
+        
+        throw ios_base::failure("Function(CountElementInCSV()) -> Failed to open file: " + pathToCSVInsert);
+        }
+
+        string line;
+
+        while (getline(outFile, line)) 
+        {
+           stringstream ss(line);
+           string item;
+
+            while (getline(ss, item, ',')) 
+            {
+                numberElementInCSV++;
+            }
+
+        }
+        outFile.close();
+        return numberElementInCSV;
+    }
+    
+    if(nameTable == JSON.GetNameTable2JSON())
+    {
+        string pathToCSVInsert = JSON.GetPathToTable2JSON() + "/1.csv";
+
+       
+        ifstream outFile(pathToCSVInsert);
+        if(!outFile.is_open())
+        {
+        cerr << "Error: Could not open the file " << pathToCSVInsert << endl;
+        throw ios_base::failure("Function(CountElementInCSVInsert()) -> Failed to open file: " + pathToCSVInsert);
+        }
+
+
+        string line;
+
+        while (getline(outFile, line)) 
+        {
+           stringstream ss(line);
+           string item;
+
+            while (getline(ss, item, ',')) 
+            {
+                numberElementInCSV++;
+            }
+
+        }
+
+        outFile.close();
+        return numberElementInCSV;
+    }
+    throw invalid_argument("Function(CountElementInCSVInsert()) -> Invalid table name: " + nameTable);
+
+
+}
+
+
+int CSVInsert::WorkWithFile_pk_sequence(string nameTable)
+{
+    string pkFilePath = "../Source/Схема 1/" + nameTable + "/" + nameTable + "_pk_sequence.txt";
+
+    int currentPk = 0;
+
+    ifstream pkFile(pkFilePath);
+
+    if (pkFile.is_open()) 
+    {
+        pkFile >> currentPk; 
+        pkFile.close();
+    } 
+    else 
+    {
+        ofstream createFile(pkFilePath);
+        if (createFile.is_open()) 
+        {
+            createFile << currentPk; // Записываем начальное значение
+            createFile.close();
+        }
+        else 
+        {
+            throw ios_base::failure("Function(WorkWithFile_pk_sequence()) -> Failed to сreate file: " + pkFilePath);
+        }
+    }
+
+    currentPk++;
+
+    ofstream outPkFile(pkFilePath);
+    if (outPkFile.is_open()) 
+    {
+        outPkFile << currentPk; 
+        outPkFile.close();
+    } 
+    else 
+    {
+        cerr << "File " << pkFilePath << " is not open for writing." << endl;
+    }
+    return currentPk;
+}

@@ -1,4 +1,24 @@
 #include "../Headers/ReadingConfigurationJSON.h"
+ 
+string ReadingJSON::GetNameTable1JSON()
+{
+    return nameTable1;
+}
+ 
+string ReadingJSON::GetNameTable2JSON()
+{
+    return nameTable2;
+}
+string ReadingJSON::GetPathToTable1JSON()
+{
+    return pathToTable1;
+}
+    
+string ReadingJSON::GetPathToTable2JSON()
+{
+    return pathToTable2;
+}
+
 
 string ReadingJSON::ReturnNameObjectFromStructure(int indexObj, json& j)
 {
@@ -17,20 +37,19 @@ string ReadingJSON::ReturnNameObjectFromStructure(int indexObj, json& j)
 
 
 
-
-void ReadingConfigurationJSON()
+void ReadingJSON::ReadingConfigurationJSON(string pathShemaJSON)
 {
-
-
-    ReadingJSON classReadingJSON;
+    
 
     json j = ParseJSON();
 
-    classReadingJSON.CreateMainDir(j);
-    classReadingJSON.CreateTable1(j);
-    classReadingJSON.CreateTable2(j);
-    classReadingJSON.CreateCSVFile(j, 1);
-    classReadingJSON.CreateCSVFile(j,2);
+    tuples_limit = j["tuples_limit"];
+
+    CreateMainDir(j);
+    CreateTable1(j);
+    CreateTable2(j);
+    CreateCSVFile(j, 1);
+    CreateCSVFile(j,2);
   
 }
 
@@ -70,6 +89,8 @@ void ReadingJSON::CreateTable1(json& j)
 
     fs::path table1 = mainDir/ReturnNameObjectFromStructure(0, j);
 
+    pathToTable1 = table1;
+
     try
     {
         if (fs::create_directory(table1)) 
@@ -97,6 +118,8 @@ void ReadingJSON::CreateTable2(json& j)
 
     fs::path table2 = mainDir/ReturnNameObjectFromStructure(1, j);
 
+    pathToTable2 = table2;
+
     try
     {
         if (fs::create_directory(table2)) 
@@ -114,6 +137,36 @@ void ReadingJSON::CreateTable2(json& j)
     }
     
     
+}
+
+template <typename T>
+Queue<T> ReadingJSON::GetColumnsFromSchema(string nameTable)
+{
+    if (!(nameTable == nameTable1 || nameTable == nameTable2)) 
+    {
+        std::cerr << "Unknown table. Function(GetColumnsFromSchema)" << std::endl;
+        throw std::invalid_argument("This table not found");
+    }
+
+    json j = ParseJSON();
+    
+    Queue<string> queueColumnsFromSchema;
+
+    json structure = j["structure"];
+
+    if (structure.contains(nameTable))
+        {
+            string columnsPk_sequence = nameTable + "_pk";
+            queueColumnsFromSchema.push_back(columnsPk_sequence);
+
+            for (auto& column : structure[nameTable])
+            {
+               queueColumnsFromSchema.push_back(column.get<string>());
+            }
+           
+        }
+
+    return queueColumnsFromSchema;
 }
 
 void ReadingJSON::CreateCSVFile(json& j, int n)
@@ -135,6 +188,8 @@ void ReadingJSON::CreateCSVFile(json& j, int n)
     {
         throw invalid_argument("This table not found");
     }
+    Queue<string> ColumnsForCSV = GetColumnsFromSchema<string>(nameTable);
+
     string fileCSVName = "../Source/Схема 1/" + nameTable + "/1.csv";
     
     ifstream inFile(fileCSVName);
@@ -143,19 +198,15 @@ void ReadingJSON::CreateCSVFile(json& j, int n)
         return;
     }
 
-
     ofstream outFile(fileCSVName);
 
     if (outFile.is_open()) 
     {
-        outFile<< nameTable <<"_pk,";
-        if (structure.contains(nameTable))
+      
+        while(ColumnsForCSV.getSize()!=0)
         {
-            for (auto& column : structure[nameTable])
-            {
-                outFile << column.get<string>() << ",";
-            }
-           
+            outFile<<ColumnsForCSV.getFront()<<",";
+            ColumnsForCSV.pop_front();
         }
         outFile.close();
         
@@ -169,7 +220,7 @@ void ReadingJSON::CreateCSVFile(json& j, int n)
 
 
 
-json ParseJSON()
+json ReadingJSON::ParseJSON()
 {
     string pathFileSchemaJson = "/home/pushk/VSCODE/Second-course/Practice/Practice 1/JSON/schema.json";
 
