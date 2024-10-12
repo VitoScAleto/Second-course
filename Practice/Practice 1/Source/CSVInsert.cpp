@@ -65,7 +65,7 @@ void CSVInsert:: WriteToCSV(stringstream& stream)
 
     stream >> nameTable;
 
-    if(nameTable == JSON.GetNameTable1JSON() || nameTable == JSON.GetNameTable2JSON()) GetNameTableFromQuery(nameTable);
+    if(JSON.IsValidTable(nameTable) == true) GetNameTableFromQuery(nameTable);
     else
     {
         cerr<<"Unknown table"<<endl;
@@ -91,11 +91,11 @@ void CSVInsert::InsertValuesFromQuery(string data)
 {
     Queue <string> queueQuery = extractDataFromQuery<string>(data);
 
-    if(nameTableFromQuery == JSON.GetNameTable1JSON())
+    if(JSON.IsValidTable(nameTableFromQuery))
     {
         Queue <string> ColumnsFromJSON = JSON.GetColumnsFromSchema<string>(nameTableFromQuery);
 
-        string pathToCSVInsert = JSON.GetPathToTable1JSON() + "/1.csv";
+        string pathToCSVInsert = "../Source/Схема 1/"+nameTableFromQuery + "/1.csv";
 
         ofstream outFile(pathToCSVInsert, ios::app);
         
@@ -130,61 +130,16 @@ void CSVInsert::InsertValuesFromQuery(string data)
         outFile.close();
         return;
     }
-    
-    if(nameTableFromQuery == JSON.GetNameTable2JSON())
-    {
-        Queue <string> ColumnsFromJSON = JSON.GetColumnsFromSchema<string>(nameTableFromQuery);
-        
-        string pathToCSVInsert = JSON.GetPathToTable2JSON() + "/1.csv";
-
-        ofstream outFile(pathToCSVInsert, ios::app);
-        if(!outFile.is_open())
-        {
-        
-        throw ios_base::failure("Function(WriteToCSVInsert()) -> Failed to open file: " + pathToCSVInsert);
-        }
-
-        while(queueQuery.getSize() != 0)
-        {   
-            outFile.close();// для обновления файла
-            ofstream outFile(pathToCSVInsert, ios::app);// для обновления файла
-
-            int quantityElementInCSVInsertFileT2 = CountElementInCSV(nameTableFromQuery);
-
-            quantityElementInCSVInsertFileT2 %= ColumnsFromJSON.getSize();
-
-            if(quantityElementInCSVInsertFileT2 == 0)
-            {
-               outFile<<"\n"<<WorkWithFile_pk_sequence(nameTableFromQuery)<<",";
-               quantityElementInCSVInsertFileT2++;
-            }
-            
-            for(int i = 0; i < ColumnsFromJSON.getSize() - quantityElementInCSVInsertFileT2 && queueQuery.getSize() != 0; i++)
-            {
-               
-                outFile << queueQuery.getFront()<<",";
-                queueQuery.pop_front();
-            }
-            quantityElementInCSVInsertFileT2 = 0;
-
-        }
-      
-
-        outFile.close();
-        return;
-    }
     throw invalid_argument("Function(WriteToCSVInsert()) -> Invalid table name: " + nameTableFromQuery);
-
-
-
 }
 
 int CSVInsert::CountElementInCSV(string nameTable)
 {
     numberElementInCSV = 0;
-    if(nameTable == JSON.GetNameTable1JSON())
+
+    if(JSON.IsValidTable(nameTable) == true)
     {
-        string pathToCSVInsert = JSON.GetPathToTable1JSON() + "/1.csv";
+        string pathToCSVInsert = "../Source/Схема 1/"+nameTable + "/1.csv";
 
         ifstream outFile(pathToCSVInsert);
         
@@ -210,40 +165,8 @@ int CSVInsert::CountElementInCSV(string nameTable)
         outFile.close();
         return numberElementInCSV;
     }
-    
-    if(nameTable == JSON.GetNameTable2JSON())
-    {
-        string pathToCSVInsert = JSON.GetPathToTable2JSON() + "/1.csv";
 
-       
-        ifstream outFile(pathToCSVInsert);
-        if(!outFile.is_open())
-        {
-        cerr << "Error: Could not open the file " << pathToCSVInsert << endl;
-        throw ios_base::failure("Function(CountElementInCSVInsert()) -> Failed to open file: " + pathToCSVInsert);
-        }
-
-
-        string line;
-
-        while (getline(outFile, line)) 
-        {
-           stringstream ss(line);
-           string item;
-
-            while (getline(ss, item, ',')) 
-            {
-                numberElementInCSV++;
-            }
-
-        }
-
-        outFile.close();
-        return numberElementInCSV;
-    }
     throw invalid_argument("Function(CountElementInCSVInsert()) -> Invalid table name: " + nameTable);
-
-
 }
 
 

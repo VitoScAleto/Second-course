@@ -1,6 +1,22 @@
 #include "../Headers/FList.h"
 
-
+template< typename T>
+T& LinkedList<T>::operator[](int index) 
+{
+        Node* temp = head;
+        for (int i = 0; i < index; ++i) 
+        {
+            if (temp == nullptr) {
+                throw std::out_of_range("Index out of range");
+            }
+            temp = temp->next;
+        }
+        if (temp == nullptr) 
+        {
+            throw std::out_of_range("Index out of range");
+        }
+        return temp->data;
+    }
 
 template <typename T>
 LinkedList<T>::~LinkedList() 
@@ -32,12 +48,11 @@ T LinkedList<T>::getHead()
 
 template <typename T>
 
-void LinkedList<T>::Replace_by_index(int indexValue, T newValue)
+T LinkedList<T>::Get_by_index(int indexValue)
 {
     if (head == nullptr) 
     {
-        cout << "List is empty" << endl;
-        return;
+        throw std::runtime_error("List is empty");
     }
 
     Node* current = head;
@@ -46,13 +61,11 @@ void LinkedList<T>::Replace_by_index(int indexValue, T newValue)
     {
         if (i == indexValue)
         {
-
-            current->value = newValue; 
-            return; 
+            return current->value;
         }
         current = current->next; 
     }
-
+    throw std::runtime_error("List is empty");
 }
 
 template <typename T>

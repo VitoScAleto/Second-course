@@ -1,55 +1,47 @@
 #include "../Headers/ReadingConfigurationJSON.h"
- 
-string ReadingJSON::GetNameTable1JSON()
+
+bool ReadingJSON::IsValidTable(const string nameTable)
 {
-    return nameTable1;
-}
- 
-string ReadingJSON::GetNameTable2JSON()
-{
-    return nameTable2;
-}
-string ReadingJSON::GetPathToTable1JSON()
-{
-    return pathToTable1;
-}
-    
-string ReadingJSON::GetPathToTable2JSON()
-{
-    return pathToTable2;
-}
+    FillingTheListFromTheSchema();
 
+    while(nameTables.getSize() != 0)
+    {
+        if(nameTable == nameTables.getHead())
+        { 
+            nameTables.~LinkedList();
+            return true;
 
-string ReadingJSON::ReturnNameObjectFromStructure(int indexObj, json& j)
-{
-    string nameObj;
-
-    json structureField = j["structure"];
-
-    auto it = structureField.items().begin();
-
-    advance(it,indexObj);
-
-    nameObj = it.key();
-
-    return nameObj;
+        }
+        nameTables.pop_front();
+    }
+    nameTables.~LinkedList();
+    return false;
 }
 
 
 
-void ReadingJSON::ReadingConfigurationJSON(string pathShemaJSON)
-{
-    
+void ReadingJSON::FillingTheListFromTheSchema()
+{   
+    string tableName;
+    json j = ParseJSON();
 
+    for (auto& JTable : j["structure"].items()) 
+    {
+     tableName = JTable.key();
+     nameTables.push_back(tableName);
+    }
+
+}
+
+void ReadingJSON::ReadingConfigurationJSON(const string pathShemaJSON)
+{
     json j = ParseJSON();
 
     tuples_limit = j["tuples_limit"];
 
     CreateMainDir(j);
-    CreateTable1(j);
-    CreateTable2(j);
-    CreateCSVFile(j, 1);
-    CreateCSVFile(j,2);
+    CreateTable(j);
+    CreateCSVFile(j);
   
 }
 
@@ -79,74 +71,64 @@ void ReadingJSON::CreateMainDir(json& j)
 
 }
 
-void ReadingJSON::CreateTable1(json& j)
+void ReadingJSON::CreateTable(json& j)
 {
+    FillingTheListFromTheSchema();
+
     name = j["name"];
     
     fs::path mainDir = name;
 
-    nameTable1 = ReturnNameObjectFromStructure(0, j);
-
-    fs::path table1 = mainDir/ReturnNameObjectFromStructure(0, j);
-
-    pathToTable1 = table1;
-
-    try
+    while(nameTables.getSize()!=0)
     {
-        if (fs::create_directory(table1)) 
+        fs::path table = mainDir/nameTables.getHead();
+
+        try
         {
-            cout << "Директория '" << table1 << "' успешно создана.\n";
-        } 
-        else 
-        {
-            cout << "Директория '" << table1 << "' уже существует.\n";
+            if (fs::create_directory(table)) 
+            {
+                cout << "Директория '" << table << "' успешно создана.\n";
+            } 
+            else 
+            {
+                cout << "Директория '" << table << "' уже существует.\n";
+            }
         }
+        catch (const fs::filesystem_error& e) 
+        {
+            cerr << "Ошибка создание директории: "<< table << e.what() << '\n';
+        }
+        nameTables.pop_front();
     }
-    catch (const fs::filesystem_error& e) 
-    {
-        cerr << "Ошибка создание директории: "<< table1 << e.what() << '\n';
-    }
+    nameTables.~LinkedList();
 }
 
-void ReadingJSON::CreateTable2(json& j)
-{
-    name = j["name"];
-    
-    fs::path mainDir = name;
-
-    nameTable2 = ReturnNameObjectFromStructure(1, j);
-
-    fs::path table2 = mainDir/ReturnNameObjectFromStructure(1, j);
-
-    pathToTable2 = table2;
-
-    try
-    {
-        if (fs::create_directory(table2)) 
-        {
-            cout << "Директория '" << table2 << "' успешно создана.\n";
-        } 
-        else 
-        {
-            cout << "Директория '" << table2 << "' уже существует.\n";
-        }
-    }
-    catch (const fs::filesystem_error& e) 
-    {
-        cerr << "Ошибка создание директории: " << table2 << e.what() << '\n';
-    }
-    
-    
-}
 
 template <typename T>
-Queue<T> ReadingJSON::GetColumnsFromSchema(string nameTable)
+Queue<T> ReadingJSON::GetColumnsFromSchema(const string nameTable)
 {
-    if (!(nameTable == nameTable1 || nameTable == nameTable2)) 
+    FillingTheListFromTheSchema();
+    
+    bool tableFound = false; 
+
+    while (nameTables.getSize() != 0)
     {
-        std::cerr << "Unknown table. Function(GetColumnsFromSchema)" << std::endl;
-        throw std::invalid_argument("This table not found");
+        if (nameTable == nameTables.getHead())
+        {
+            tableFound = true; 
+            break; 
+        }
+        nameTables.pop_front(); 
     }
+    
+    
+    if (!tableFound)
+    {
+        cerr << "Unknown table. Function(GetColumnsFromSchema)" << endl;
+        throw invalid_argument("This table not found");
+    }
+    
+    
 
     json j = ParseJSON();
     
@@ -169,53 +151,45 @@ Queue<T> ReadingJSON::GetColumnsFromSchema(string nameTable)
     return queueColumnsFromSchema;
 }
 
-void ReadingJSON::CreateCSVFile(json& j, int n)
+void ReadingJSON::CreateCSVFile(json& j)
 {
     json structure = j["structure"];
 
-    string nameTable;
+    FillingTheListFromTheSchema();
 
-    if(n == 1)
+    while(nameTables.getSize()!=0)
     {
-        nameTable = nameTable1;
-    }
-    else if(n == 2)
-    {
-        nameTable = nameTable2;
+        Queue<string> ColumnsForCSV = GetColumnsFromSchema<string>(nameTables.getHead());
 
-    }
-    else
-    {
-        throw invalid_argument("This table not found");
-    }
-    Queue<string> ColumnsForCSV = GetColumnsFromSchema<string>(nameTable);
-
-    string fileCSVName = "../Source/Схема 1/" + nameTable + "/1.csv";
-    
-    ifstream inFile(fileCSVName);
-    if(inFile.is_open())
-    {
-        return;
-    }
-
-    ofstream outFile(fileCSVName);
-
-    if (outFile.is_open()) 
-    {
-      
-        while(ColumnsForCSV.getSize()!=0)
-        {
-            outFile<<ColumnsForCSV.getFront()<<",";
-            ColumnsForCSV.pop_front();
-        }
-        outFile.close();
+        string fileCSVName = "../Source/Схема 1/" + nameTables.getHead() + "/1.csv";
         
-        cout << "Файл CSV успешно создан: "<< endl;
-    } else 
-    {
-        throw ios_base::failure("Failed to create file: " + fileCSVName );
-    }
+        ifstream inFile(fileCSVName);
+        if(inFile.is_open())
+        {
+            return;
+        }
 
+        ofstream outFile(fileCSVName);
+
+        if (outFile.is_open()) 
+        {
+        
+            while(ColumnsForCSV.getSize()!=0)
+            {
+                outFile<<ColumnsForCSV.getFront()<<",";
+                ColumnsForCSV.pop_front();
+            }
+            outFile.close();
+            
+            cout << "Файл CSV успешно создан: "<< endl;
+        } else 
+        {
+            throw ios_base::failure("Failed to create file: " + fileCSVName );
+        }
+        nameTables.pop_front();
+    
+    }
+    nameTables.~LinkedList();
 }
 
 

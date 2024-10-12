@@ -11,8 +11,9 @@ int main()
 
     CSVInsert csvInsert(JSON);
     CSVDelete csvDelete(JSON);
+    CSVSelect csvSelect(JSON);
 
-    SQLQueryParse myQuery(JSON, csvInsert,csvDelete);
+    SQLQueryParse myQuery(JSON, csvInsert,csvDelete, csvSelect);
     
 
     myQuery.Start();

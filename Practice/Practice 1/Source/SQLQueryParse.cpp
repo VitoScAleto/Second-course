@@ -1,9 +1,7 @@
 #include "../Headers/SQLQueryParse.h"
 
-SQLQueryParse::SQLQueryParse(ReadingJSON& JSON, CSVInsert& csvInsert,CSVDelete& csvDelete) : JSON(JSON), 
-csvInsert(csvInsert), csvDelete(csvDelete){}
-
-
+SQLQueryParse::SQLQueryParse(ReadingJSON& JSON, CSVInsert& csvInsert,CSVDelete& csvDelete,CSVSelect& csvSelect) : JSON(JSON), 
+csvInsert(csvInsert), csvDelete(csvDelete),csvSelect(csvSelect){}
 
 
 void SQLQueryParse::SQLInsert(stringstream& stream)
@@ -30,7 +28,7 @@ void SQLQueryParse::SQLDelete(stringstream& stream)
     string nameTable;
     stream >> nameTable;
 
-    if(nameTable == JSON.GetNameTable1JSON() || nameTable == JSON.GetNameTable2JSON())
+    if(JSON.IsValidTable(nameTable) == true)
     {
         string action;
 
@@ -73,8 +71,7 @@ void SQLQueryParse::Start()
 
         if (action == "SELECT")
         {
-            cout << "Обработка команды SELECT..." << endl;
-            
+            csvSelect.SelectStart(stream);
         }
         else if (action == "INSERT")
         {

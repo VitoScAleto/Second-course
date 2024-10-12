@@ -21,9 +21,9 @@ void CSVDelete::ParseCommandForDelete(string& nameTable, string& nameColumn, str
     getline(stream, nameTable, '.');
     
 
-    if (!(nameTable == JSON.GetNameTable1JSON() || nameTable == JSON.GetNameTable2JSON())) 
+    if (JSON.IsValidTable(nameTable) == false) 
     {
-        cerr << "Unknown table.(Function -> ParseCommandForDelete()" << endl;
+        cerr << "Unknown table.(Function -> ParseCommandForDelete())" << endl;
         throw invalid_argument("This table not found");
     }
     getline(stream, nameColumn, ' ');
@@ -36,7 +36,7 @@ void CSVDelete::ParseCommandForDelete(string& nameTable, string& nameColumn, str
         queueColumns.pop_front();
         if(queueColumns.getSize() == 0)
         {
-            cerr<<"Такой колонки нет"<<endl;
+            cerr<<"Такой колонки нет"<< nameColumn <<endl;
             return;
         }
     }
@@ -56,16 +56,13 @@ void CSVDelete::ParseCommandForDelete(string& nameTable, string& nameColumn, str
 
 void CSVDelete::DeleteFromCSV(string nameTable, string nameColumn, string valuesToDelete)
 {
-    string pathToCSV;
 
-    if(nameTable == JSON.GetNameTable1JSON())
+    if(JSON.IsValidTable(nameTable) == false)
     {
-        pathToCSV = JSON.GetPathToTable1JSON()+"/1.csv";
+        cerr<<"Неизветная таблица " << nameTable<<endl;
+        return;
     }
-    else
-    {
-        pathToCSV = JSON.GetPathToTable2JSON()+"/1.csv";
-    }
+    string pathToCSV = "../Source/Схема 1/" + nameTable + "/1.csv";
 
     ifstream inFile(pathToCSV);
     ofstream outFile("temp.csv"); // Временный файл для записи отфильтрованных данных
