@@ -5,7 +5,7 @@
 #include "CSVInsert.h"
 #include "ReadingConfigurationJSON.h"
 #include "CSVDelete.h"
-
+#include "CSVSelect.h"
 
 class SQLQueryParse
 {
@@ -14,10 +14,11 @@ class SQLQueryParse
     ReadingJSON& JSON;
     CSVInsert& csvInsert;
     CSVDelete& csvDelete;
+    CSVSelect& csvSelect;
 
     public:
 
-    SQLQueryParse(ReadingJSON& JSON, CSVInsert& csvInsert, CSVDelete& csvDelete);
+    SQLQueryParse(ReadingJSON& JSON, CSVInsert& csvInsert, CSVDelete& csvDelete, CSVSelect& csvSelect);
     
     void Start();
 

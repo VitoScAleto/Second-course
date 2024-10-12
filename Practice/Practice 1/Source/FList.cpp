@@ -15,7 +15,7 @@ T& LinkedList<T>::operator[](int index)
         {
             throw std::out_of_range("Index out of range");
         }
-        return temp->data;
+        return temp->value;
     }
 
 template <typename T>

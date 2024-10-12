@@ -27,6 +27,7 @@ class CSVInsert
     void InsertValuesFromQuery(string data);
 
     int CountElementInCSV(string nameTable);
+    
     int WorkWithFile_pk_sequence(string nameTable);
     
     void WriteToCSV(stringstream& stream);

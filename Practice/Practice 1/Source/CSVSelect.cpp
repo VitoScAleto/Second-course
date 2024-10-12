@@ -13,30 +13,30 @@ void CSVSelect::SelectStart(stringstream& stream)
 
     SelectFromCSV(nameTable1, nameTable2, nameColumn1, nameColumn2);
 
-
-
 }
 
 void CSVSelect::SelectFromCSV(string& nameTable1,string& nameTable2,string& nameColumn1, string& nameColumn2)
 {
-
     string pathToCSV1 = "../Source/Схема 1/" + nameTable1 + "/1.csv";
     string pathToCSV2 = "../Source/Схема 1/" + nameTable2 + "/1.csv";
-    string pathToOutput = "../Source/Схема 1/" + nameTable1 + nameColumn1 +"_" + nameTable2 +nameColumn2+ "_cj.csv";
+    string pathToOutput = "../Source/Схема 1/" + nameTable1 + "_" + nameColumn1 + "_" + nameTable2 + "_" + nameColumn2 + "_cj.csv";
 
     ifstream inFile1(pathToCSV1);
     ifstream inFile2(pathToCSV2);
     ofstream outFile(pathToOutput);
 
-    if (!inFile1.is_open()) {
+    if (!inFile1.is_open()) 
+    {
         cerr << "Ошибка открытия файла " << pathToCSV1 << endl;
         return;
     }
-    if (!inFile2.is_open()) {
+    if (!inFile2.is_open()) 
+    {
         cerr << "Ошибка открытия файла " << pathToCSV2 << endl;
         return;
     }
-    if (!outFile.is_open()) {
+    if (!outFile.is_open()) 
+    {
         cerr << "Ошибка открытия файла " << pathToOutput << endl;
         return;
     }
@@ -45,11 +45,12 @@ void CSVSelect::SelectFromCSV(string& nameTable1,string& nameTable2,string& name
     getline(inFile1, header1);
     getline(inFile2, header2);
 
+   
+    int columnIndex1 = -1, columnIndex2 = -1;
+
     stringstream ss1(header1);
     stringstream ss2(header2);
     string column;
-
-    int columnIndex1 = -1, columnIndex2 = -1;
     int index = 0;
 
     while (getline(ss1, column, ',')) 
@@ -62,7 +63,6 @@ void CSVSelect::SelectFromCSV(string& nameTable1,string& nameTable2,string& name
     }
 
     index = 0;
-   
     while (getline(ss2, column, ',')) 
     {
         if (column == nameColumn2) 
@@ -72,94 +72,60 @@ void CSVSelect::SelectFromCSV(string& nameTable1,string& nameTable2,string& name
         index++;
     }
 
+   
+    if (columnIndex1 == -1 || columnIndex2 == -1) 
+    {
+        cerr << "Одна или обе колонки не найдены." << endl;
+        return;
+    }
+
+ 
+    outFile << nameColumn1 << "," << nameColumn2 << endl;
+
+    
+    LinkedList <string> valuesFromTable1;
     string line;
-
-    while(getline(inFile1,line))
-    {
-        stringstream lineStream(line);
-        string cell;
-        LinkedList<string> row;
-        int currentIndex = 0;
-
-        while (getline(lineStream, cell, ',')) 
-        {   
-            if(currentIndex == 0)
-            {   
-                outFile<<"CrossJoin_pk,";
-            }
-            //if(currentIndex == nameColumn1)
-            // {
-                
-
-            // }
-            currentIndex++;
-        }
-
-
-    }
-    
-    while(getline(inFile2,line))
-    {
-        stringstream lineStream(line);
-        string cell;
-        LinkedList<string> row;
-        int currentIndex = 0;
-
-        while (getline(lineStream, cell, ',')) 
-        {   
-            if(currentIndex == columnIndex2 || cell == nameColumn2)
-            {   
-                outFile.close();
-                ofstream outFile(pathToOutput, ios::app);
-                row.push_back(cell);
-                outFile<<row.getHead()<<",\n";
-                row.~LinkedList();
-            }
-            currentIndex++;
-        }
-    }
-
-    LinkedList<string> row2;
-    
-    while (getline(inFile2, line)) 
-        {
-            stringstream lineStream(line);
-            string cell;
-            
-            int currentIndex2= 0;
-
-            while (getline(lineStream, cell, ',')) 
-            {   
-                if(currentIndex2 == columnIndex2)
-                {
-                    row2.push_back(cell);
-                }
-                currentIndex2++;
-            }
-        }
 
     while (getline(inFile1, line)) 
     {
         stringstream lineStream(line);
         string cell;
-        LinkedList<string> row;
-        
         int currentIndex = 0;
 
         while (getline(lineStream, cell, ',')) 
-        {   
-            if(currentIndex == columnIndex1 || currentIndex == 0)
+        {
+            if (currentIndex == columnIndex1) 
             {
-                row.push_back(cell);
+                valuesFromTable1.push_back(cell);
             }
             currentIndex++;
         }
-        
-        for(int i = 0; i < row2.getSize(); i++)
+    }
+
+    LinkedList<string> valuesFromTable2;
+    while (getline(inFile2, line)) 
+    {
+        stringstream lineStream(line);
+        string cell;
+        int currentIndex = 0;
+
+        while (getline(lineStream, cell, ',')) 
         {
-            outFile<<row.getHead()<<","<<row2.Get_by_index(i)<<","<<"\n";
+            if (currentIndex == columnIndex2) 
+            {
+                valuesFromTable2.push_back(cell);
+            }
+            currentIndex++;
         }
-        row.~LinkedList();
+    }
+
+    
+    for (int i =0; i < valuesFromTable1.getSize(); i++) 
+    {
+        for (int j =0; j < valuesFromTable2.getSize(); j++) 
+        {
+            outFile << valuesFromTable1[i] << "," << valuesFromTable2[j] << endl;
+        }
     }
 
     inFile1.close();

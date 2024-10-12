@@ -3,6 +3,7 @@
 
 #include "Headers.h"
 #include "Queue.h"
+#include "FList.h"
 
 class ReadingJSON
 {
@@ -11,36 +12,26 @@ private:
     string name;
 
     int tuples_limit;
-
-    string nameTable1;
-    string nameTable2;
     
     string pathToTable1;
     string pathToTable2;
 
+    LinkedList <string> nameTables;
+    LinkedList <string> nameColumns;
    
     void CreateMainDir(json& j);
-    void CreateTable1(json& j);
-    void CreateTable2(json& j);
-    void CreateCSVFile(json& j, int n);
-    
-    string ReturnNameObjectFromStructure(int indexObj, json& j);
+    void CreateTable(json& j);
+    void CreateCSVFile(json& j);
 
     json ParseJSON();
-    
+
+    void FillingTheListFromTheSchema();
 public:
-    void ReadingConfigurationJSON(string pathShemaJSON);
+    void ReadingConfigurationJSON(const string pathShemaJSON);
 
     template <typename T>
-    Queue<T> GetColumnsFromSchema(string nameTable);
-
-    string GetNameTable1JSON();
-    string GetNameTable2JSON();
-    string GetPathToTable1JSON();
-    string GetPathToTable2JSON();
-
-   
-
+    Queue<T> GetColumnsFromSchema(const string nameTable);
+    bool IsValidTable(const string nameTable) ;   
 };
 
 

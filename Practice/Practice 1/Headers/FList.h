@@ -23,11 +23,12 @@ private:
     int index = 0;
 
     bool isValidValue(T item);
+   
     
 
 public:
     ~LinkedList();
-    
+    T& operator[](int index);
     T getHead();
     int getSize();
     int GetIndex();
@@ -38,7 +39,7 @@ public:
     void pop_front();
     void delete_by_value(T item);
     void printList();
-    void Replace_by_index(int indexValue, T newValue);
+    T Get_by_index(int indexValue);
 };
 
 
