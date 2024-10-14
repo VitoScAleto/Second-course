@@ -6,6 +6,7 @@
 #include "ReadingConfigurationJSON.h"
 #include "CSVDelete.h"
 #include "CSVSelect.h"
+#include "CSVWhere.h"
 
 class SQLQueryParse
 {
@@ -15,15 +16,18 @@ class SQLQueryParse
     CSVInsert& csvInsert;
     CSVDelete& csvDelete;
     CSVSelect& csvSelect;
+    CSVWhere& csvWhere;
 
+    bool SearcWhereInQuery(stringstream& stream,const string searchString);
+    bool IsValidQueryForSelect(stringstream& stream);
+    
     public:
 
-    SQLQueryParse(ReadingJSON& JSON, CSVInsert& csvInsert, CSVDelete& csvDelete, CSVSelect& csvSelect);
+    SQLQueryParse(ReadingJSON& JSON, CSVInsert& csvInsert, CSVDelete& csvDelete, CSVSelect& csvSelect, CSVWhere& csvWhere);
     
     void Start();
-
+    void SelectAndWhereStart(stringstream& stream);
     void SQLInsert(stringstream& stream);
-
     void SQLDelete(stringstream& stream);
 };
 

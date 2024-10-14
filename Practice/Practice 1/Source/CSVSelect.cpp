@@ -3,23 +3,11 @@
 
 CSVSelect::CSVSelect(ReadingJSON& JSON) : JSON(JSON){}
 
-
-
-void CSVSelect::SelectStart(stringstream& stream)
-{
-    string nameTable1, nameTable2, nameColumn1, nameColumn2;
-
-    ParseCommandForSelect(nameTable1, nameTable2, nameColumn1, nameColumn2,stream);
-
-    SelectFromCSV(nameTable1, nameTable2, nameColumn1, nameColumn2);
-
-}
-
 void CSVSelect::SelectFromCSV(string& nameTable1,string& nameTable2,string& nameColumn1, string& nameColumn2)
 {
-    string pathToCSV1 = "../Source/Схема 1/" + nameTable1 + "/1.csv";
-    string pathToCSV2 = "../Source/Схема 1/" + nameTable2 + "/1.csv";
-    string pathToOutput = "../Source/Схема 1/" + nameTable1 + "_" + nameColumn1 + "_" + nameTable2 + "_" + nameColumn2 + "_cj.csv";
+    string pathToCSV1 = "../Source/" + JSON.GetNameMainDir()+"/" + nameTable1 + "/1.csv";
+    string pathToCSV2 = "../Source/" + JSON.GetNameMainDir()+"/" + nameTable2 + "/1.csv";
+    string pathToOutput = "../Source/" + JSON.GetNameMainDir()+"/" + nameTable1 + "_" + nameColumn1 + "_" + nameTable2 + "_" + nameColumn2 + "_cj.csv";
 
     ifstream inFile1(pathToCSV1);
     ifstream inFile2(pathToCSV2);
@@ -134,7 +122,7 @@ void CSVSelect::SelectFromCSV(string& nameTable1,string& nameTable2,string& name
 }
 
 
-void CSVSelect::ParseCommandForSelect(string& nameTable1,string& nameTable2,string& nameColumn1, string& nameColumn2, stringstream& stream)
+bool CSVSelect::ParseCommandForSelect(string& nameTable1,string& nameTable2,string& nameColumn1, string& nameColumn2, stringstream& stream)
 {
     stream.ignore(1);
     getline(stream,nameTable1,'.');
@@ -158,7 +146,7 @@ void CSVSelect::ParseCommandForSelect(string& nameTable1,string& nameTable2,stri
         if(queueColumns1.getSize() == 0)
         {
             cerr<<"Такой колонки нет"<<nameColumn1<<endl;
-            return;
+            return false;
         }
     }
     while(queueColumns2.getSize()!=0)
@@ -168,7 +156,36 @@ void CSVSelect::ParseCommandForSelect(string& nameTable1,string& nameTable2,stri
         if(queueColumns2.getSize() == 0)
         {
             cerr<<"Такой колонки нет"<<nameColumn2<<endl;
-            return;
+            return false;
         }
     }
+    
+    string action;
+
+    stream >> action;
+
+    if(action != "FROM")
+    {
+        cerr<<"Ожидалась команда FROM, получена "<< action<<endl;
+    }
+
+    if(ParsePostQuery(nameTable1, nameTable2,stream) == false) return false;
+    return true;
+}
+
+
+bool CSVSelect::ParsePostQuery(const string nameTable1, const string nameTable2, stringstream& stream)
+{
+    string nameTableAfterFROM1, nameTableAfterFROM2;
+
+    stream >> nameTableAfterFROM1;
+    stream >> nameTableAfterFROM2;
+
+    if(nameTableAfterFROM1 != nameTable1 || nameTableAfterFROM2 != nameTable2)
+    {
+        
+        return false;
+
+    }
+    return true;
 }

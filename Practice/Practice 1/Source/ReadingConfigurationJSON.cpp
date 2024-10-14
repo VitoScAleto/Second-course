@@ -1,5 +1,12 @@
 #include "../Headers/ReadingConfigurationJSON.h"
 
+string ReadingJSON::GetNameMainDir()
+{
+    return nameMainDirJSON;
+
+}
+
+
 bool ReadingJSON::IsValidTable(const string nameTable)
 {
     FillingTheListFromTheSchema();
@@ -48,9 +55,9 @@ void ReadingJSON::ReadingConfigurationJSON(const string pathShemaJSON)
 
 void ReadingJSON::CreateMainDir(json& j)
 {
-    name = j["name"];
+    nameMainDirJSON = j["name"];
     
-    fs::path mainDir = name;
+    fs::path mainDir =  nameMainDirJSON;
 
     try 
     {
@@ -75,9 +82,9 @@ void ReadingJSON::CreateTable(json& j)
 {
     FillingTheListFromTheSchema();
 
-    name = j["name"];
+    nameMainDirJSON = j["name"];
     
-    fs::path mainDir = name;
+    fs::path mainDir =  nameMainDirJSON;
 
     while(nameTables.getSize()!=0)
     {
@@ -218,3 +225,66 @@ json ReadingJSON::ParseJSON()
 
     return j;
 }
+
+// string ReadingJSON::IsValidTuplesLimitInCSV(string nameTable)
+// {
+    
+
+
+
+// }
+
+
+// int CountElementInCSV(string nameTable)
+// {
+//     numberElementInCSV = 0;
+
+//     if(JSON.IsValidTable(nameTable) == true)
+//     {
+//         string pathToCSVInsert = "../Source/Схема 1/"+nameTable + "/1.csv";
+
+//         ifstream outFile(pathToCSVInsert);
+        
+//         if(!outFile.is_open())
+//         {
+        
+//         throw ios_base::failure("Function(CountElementInCSV()) -> Failed to open file: " + pathToCSVInsert);
+//         }
+
+//         string line;
+
+//         while (getline(outFile, line)) 
+//         {
+//            stringstream ss(line);
+//            string item;
+
+//             while (getline(ss, item, ',')) 
+//             {
+//                 numberElementInCSV++;
+//             }
+
+//         }
+//         outFile.close();
+//         return numberElementInCSV;
+//     }
+
+//     throw invalid_argument("Function(CountElementInCSVInsert()) -> Invalid table name: " + nameTable);
+// }
+
+
+// string ReadingJSON::listFilesInDirectory(const string nameTable) 
+// {
+//     string directoryPath = "../Source/" + GetNameMainDir()+"/" + nameTable;
+//     try {
+//         for (const auto& entry : fs::directory_iterator(directoryPath)) 
+//         {
+//             if (fs::is_regular_file(entry.status())) 
+//             {
+//                 entry.path().filename().string();
+//             }
+//         }
+//     } catch (const fs::filesystem_error& e) 
+//     {
+//         cerr << "Ошибка доступа к директории: " << e.what() << endl;
+//     }
+// }

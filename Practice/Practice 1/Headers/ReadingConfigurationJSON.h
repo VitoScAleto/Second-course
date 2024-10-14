@@ -9,8 +9,8 @@ class ReadingJSON
 {
 
 private:
-    string name;
-
+    string nameMainDirJSON;
+    
     int tuples_limit;
     
     string pathToTable1;
@@ -25,9 +25,16 @@ private:
 
     json ParseJSON();
 
+    string listFilesInDirectory(const string nameTable);
+    
     void FillingTheListFromTheSchema();
 public:
+    
+    string GetNameMainDir();
+
     void ReadingConfigurationJSON(const string pathShemaJSON);
+
+    string IsValidTuplesLimitInCSV(string nameTable);
 
     template <typename T>
     Queue<T> GetColumnsFromSchema(const string nameTable);

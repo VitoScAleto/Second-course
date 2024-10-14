@@ -1,7 +1,7 @@
 #include "../Headers/SQLQueryParse.h"
 
-SQLQueryParse::SQLQueryParse(ReadingJSON& JSON, CSVInsert& csvInsert,CSVDelete& csvDelete,CSVSelect& csvSelect) : JSON(JSON), 
-csvInsert(csvInsert), csvDelete(csvDelete),csvSelect(csvSelect){}
+SQLQueryParse::SQLQueryParse(ReadingJSON& JSON, CSVInsert& csvInsert,CSVDelete& csvDelete,CSVSelect& csvSelect, CSVWhere& csvWhere) : JSON(JSON), 
+csvInsert(csvInsert), csvDelete(csvDelete),csvSelect(csvSelect), csvWhere(csvWhere){}
 
 
 void SQLQueryParse::SQLInsert(stringstream& stream)
@@ -54,6 +54,50 @@ void SQLQueryParse::SQLDelete(stringstream& stream)
 }
 
 
+void SQLQueryParse::SelectAndWhereStart(stringstream& stream)
+{
+    string nameTable1, nameTable2, nameColumn1, nameColumn2;
+   
+    if(csvSelect.ParseCommandForSelect(nameTable1, nameTable2, nameColumn1, nameColumn2,stream) == false) 
+    {
+        
+        cerr<<"Ошибка ввода команды SELECT FROM"<<endl;
+        return;
+    }
+    else if(SearcWhereInQuery(stream,"WHERE") == true)
+    {
+        string action;
+        stream >> action;
+        csvWhere.StartWhere(nameTable1, nameTable2, nameColumn1, nameColumn2,stream);
+    } 
+    else if(IsValidQueryForSelect(stream) == true)
+    {
+        csvSelect.SelectFromCSV(nameTable1, nameTable2, nameColumn1, nameColumn2);
+    }
+
+}
+bool SQLQueryParse::SearcWhereInQuery(stringstream& stream, const string searchString)
+{
+    string content = stream.str();
+    return content.find(searchString) != string::npos;
+
+}
+
+bool SQLQueryParse::IsValidQueryForSelect(stringstream& stream)
+{
+    string action;
+    stream >> action;
+    if(action == " " || action == "") return true;
+    else
+    {
+        string ss;
+        getline(stream,ss);
+        cerr<<"Ожидалось, что для SELECT FROM дальше ничего не будет, но полученно "<<action<<" "<< ss <<endl;
+        return false;
+    }
+    
+}
+
 void SQLQueryParse::Start()
 {
     while(true)
@@ -71,7 +115,7 @@ void SQLQueryParse::Start()
 
         if (action == "SELECT")
         {
-            csvSelect.SelectStart(stream);
+            SelectAndWhereStart(stream);
         }
         else if (action == "INSERT")
         {

@@ -95,7 +95,7 @@ void CSVInsert::InsertValuesFromQuery(string data)
     {
         Queue <string> ColumnsFromJSON = JSON.GetColumnsFromSchema<string>(nameTableFromQuery);
 
-        string pathToCSVInsert = "../Source/Схема 1/"+nameTableFromQuery + "/1.csv";
+        string pathToCSVInsert = "../Source/" + JSON.GetNameMainDir()+"/"+nameTableFromQuery + "/1.csv";
 
         ofstream outFile(pathToCSVInsert, ios::app);
         
@@ -139,7 +139,7 @@ int CSVInsert::CountElementInCSV(string nameTable)
 
     if(JSON.IsValidTable(nameTable) == true)
     {
-        string pathToCSVInsert = "../Source/Схема 1/"+nameTable + "/1.csv";
+        string pathToCSVInsert = "../Source/" + JSON.GetNameMainDir()+"/"+nameTable + "/1.csv";
 
         ifstream outFile(pathToCSVInsert);
         
@@ -172,7 +172,7 @@ int CSVInsert::CountElementInCSV(string nameTable)
 
 int CSVInsert::WorkWithFile_pk_sequence(string nameTable)
 {
-    string pkFilePath = "../Source/Схема 1/" + nameTable + "/" + nameTable + "_pk_sequence.txt";
+    string pkFilePath = "../Source/" + JSON.GetNameMainDir()+"/" + nameTable + "/" + nameTable + "_pk_sequence.txt";
 
     int currentPk = 0;
 

@@ -1,10 +1,11 @@
 
 #include "../Headers/ReadingConfigurationJSON.h"
 #include "../Headers/SQLQueryParse.h"
-#include "../Headers/CSVInsert.h"
+
 
 int main()
 {
+
     ReadingJSON JSON;
     
     JSON.ReadingConfigurationJSON("../JSON/schema.json");
@@ -12,8 +13,9 @@ int main()
     CSVInsert csvInsert(JSON);
     CSVDelete csvDelete(JSON);
     CSVSelect csvSelect(JSON);
+    CSVWhere csvWhere(JSON);
 
-    SQLQueryParse myQuery(JSON, csvInsert,csvDelete, csvSelect);
+    SQLQueryParse myQuery(JSON, csvInsert,csvDelete, csvSelect, csvWhere);
     
 
     myQuery.Start();

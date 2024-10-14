@@ -62,7 +62,7 @@ void CSVDelete::DeleteFromCSV(string nameTable, string nameColumn, string values
         cerr<<"Неизветная таблица " << nameTable<<endl;
         return;
     }
-    string pathToCSV = "../Source/Схема 1/" + nameTable + "/1.csv";
+    string pathToCSV = "../Source/" + JSON.GetNameMainDir()+"/"+ nameTable + "/1.csv";
 
     ifstream inFile(pathToCSV);
     ofstream outFile("temp.csv"); // Временный файл для записи отфильтрованных данных
