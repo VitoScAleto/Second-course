@@ -5,11 +5,11 @@
 
 int main()
 {
-
+    
     ReadingJSON JSON;
     
     JSON.ReadingConfigurationJSON("../JSON/schema.json");
-
+    
     CSVInsert csvInsert(JSON);
     CSVDelete csvDelete(JSON);
     CSVSelect csvSelect(JSON);
