@@ -1,4 +1,7 @@
 #include "../Headers/FList.h"
+template <typename T>
+
+LinkedList<T>::~LinkedList(){};
 
 template <typename T>
 
@@ -24,20 +27,21 @@ template <typename T>
 
 void LinkedList<T>::writeToConfiguration(string nameFile)
 {
-        string valueConfiguration;
+        ofstream outputFile(nameFile);
 
-        ifstream inputFile(nameFile);
-
-        if (!inputFile) {
+        if (!outputFile) {
             cerr << "Не удалось открыть файл!" << endl;
             return;
         }
-        while (inputFile >> valueConfiguration)
+
+        Node* current = head;
+        while (current != nullptr)
         {
-            push_back(valueConfiguration);
+            outputFile << current->value<<" ";
+            current = current->next;
         }
 
-        inputFile.close();
+        outputFile.close();
     }
 
 template <typename T>

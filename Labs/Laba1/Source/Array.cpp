@@ -1,4 +1,8 @@
 #include "../Headers/Array.h"
+template <typename T>
+
+MyArray<T>::MyArray(){}
+
 
 template <typename T>
 

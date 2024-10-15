@@ -77,12 +77,12 @@ int QueueForTree<T>::getSize()
 
 template <typename T>
 
-int ComBinTree<T>::find(T item) 
+bool ComBinTree<T>::find(T item) 
     {
         clearingTheQueue();
         if (root == nullptr) 
         {
-            return -1; // Дерево пустое
+            return false; // Дерево пустое
         }
         queue.push_front(root);
         int index = 0; 
@@ -93,7 +93,7 @@ int ComBinTree<T>::find(T item)
 
             if (currentPtr->value == item) 
             {
-                return index; // Возвращаем индекс найденного элемента
+                return true; // Возвращаем индекс найденного элемента
             }
             index++;
 
@@ -106,7 +106,7 @@ int ComBinTree<T>::find(T item)
                 queue.push_front(currentPtr->right);
             }
         }
-        return -1; // Элемент не найден
+        return false; // Элемент не найден
     }
 
 template <typename T>
@@ -158,8 +158,11 @@ void ComBinTree<T>::writeToConfiguration(string nameFile)
             cerr << "Не удалось открыть файл!" << endl;
             return;
         }
-        clearingTheQueue();
-
+        clearingTheQueue(); 
+        if(root == nullptr)
+        {
+            return;
+        }
         queue.push_front(root);
 
         while (queue.getSize() != 0)
@@ -242,7 +245,7 @@ void ComBinTree<T>::print()
                 queue.push_front(currentPtr->right);
             }
         }
-
+        cout<<endl;
     }
 
 template <typename T>
