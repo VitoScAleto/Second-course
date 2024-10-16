@@ -19,7 +19,7 @@ private:
     void resize(size_t new_capacity);
     
 public:
-
+    MyArray();
     MyArray(size_t init_capacity);
     
     T& operator[](size_t index);
@@ -43,7 +43,6 @@ public:
 };
 
 
-    int FunArray();
 
     #include "../Source/Array.cpp"
 

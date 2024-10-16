@@ -35,7 +35,7 @@ public:
 };
 
 
-    int FunStack();
+    
 
 #include "../Source/stack.cpp"
 

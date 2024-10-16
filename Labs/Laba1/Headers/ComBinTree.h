@@ -56,20 +56,16 @@ public:
 
     void push(T item);
     
-
     void print();
     
-
-
     void readingConfiguration(string nameFile);
     
     void writeToConfiguration(string nameFile);
    
     bool isComplete();
     
-    int find(T item);
+    bool find(T item);
     
-
 };
 
 #include "../Source/ComBinTree.cpp"

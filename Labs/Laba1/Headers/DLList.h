@@ -44,7 +44,6 @@ public:
     void writeToConfiguration(string nameFile);
 };
 
-    int FunDLList();
 
 #include "../Source/DLList.cpp"
 

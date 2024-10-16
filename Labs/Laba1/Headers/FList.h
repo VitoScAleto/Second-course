@@ -25,12 +25,12 @@ private:
     int sizeList = 0;
     int index = 0;
 
-    bool isValidValue(T item);
+    
     
 public:
-
+    ~LinkedList();
+    bool isValidValue(T item);
     int getSize();
-    int GetIndex();
     void push_back(T item);
     void push_front(T item);
     void search_by_value(T item);
