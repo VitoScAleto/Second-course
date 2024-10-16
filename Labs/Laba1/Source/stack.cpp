@@ -30,10 +30,15 @@ void Stack<T>::readingConfiguration(string nameFile)
         string valueConfiguration;
 
         ifstream inputFile(nameFile);
-
-        if (!inputFile) {
-            cerr << "Не удалось открыть файл!" << endl;
-            return;
+        if (!inputFile)
+        {
+            ofstream outputFile(nameFile);
+            if(!outputFile)
+            {
+                cerr<<"Не удалось создать файл "<< nameFile<<endl;
+                return;
+            }
+            outputFile.close();
         }
         while (inputFile >> valueConfiguration)
         {
@@ -125,61 +130,3 @@ bool Stack<T>::isValidValue(T item)
         }
         return false;
     }
-
-
-int FunStack()
-{
-    Stack <string> Stack;
-
-    Stack.readingConfiguration("test.txt");
-
-    char c;
-    cout << "--------------------------------- Stack ---------------------------------" << endl;
-    cout << endl;
-
-    while (true)
-    {
-        cout << "0 - exit, 1 - print stack, 2 - push, 3 - pop_front, 4 - get size\n<<< ";
-        cin >> c;
-
-        switch (c)
-        {
-        case '1':
-            cout << endl;
-            Stack.printStack();
-            cout << endl;
-            break;
-        case '2':
-        {
-            cout << endl;
-            string valueInStack;
-            
-                cout << "Enter value\n\n<<< ";
-                cin >> valueInStack;
-
-            
-            Stack.push_front(valueInStack);
-            cout << endl;
-            break;
-        }
-
-        case '3':
-            cout << endl;
-            Stack.pop_front();
-            cout << endl;
-            break;
-
-        case '4':
-            cout << endl;
-            cout << "Size stack: " << Stack.getSize() << endl;
-            cout << endl;
-            break;
-        case '0':
-            Stack.writeToConfiguration("test.txt");
-            return 0;
-        default:
-            cout << "Unknown command. Re-enter\n" << endl;
-            break;
-        }
-    }
-}

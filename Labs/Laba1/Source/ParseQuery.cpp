@@ -7,8 +7,13 @@ void ParseQuery::handleCommand(FieldQuery& fieldQuery)
 {
     switch (fieldQuery.structureType) 
     {
-        case 'T': // Дерево
+        case 'T': 
         {
+            if(fieldQuery.name != "mytree")
+            {
+                cerr<<"Ошибка. Такой структуры "<<fieldQuery.name<<" не существует"<<endl;
+                return;
+            }
             ComBinTree<string> tree;
             tree.readingConfiguration(fieldQuery.filePath);
             if (fieldQuery.method == "find") 
@@ -32,7 +37,11 @@ void ParseQuery::handleCommand(FieldQuery& fieldQuery)
         }
         case 'M': // Массив
         {
-    
+            if(fieldQuery.name != "myarray")
+            {
+                cerr<<"Ошибка. Такой структуры "<<fieldQuery.name<<" не существует"<<endl;
+                return;
+            }
     MyArray<string> array(5);
             array.readingConfiguration(fieldQuery.filePath);
             if (fieldQuery.method == "getSize") 
@@ -80,7 +89,11 @@ void ParseQuery::handleCommand(FieldQuery& fieldQuery)
         }
         case 'Q': // Очередь
         {
-     
+            if(fieldQuery.name != "myqueue")
+            {
+                cerr<<"Ошибка. Такой структуры "<<fieldQuery.name<<" не существует"<<endl;
+                return;
+            }
     Queue<string> queue;
    
             queue.readingConfiguration(fieldQuery.filePath);
@@ -109,7 +122,11 @@ void ParseQuery::handleCommand(FieldQuery& fieldQuery)
         }
         case 'S': // Стек
         {
-    
+            if(fieldQuery.name != "mystack")
+            {
+                cerr<<"Ошибка. Такой структуры "<<fieldQuery.name<<" не существует"<<endl;
+                return;
+            }
     Stack<string> stack;
    
             stack.readingConfiguration(fieldQuery.filePath);
@@ -134,6 +151,11 @@ void ParseQuery::handleCommand(FieldQuery& fieldQuery)
         }
         case 'L': // Связанный список
         {
+            if(fieldQuery.name != "mylist")
+            {
+                cerr<<"Ошибка. Такой структуры "<<fieldQuery.name<<" не существует"<<endl;
+                return;
+            }
             LinkedList<string> List;
             List.readingConfiguration(fieldQuery.filePath);
             if (fieldQuery.method == "getSize") 
@@ -174,7 +196,11 @@ void ParseQuery::handleCommand(FieldQuery& fieldQuery)
         }
         case 'D': // Двусвязный список
         {
-             
+             if(fieldQuery.name != "mydlist")
+            {
+                cerr<<"Ошибка. Такой структуры "<<fieldQuery.name<<" не существует"<<endl;
+                return;
+            }
             DLinkedList<string> DList;
    
             DList.readingConfiguration(fieldQuery.filePath);
@@ -286,8 +312,8 @@ void ParseQuery::parseCommand(const string& command)
     }
     if (fieldQuery.structureType != 'M' && !fieldQuery.index.empty()) 
     {
-    cerr << "Ошибка запроса. Индекс может использоваться только для массива." << endl;
-    return;
+        cerr << "Ошибка запроса. Индекс может использоваться только для массива." << endl;
+        return;
     }   
     string validStructTypes = "TMLDQS";
 

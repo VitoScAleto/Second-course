@@ -33,10 +33,15 @@ void Queue<T>::readingConfiguration(string nameFile)
         string valueConfiguration;
 
         ifstream inputFile(nameFile);
-
-        if (!inputFile) {
-            cerr << "Не удалось открыть файл!" << endl;
-            return;
+        if (!inputFile)
+        {
+            ofstream outputFile(nameFile);
+            if(!outputFile)
+            {
+                cerr<<"Не удалось создать файл "<< nameFile<<endl;
+                return;
+            }
+            outputFile.close();
         }
         while (inputFile >> valueConfiguration)
         {
@@ -139,65 +144,3 @@ bool Queue<T>::isValidValue(T item)
         }
         return false;
     }
-
-
-
-
-
-int FunQueue()
-{
-    Queue <string> Queue;
-
-    Queue.readingConfiguration("test.txt");
-
-    char c;
-    cout << "--------------------------------- Queue ---------------------------------" << endl;
-    cout << endl;
-
-    while (true)
-    {
-        cout << "0 - exit, 1 - print queue, 2 - push, 3 - pop, 4 - get size\n<<< ";
-        cin >> c;
-
-        switch (c)
-        {
-        case '1':
-            cout << endl;
-            Queue.printQueue();
-            cout << endl;
-            break;
-        case '2':
-        {
-            cout << endl;
-            string valueInList;
-          
-                cout << "Enter value\n\n<<< ";
-                cin >> valueInList;
-
-            
-            Queue.push_front(valueInList);
-            cout << endl;
-            break;
-        }
-        case '3':
-        {
-            cout << endl;
-            Queue.pop_back();
-            cout << endl;
-            break;
-        }
-        case '4':
-            cout << endl;
-            cout << "Size queue: " << Queue.getSize() << endl;
-            cout << endl;
-            break;
-        case '0':
-            Queue.writeToConfiguration("test.txt");
-            return 0;
-        default:
-            cout << "Unknown command. Re-enter\n" << endl;
-            break;
-        }
-    }
-
-}

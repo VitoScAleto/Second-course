@@ -196,11 +196,16 @@ void ComBinTree<T>::readingConfiguration(string nameFile)
     {
         string valueConfiguration;
 
-        ifstream inputFile(nameFile);
-
-        if (!inputFile) {
-            cerr << "Не удалось открыть файл!" << endl;
-            return;
+       ifstream inputFile(nameFile);
+        if (!inputFile)
+        {
+            ofstream outputFile(nameFile);
+            if(!outputFile)
+            {
+                cerr<<"Не удалось создать файл "<< nameFile<<endl;
+                return;
+            }
+            outputFile.close();
         }
         while (inputFile >> valueConfiguration)
         {
@@ -305,77 +310,3 @@ void ComBinTree<T>::clearingTheQueue()
 
 
 
-int FunComBinTree()
-{
-    ComBinTree <string> tree;
-
-    tree.readingConfiguration("test.txt");
-
-    char c;
-
-    cout << "\t\t-------------------------- Complete Binary Tree -------------------------" << endl;
-    cout << endl;
-
-    while (true)
-    {
-        cout << "0 - exit, 1 - print tree, 2 - push, 3 - complete tree, 4 - search value\n\n<<< ";
-        cin >> c;
-
-        switch (c)
-        {
-        case '1':
-            cout << endl;
-            tree.print();
-            cout << endl;
-            break;
-        case '2':
-        {
-            cout << endl;
-            string valueInList;
-
-            cout << "Enter value\n\n<<< ";
-            cin >> valueInList;
-
-
-            tree.push(valueInList);
-            cout << endl;
-            break;
-        }
-        case '3':
-            cout << endl;
-            if (tree.isComplete() == true)
-            {
-                cout << "Tree is  complete" << endl;
-            }
-            else
-            {
-                cout << "Tree is not complete" << endl;
-            }
-            break;
-        case '4':
-        {
-            cout << endl;
-            string valueInList;
-            cout << "Enter value\n\n<<< ";
-            cin >> valueInList;
-
-            if (tree.find(valueInList) == -1)
-            {
-                cout << "Value not found" << endl;
-            }
-            else
-            {
-                cout << "Index: " << tree.find(valueInList) << endl;
-            }
-        }
-            break;
-        case '0':
-            tree.writeToConfiguration("test.txt");
-            return 0;
-        default:
-            cout << "Unknown command. Re-enter\n" << endl;
-            break;
-
-        }
-    }
-}

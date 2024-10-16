@@ -129,9 +129,15 @@ void MyArray<T>::readingConfiguration(string nameFile)
         ifstream inputFile(nameFile);
         if (!inputFile)
         {
-            cerr << "Не удалось открыть файл!" << endl;
-            return;
+            ofstream outputFile(nameFile);
+            if(!outputFile)
+            {
+                cerr<<"Не удалось создать файл "<< nameFile<<endl;
+                return;
+            }
+            outputFile.close();
         }
+        
         while (inputFile >> valueConfiguration)
         {
             push_back(valueConfiguration);
@@ -156,125 +162,3 @@ void MyArray<T>::writeToConfiguration(string nameFile)
         outputFile.close();
     }
 
-
-    int FunArray()
-{
-
-    MyArray<string> intArr{ 5 };
-
-    intArr.readingConfiguration("test.txt");
-    char c;
-    cout << "--------------------------------- Array ---------------------------------" << endl;
-    cout << endl;
-    while (true)
-    {
-        cout << "0 - exit, 1 - print array, 2 - push back, 3 - push by index, 4 - get value by index, 5 - delete value by index, 6 - replace by index, 7 - size array\n<<< ";
-        cin >> c;
-        switch (c)
-        {
-        case '1':
-            cout << endl;
-            intArr.print();
-            cout << endl;
-            break;
-        case '2':
-        {
-            cout << endl;
-            string valueInArr;
-
-            cout << "Enter value\n\n<<< ";
-            cin >> valueInArr;
-
-            intArr.push_back(valueInArr);
-            cout << endl;
-            break;
-        }
-        case '3':
-        {
-            cout << endl;
-            string valueInArr;
-            int index;
-            cout << "Enter index\n<<< ";
-
-            cin >> index;
-
-
-            cout << "Enter value\n<<< ";
-            cin >> valueInArr;
-
-            intArr.insert(index, valueInArr);
-            cout << endl;
-            break;
-        }
-        case '4':
-        {
-            cout << endl;
-            int index;
-            cout << "Enter index\n<<< ";
-            cin >> index;
-            try
-            {
-                cout << "Value at index " << index << ": " << intArr[index] << endl;
-            }
-            catch (const out_of_range& e)
-            {
-                cerr << e.what() << endl;
-            }
-            cout << endl;
-            break;
-        }
-        case '5':
-        {
-            cout << endl;
-            int index;
-            cout << "Enter index to delete\n<<< ";
-            cin >> index;
-            try
-            {
-                intArr.delete_by_index(index);
-                cout << "Value at index " << index << " deleted." << endl;
-            }
-            catch (const invalid_argument& e)
-            {
-                cerr << e.what() << endl;
-            }
-            cout << endl;
-            break;
-        }
-        case '6':
-        {
-            cout << endl;
-            int index;
-            string valueInArr;
-            cout << "Enter index to replace\n<<< ";
-            cin >> index;
-
-            cout << "Enter new value\n<<< ";
-            cin >> valueInArr;
-
-            try
-            {
-                intArr.replace_by_index(index, valueInArr);
-                cout << "Value at index " << index << " replaced." << endl;
-            }
-            catch (const invalid_argument& e) {
-                cerr << e.what() << endl;
-            }
-            cout << endl;
-            break;
-        }
-        case '7':
-            cout << endl;
-            cout << "Size arr: " << intArr.getSize() << endl;
-            cout << endl;
-            break;
-        case '0':
-            intArr.writeToConfiguration("test.txt");
-            return 0;
-        default:
-            cout << "Unknown command. Re-enter\n" << endl;
-            break;
-        }
-    }
-    return 0;
-}
