@@ -89,14 +89,14 @@ void LinkedList<T>::delete_by_value(T item)
             return;
         }
 
-        while (currentPtr != nullptr && currentPtr->value == item)
-        {
-            Node* temp = currentPtr;
-            currentPtr = currentPtr->next;
-            delete temp;
-            head = currentPtr;
-            sizeList--;
-        }
+        // while (currentPtr != nullptr && currentPtr->value == item)
+        // {
+        //     Node* temp = currentPtr;
+        //     currentPtr = currentPtr->next;
+        //     delete temp;
+        //     head = currentPtr;
+        //     sizeList--;
+        // }
 
 
         prevPtr = head;

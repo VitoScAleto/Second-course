@@ -21,6 +21,7 @@
 --file file.txt --query 'Lpush_back mylist value'
 --file file.txt --query 'Lpush_front mylist val'
 --file file.txt --query 'Lsearch_by_value mylist val'
+--file file.txt --query 'Ldelete_by_value mylist value'
 --file file.txt --query 'Lpop_back mylist'
 --file file.txt --query 'Lpop_front mylist'
 --file file.txt --query 'Lprint mylist'

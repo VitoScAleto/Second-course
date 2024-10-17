@@ -55,8 +55,8 @@ private:
 public:
 
     void push(T item);
-    
-    void print();
+    void display();
+    void print_CBT(NodeTree* current, int level);
     
     void readingConfiguration(string nameFile);
     

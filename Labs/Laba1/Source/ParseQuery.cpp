@@ -30,7 +30,7 @@ void ParseQuery::handleCommand(FieldQuery& fieldQuery)
             } 
             else if (fieldQuery.method == "print") 
             {
-                tree.print();
+                tree.display();
             }
             tree.writeToConfiguration(fieldQuery.filePath);
             break;
@@ -89,36 +89,36 @@ void ParseQuery::handleCommand(FieldQuery& fieldQuery)
         }
         case 'Q': // Очередь
         {
-            if(fieldQuery.name != "myqueue")
-            {
-                cerr<<"Ошибка. Такой структуры "<<fieldQuery.name<<" не существует"<<endl;
-                return;
-            }
-    Queue<string> queue;
+    //         if(fieldQuery.name != "myqueue")
+    //         {
+    //             cerr<<"Ошибка. Такой структуры "<<fieldQuery.name<<" не существует"<<endl;
+    //             return;
+    //         }
+    // Queue<string> queue;
    
-            queue.readingConfiguration(fieldQuery.filePath);
-            if (fieldQuery.method == "push") 
-            {
-                queue.push_front(fieldQuery.value);
-            } 
-            else if (fieldQuery.method == "pop") 
-            {
-                queue.pop_back();
-            } 
-            else if (fieldQuery.method == "getSize") 
-            {
-                queue.pop_back();
-            } 
-            else if (fieldQuery.method == "print") 
-            {
-                queue.printQueue();
-            }
-            else
-            {
-                cout<<"Такого метода для очереди нет "<<fieldQuery.method<<endl;
-            }
-            queue.writeToConfiguration(fieldQuery.filePath);
-            break;
+    //         queue.readingConfiguration(fieldQuery.filePath);
+    //         if (fieldQuery.method == "push") 
+    //         {
+    //             queue.push_front(fieldQuery.value);
+    //         } 
+    //         else if (fieldQuery.method == "pop") 
+    //         {
+    //             queue.pop_back();
+    //         } 
+    //         else if (fieldQuery.method == "getSize") 
+    //         {
+    //             queue.pop_back();
+    //         } 
+    //         else if (fieldQuery.method == "print") 
+    //         {
+    //             queue.printQueue();
+    //         }
+    //         else
+    //         {
+    //             cout<<"Такого метода для очереди нет "<<fieldQuery.method<<endl;
+    //         }
+    //         queue.writeToConfiguration(fieldQuery.filePath);
+    //         break;
         }
         case 'S': // Стек
         {

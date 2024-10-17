@@ -217,42 +217,30 @@ void ComBinTree<T>::readingConfiguration(string nameFile)
 
 template <typename T>
 
-void ComBinTree<T>::print()
-    {
-        clearingTheQueue();
-
-        if (root == nullptr)
-        {
-            cout << "Tree empty" << endl;
-            return;
-        }
-
-        queue.push_front(root); // Начинаем с корня
-
-        while (queue.getSize() != 0)
-        {
-
-            NodeTree* currentPtr = queue.getFront(); // Получаем указатель на текущий узел
-            queue.pop_back(); // Удаляем его из очереди
-
-            cout << currentPtr->value << " "; // Печатаем значение текущего узла
-
-
-            // Если у текущего узла есть левый потомок, добавляем его в очередь
-            if (currentPtr->left != nullptr)
-            {
-                queue.push_front(currentPtr->left);
+void ComBinTree<T>::print_CBT(NodeTree* current, int level) 
+{
+        if (current) {
+            print_CBT(current->right, level + 1);
+            for (int i = 0; i < level; i++) {
+                cout << "   ";
             }
 
-            // Если у текущего узла есть правый потомок, добавляем его в очередь
-            if (currentPtr->right != nullptr)
-            {
-                queue.push_front(currentPtr->right);
-            }
+            cout << current->value << endl; 
+            print_CBT(current->left, level + 1);
         }
-        cout<<endl;
     }
 
+
+template <typename T>
+
+ void ComBinTree<T>:: display() 
+ {
+        if (root == nullptr) {
+            cout << "Tree is empty.\n";
+            return;
+        }
+        print_CBT (root, 0);
+    }
 template <typename T>
 
 void ComBinTree<T>::push(T item)
