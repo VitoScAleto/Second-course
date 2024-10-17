@@ -24,28 +24,21 @@ void CSVDelete::ParseCommandForDelete(string& nameTable, string& nameColumn, str
     if (JSON.IsValidTable(nameTable) == false) 
     {
         cerr << "Unknown table.(Function -> ParseCommandForDelete())" << endl;
-        throw invalid_argument("This table not found");
+        return;
     }
     getline(stream, nameColumn, ' ');
 
-    Queue<string> queueColumns = JSON.GetColumnsFromSchema<string>(nameTable);
-
-    while(queueColumns.getSize()!=0)
+    if(JSON.IsValidColumns(nameTable, nameColumn) == false)
     {
-        if(nameColumn == queueColumns.getFront()) break;
-        queueColumns.pop_front();
-        if(queueColumns.getSize() == 0)
-        {
-            cerr<<"Такой колонки нет"<< nameColumn <<endl;
-            return;
-        }
+        cerr<<"Ошибка. Для данной таблицы "<<nameTable<<" нет такой колоник "<<nameColumn<<endl;
+        return;
     }
-    
 
     getline(stream, equalSym, ' '); 
+
     if(equalSym != "=")
     {
-        cerr<<"This is not ="<<endl;
+        cerr<<"This is"<<equalSym << " not ="<<endl;
         return;
     }
 

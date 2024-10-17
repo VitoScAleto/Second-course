@@ -3,76 +3,57 @@
 CSVWhere::CSVWhere(ReadingJSON& JSON) : JSON(JSON) {}
 
 void CSVWhere::StartWhere(string& nameTable1,string& nameTable2,string& nameColumn1, string& nameColumn2,stringstream& stream)
-{
+{   
     string action;
-    getline(stream,action);
-
+    getline(stream, action);
+    
     if(IsValidCondition(action)==false)
     {
         cerr<<"Строка после Where не прошла валидность"<<endl;
         return;
     }
-    ParseWhereQuery(stream);
+    ParseWhereQuery(action);
     if(IsValidCommandPostWhere(nameTable1,nameTable2,nameColumn1, nameColumn2)== false)
     {
 
         cerr<<"Несоответствие колонок или таблиц c SELECT FROM после WHERE"<<endl;
         return;
     }
+    else
+    {
+        cout<<"All good"<<endl;
+    }
 }
 
 bool CSVWhere::IsValidCommandPostWhere(string nameTable1, string nameTable2, string nameColumn1, string nameColumn2) 
 {
     string nameTableAfterWhere, nameColumnAfterWhere;
-    stringstream s1;
+    regex pattern(R"((\w+)\.(\w+))"); 
+    smatch matches;
 
-    for (int i = 0; i < conditions.getSize(); i++) {
-        s1.str(conditions[i]);  // Устанавливаем строку для разбора
-        s1.clear();  // Очищаем флаги состояния
+    LinkedList<string> tables;  
+    LinkedList<string> columns;   
 
-        // Извлекаем таблицу и колонку
-        getline(s1, nameTableAfterWhere, '.');
-        if (nameTableAfterWhere != nameTable1 || nameTableAfterWhere != nameTable2) 
+    for(int i =0; i < conditions.getSize(); i++)
+    {
+        string text = conditions[i];
+        auto it = text.cbegin();
+        while (regex_search(it, text.cend(), matches, pattern)) 
         {
-            cerr << "Неизвестная таблица Функция(IsValidCommandPostWhere) Ожидалась таблица " 
-                 << nameTable1 << " либо " << nameTable2 << " получена " << nameTableAfterWhere << endl;
-            return false;
+            nameTableAfterWhere = matches[1].str();  
+            if(nameTableAfterWhere != nameTable1 || nameTableAfterWhere != nameTable2) return false;
+            nameColumnAfterWhere = matches[2].str();
+            if(nameColumnAfterWhere != nameColumn1 || nameColumnAfterWhere != nameColumn2) return false;
+            it = matches[0].second;               
         }
-
-        // Извлекаем колонку
-        getline(s1, nameColumnAfterWhere, ' ');
-
-        // Проверяем наличие колонки в схеме
-        Queue<string> queueColumns = JSON.GetColumnsFromSchema<string>(nameTableAfterWhere);
-        bool columnExists = false;
-        while (queueColumns.getSize() != 0) {
-            if (nameColumnAfterWhere == queueColumns.getFront()) {
-                columnExists = true;
-                break;
-            }
-            queueColumns.pop_front();
-        }
-
-        if (!columnExists) {
-            cerr << "Такой колонки нет " << nameColumnAfterWhere << endl;
-            return false;
-        }
-
-        // Пропускаем оставшуюся часть условия
-        string temp;
-        getline(s1, temp);  // Читаем оставшуюся часть строки
     }
-
     return true;
 }
 
 
 
-void CSVWhere::ParseWhereQuery(stringstream& stream)
+void CSVWhere::ParseWhereQuery(string whereClause)
 {
-    string whereClause;
-    stream.ignore(1);
-    getline(stream, whereClause);
    
     smatch match;
     regex conditionPattern(R"((\w+\.\w+)\s*=\s*(\w+\.\w+)|(\w+\.\w+)\s*=\s*'([^']+)')");
@@ -97,10 +78,11 @@ void CSVWhere::ParseWhereQuery(stringstream& stream)
 
 bool CSVWhere::IsValidCondition(string condition) 
 {
- 
+   
+
     regex conditionRegex(R"(\s*(\w+\.\w+\s*=\s*('[^']*'|\w+\.\w+))(\s+(AND|OR)\s+(\w+\.\w+\s*=\s*('[^']*'|\w+\.\w+)))*$)");
     
-    if (!std::regex_match(condition, conditionRegex)) 
+    if (!regex_match(condition, conditionRegex)) 
     {
         return false; // Неверный формат
     }

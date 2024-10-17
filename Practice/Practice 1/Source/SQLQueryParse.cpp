@@ -56,24 +56,20 @@ void SQLQueryParse::SQLDelete(stringstream& stream)
 
 void SQLQueryParse::SelectAndWhereStart(stringstream& stream)
 {
-    string nameTable1, nameTable2, nameColumn1, nameColumn2;
-   
-    if(csvSelect.ParseCommandForSelect(nameTable1, nameTable2, nameColumn1, nameColumn2,stream) == false) 
+    if(csvSelect.ParseCommandForSelect(nameTableFromQuery,nameColumnFromQuery,stream) == false) 
     {
-        
-        cerr<<"Ошибка ввода команды SELECT FROM"<<endl;
         return;
     }
-    else if(SearcWhereInQuery(stream,"WHERE") == true)
-    {
-        string action;
-        stream >> action;
-        csvWhere.StartWhere(nameTable1, nameTable2, nameColumn1, nameColumn2,stream);
-    } 
-    else if(IsValidQueryForSelect(stream) == true)
-    {
-        csvSelect.SelectFromCSV(nameTable1, nameTable2, nameColumn1, nameColumn2);
-    }
+    // else if(SearcWhereInQuery(stream,"WHERE") == true)
+    // {
+    //     string action;
+    //     stream >> action;
+    //     csvWhere.StartWhere(nameTable1, nameTable2, nameColumn1, nameColumn2,stream);
+    // } 
+    // else if(IsValidQueryForSelect(stream) == true)
+    // {
+    //     csvSelect.SelectFromCSV(nameTable1, nameTable2, nameColumn1, nameColumn2);
+    // }
 
 }
 bool SQLQueryParse::SearcWhereInQuery(stringstream& stream, const string searchString)

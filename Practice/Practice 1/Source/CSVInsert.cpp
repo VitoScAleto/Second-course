@@ -24,9 +24,9 @@ void CSVInsert::GetNameTableFromQuery(string nameTable)
 
 template <typename T>
 
-Queue<T> CSVInsert::extractDataFromQuery(string input) 
+void CSVInsert::extractDataFromQuery(LinkedList<T>& listQuery, string input) 
 {
-    Queue <string> queue;
+
     size_t start = 0, end = 0;
 
     // Найти первую открывающую скобку
@@ -46,7 +46,7 @@ Queue<T> CSVInsert::extractDataFromQuery(string input)
         if (nextEnd == string::npos) break; // Если нет закрывающей кавычки
 
         // Извлечь значение между кавычками
-        queue.push_back(input.substr(end + 1, nextEnd - end - 1));
+        listQuery.push_back(input.substr(end + 1, nextEnd - end - 1));
         // Обновить start для поиска следующего значения
         end = input.find(",", nextEnd + 1);
         if (end == string::npos) break; // Если нет запятой, выходим из цикла
@@ -54,8 +54,6 @@ Queue<T> CSVInsert::extractDataFromQuery(string input)
         end = input.find("'", start);
     }
 
-    
-    return queue;
 }
 
 
@@ -89,11 +87,14 @@ void CSVInsert:: WriteToCSV(stringstream& stream)
 
 void CSVInsert::InsertValuesFromQuery(string data)
 {
-    Queue <string> queueQuery = extractDataFromQuery<string>(data);
+    LinkedList <string> ListQuery;
+
+    extractDataFromQuery(ListQuery, data);
 
     if(JSON.IsValidTable(nameTableFromQuery))
     {
-        Queue <string> ColumnsFromJSON = JSON.GetColumnsFromSchema<string>(nameTableFromQuery);
+        LinkedList <string> ColumnsFromJSON; 
+        JSON.GetColumnsFromSchema(ColumnsFromJSON,nameTableFromQuery);
 
         string pathToCSVInsert = "../Source/" + JSON.GetNameMainDir()+"/"+nameTableFromQuery + "/1.csv";
 
@@ -104,30 +105,32 @@ void CSVInsert::InsertValuesFromQuery(string data)
         throw ios_base::failure("Function(WriteToCSVInsert()) -> Failed to open file: " + pathToCSVInsert);
         }
 
-        while(queueQuery.getSize() != 0)
+        while(ListQuery.getSize() != 0)
         {    
             outFile.close();
             ofstream outFile(pathToCSVInsert, ios::app);
 
-            int quantityElementInCSVInsertFileT1 = CountElementInCSV(nameTableFromQuery);
+            int quantityElementInCSVInsertFileT = CountElementInCSV(nameTableFromQuery);
 
-            quantityElementInCSVInsertFileT1 %= ColumnsFromJSON.getSize();
+            quantityElementInCSVInsertFileT %= ColumnsFromJSON.getSize();
 
-            if(quantityElementInCSVInsertFileT1 == 0)
+            if(quantityElementInCSVInsertFileT == 0)
             {
                 outFile<<"\n"<<WorkWithFile_pk_sequence(nameTableFromQuery)<<",";
-                quantityElementInCSVInsertFileT1++;
+                quantityElementInCSVInsertFileT++;
             }
-            for(int i = 0; i < ColumnsFromJSON.getSize() - quantityElementInCSVInsertFileT1 && queueQuery.getSize() != 0; i++)
+            for(int i = 0; i < ColumnsFromJSON.getSize() - quantityElementInCSVInsertFileT && ListQuery.getSize() != 0; i++)
             {
-                outFile << queueQuery.getFront()<<",";
-                queueQuery.pop_front();
+                outFile << ListQuery.getHead()<<",";
+                ListQuery.pop_front();
                 
             }
 
         }
 
         outFile.close();
+        ListQuery.~LinkedList();
+
         return;
     }
     throw invalid_argument("Function(WriteToCSVInsert()) -> Invalid table name: " + nameTableFromQuery);

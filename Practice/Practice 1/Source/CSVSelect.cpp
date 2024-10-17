@@ -122,44 +122,41 @@ void CSVSelect::SelectFromCSV(string& nameTable1,string& nameTable2,string& name
 }
 
 
-bool CSVSelect::ParseCommandForSelect(string& nameTable1,string& nameTable2,string& nameColumn1, string& nameColumn2, stringstream& stream)
+bool CSVSelect::ParseCommandForSelect(LinkedList<string> nameTableFromQuery, LinkedList<string> nameColumnFromQuery, stringstream& stream)
 {
     stream.ignore(1);
-    getline(stream,nameTable1,'.');
-    getline(stream,nameColumn1,' ');
-    getline(stream,nameTable2,'.');
-    getline(stream,nameColumn2,' ');
+    string lineBeforCommandFROM;
+    getline(stream, lineBeforCommandFROM,'F');
 
-    if (JSON.IsValidTable(nameTable1) == false || JSON.IsValidTable(nameTable2)==false) 
+    regex pattern(R"((\w+)\.(\w+))"); 
+    smatch matches;
+
+    string text = lineBeforCommandFROM;
+
+    auto it = text.cbegin();
+    while (regex_search(it, text.cend(), matches, pattern))// заполнение листов с именами таблиц колонок
     {
-        cerr << "Unknown table.(Function -> ParseCommandForSelect())" << endl;
-        throw invalid_argument("This table not found");
+        nameTableFromQuery.push_back(matches[1].str());  
+        nameColumnFromQuery.push_back(matches[2].str());
+       
+        it = matches[0].second;               
     }
-    Queue<string> queueColumns1 = JSON.GetColumnsFromSchema<string>(nameTable1);
 
-    Queue<string> queueColumns2 = JSON.GetColumnsFromSchema<string>(nameTable2);
-
-    while(queueColumns1.getSize()!=0)
+    for(int i = 0; i < nameTableFromQuery.getSize(); i++)// проверка на валидность введеных таблиц и колонок
     {
-        if(nameColumn1 == queueColumns1.getFront()) break;
-        queueColumns1.pop_front();
-        if(queueColumns1.getSize() == 0)
+        if(JSON.IsValidTable(nameTableFromQuery[i]) == false)
         {
-            cerr<<"Такой колонки нет"<<nameColumn1<<endl;
+            cerr << "Ошибка. Неизвестная таблица " << nameTableFromQuery[i] << endl;
             return false;
         }
-    }
-    while(queueColumns2.getSize()!=0)
-    {
-        if(nameColumn2 == queueColumns2.getFront()) break;
-        queueColumns2.pop_front();
-        if(queueColumns2.getSize() == 0)
+        if(JSON.IsValidColumns(nameTableFromQuery[i], nameColumnFromQuery[i]) == false)
         {
-            cerr<<"Такой колонки нет"<<nameColumn2<<endl;
+            cerr<<"Ошибка. Для данной таблицы " <<nameTableFromQuery[i]<<" нет такой колонки " <<nameColumnFromQuery[i]<<endl;
             return false;
         }
-    }
     
+    }   
+
     string action;
 
     stream >> action;
@@ -169,23 +166,28 @@ bool CSVSelect::ParseCommandForSelect(string& nameTable1,string& nameTable2,stri
         cerr<<"Ожидалась команда FROM, получена "<< action<<endl;
     }
 
-    if(ParsePostQuery(nameTable1, nameTable2,stream) == false) return false;
+    if(ParsePostQuery(nameTableFromQuery,stream) == false) return false;
     return true;
 }
 
 
-bool CSVSelect::ParsePostQuery(const string nameTable1, const string nameTable2, stringstream& stream)
+bool CSVSelect::ParsePostQuery(LinkedList<string> nameTableFromQuery, stringstream& stream)
 {
-    string nameTableAfterFROM1, nameTableAfterFROM2;
+    LinkedList <string> nameTablePostQuery;
+    string nameTableAfterFROM;
 
-    stream >> nameTableAfterFROM1;
-    stream >> nameTableAfterFROM2;
-
-    if(nameTableAfterFROM1 != nameTable1 || nameTableAfterFROM2 != nameTable2)
+    while(getline(stream,nameTableAfterFROM,' ') || getline(stream,nameTableAfterFROM,'W'))
     {
-        
-        return false;
-
+        nameTablePostQuery.push_back(nameTableAfterFROM);
     }
-    return true;
+
+    int isValidTableInOrder = 0; // счетчик для проверки совпадания таблиц после FROM
+
+    for(int i = 0; i < nameTableFromQuery.getSize(); i++)
+    {
+        if(nameTableFromQuery[i] == nameTablePostQuery[i]) isValidTableInOrder++;
+    }  
+    if(isValidTableInOrder == nameTableFromQuery.getSize()) return true;
+    
+    return false;
 }
