@@ -50,12 +50,12 @@ void SQLQueryParse::SQLDelete(stringstream& stream)
         cerr<<"Unknown table Fun"<< nameTable <<endl;
     }
 
-
 }
 
 
 void SQLQueryParse::SelectAndWhereStart(stringstream& stream)
 {
+
     if(csvSelect.ParseCommandForSelect(nameTableFromQuery,nameColumnFromQuery,stream) == false) 
     {
         return;
@@ -64,12 +64,14 @@ void SQLQueryParse::SelectAndWhereStart(stringstream& stream)
     // {
     //     string action;
     //     stream >> action;
-    //     csvWhere.StartWhere(nameTable1, nameTable2, nameColumn1, nameColumn2,stream);
+    //     csvWhere.StartWhere(nameTableFromQuery, nameColumnFromQuery,stream);
     // } 
-    // else if(IsValidQueryForSelect(stream) == true)
-    // {
-    //     csvSelect.SelectFromCSV(nameTable1, nameTable2, nameColumn1, nameColumn2);
-    // }
+    else if(IsValidQueryForSelect(stream) == true)
+    {
+        csvSelect.SelectFromCSV(nameTableFromQuery, nameColumnFromQuery);
+    }
+    nameColumnFromQuery.~LinkedList();
+    nameTableFromQuery.~LinkedList();
 
 }
 bool SQLQueryParse::SearcWhereInQuery(stringstream& stream, const string searchString)

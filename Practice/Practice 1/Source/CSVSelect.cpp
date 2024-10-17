@@ -1,76 +1,73 @@
 #include "../Headers/CSVSelect.h"
 
-
 CSVSelect::CSVSelect(ReadingJSON& JSON) : JSON(JSON){}
 
-void CSVSelect::SelectFromCSV(string& nameTable1,string& nameTable2,string& nameColumn1, string& nameColumn2)
+int CSVSelect::findColumnIndex(const string& header, const string& columnName) 
 {
-    string pathToCSV1 = "../Source/" + JSON.GetNameMainDir()+"/" + nameTable1 + "/1.csv";
-    string pathToCSV2 = "../Source/" + JSON.GetNameMainDir()+"/" + nameTable2 + "/1.csv";
-    string pathToOutput = "../Source/" + JSON.GetNameMainDir()+"/" + nameTable1 + "_" + nameColumn1 + "_" + nameTable2 + "_" + nameColumn2 + "_cj.csv";
-
-    ifstream inFile1(pathToCSV1);
-    ifstream inFile2(pathToCSV2);
-    ofstream outFile(pathToOutput);
-
-    if (!inFile1.is_open()) 
-    {
-        cerr << "Ошибка открытия файла " << pathToCSV1 << endl;
-        return;
-    }
-    if (!inFile2.is_open()) 
-    {
-        cerr << "Ошибка открытия файла " << pathToCSV2 << endl;
-        return;
-    }
-    if (!outFile.is_open()) 
-    {
-        cerr << "Ошибка открытия файла " << pathToOutput << endl;
-        return;
-    }
-
-    string header1, header2;
-    getline(inFile1, header1);
-    getline(inFile2, header2);
-
-   
-    int columnIndex1 = -1, columnIndex2 = -1;
-
-    stringstream ss1(header1);
-    stringstream ss2(header2);
+    stringstream ss(header);
     string column;
+
     int index = 0;
 
-    while (getline(ss1, column, ',')) 
+    while (getline(ss, column, ',')) 
     {
-        if (column == nameColumn1) 
+        if (column == columnName) 
         {
-            columnIndex1 = index;
+            return index;
         }
         index++;
     }
+    return -1; // Колонка не найдена
+}
 
-    index = 0;
-    while (getline(ss2, column, ',')) 
+
+
+void CSVSelect::SelectFromCSV(LinkedList<string>& nameTableFromQuery, LinkedList<string>& nameColumnFromQuery)
+{
+    
+    LinkedList<string> listPathToCSV;
+
+    for(int i = 0; i < nameTableFromQuery.getSize(); i++)
     {
-        if (column == nameColumn2) 
-        {
-            columnIndex2 = index;
-        }
-        index++;
+        string pathToCSV = "../Source/"+JSON.GetNameMainDir() + "/"+ nameTableFromQuery[i]+"/1.csv";
+        listPathToCSV.push_back(pathToCSV);
+    }
+    string pathToOutput = "../Source/" + JSON.GetNameMainDir() + "/" + nameTableFromQuery[0] + "_" + nameColumnFromQuery[0] + "_cj.csv";
+
+    ifstream inFile1(listPathToCSV[0]);
+    if (!inFile1.is_open()) 
+    {
+        cerr << "Ошибка открытия файла " << listPathToCSV[0] << endl;
+        return;
     }
 
+    ifstream inFile2(listPathToCSV[1]);
+    if (!inFile1.is_open()) 
+    {
+        cerr << "Ошибка открытия файла " << listPathToCSV[1] << endl;
+        return;
+    }
+    
+    string header;
+    int columnIndex1 = -1, columnIndex2 = -1;
+
+    getline(inFile1, header);
+    columnIndex1 = findColumnIndex(header,nameColumnFromQuery[0]);
+    getline(inFile2, header);
+    columnIndex2 = findColumnIndex(header,nameColumnFromQuery[1]);
+   
    
     if (columnIndex1 == -1 || columnIndex2 == -1) 
     {
         cerr << "Одна или обе колонки не найдены." << endl;
         return;
     }
-
- 
-    outFile << nameColumn1 << "," << nameColumn2 << endl;
-
+   
     
+    string pathToIntermediate = "../Source/" + JSON.GetNameMainDir() + "/intermediate.csv";
+    ofstream intermediateFile(pathToIntermediate); 
+    intermediateFile << nameTableFromQuery[0]<< nameColumnFromQuery[0]<<","<< nameTableFromQuery[1]<<nameColumnFromQuery[1] << ","<< endl;
+
     LinkedList <string> valuesFromTable1;
     string line;
 
@@ -106,28 +103,87 @@ void CSVSelect::SelectFromCSV(string& nameTable1,string& nameTable2,string& name
             currentIndex++;
         }
     }
-
-    
-    for (int i =0; i < valuesFromTable1.getSize(); i++) 
+    for (int i = 0; i < valuesFromTable1.getSize(); i++) 
     {
         for (int j =0; j < valuesFromTable2.getSize(); j++) 
         {
-            outFile << valuesFromTable1[i] << "," << valuesFromTable2[j] << endl;
+            intermediateFile << valuesFromTable1[i] << "," << valuesFromTable2[j] << endl;
         }
     }
-
     inFile1.close();
     inFile2.close();
-    outFile.close();
+    intermediateFile.close();
+
+    valuesFromTable1.~LinkedList();
+    valuesFromTable2.~LinkedList();
+    
+    for(int i = 2; i < listPathToCSV.getSize(); i++)
+    {
+
+        ifstream intermediateFile(pathToIntermediate);
+        while(getline(intermediateFile, header))
+        {
+            valuesFromTable1.push_back(header);
+        }
+        intermediateFile.close();
+
+        ifstream inFile(listPathToCSV[i]);
+        if (!inFile.is_open()) 
+        {
+            cerr << "Ошибка открытия файла " << listPathToCSV[i] << endl;
+            return;
+        }
+        
+        getline(inFile, header);
+
+        int columnIndex = findColumnIndex(header,nameColumnFromQuery[i]);
+
+        string line;
+
+        while (getline(inFile, line)) 
+        {
+            stringstream lineStream1(line);
+            string cell2;
+            int currentIndex = 0;
+
+            while (getline(lineStream1, cell2, ',')) 
+            {
+                if (currentIndex == columnIndex) 
+                {
+                    valuesFromTable2.push_back(cell2);
+                }
+                currentIndex++;
+            }
+        }
+        inFile.close();
+
+        ofstream intermediateFile1(pathToIntermediate);
+        intermediateFile1<<valuesFromTable1[0]<<nameTableFromQuery[i]<<nameColumnFromQuery[i]<<","<<endl;
+
+        for (int i =1; i < valuesFromTable1.getSize(); i++) 
+        {
+            for (int j =0; j < valuesFromTable2.getSize(); j++) 
+            {
+                intermediateFile1 << valuesFromTable1[i] << "," << valuesFromTable2[j] << endl;
+            }
+        }
+        valuesFromTable1.~LinkedList();
+        valuesFromTable2.~LinkedList();
+        intermediateFile1.close();
+
+
+    }
+
+
+
 }
 
-
-bool CSVSelect::ParseCommandForSelect(LinkedList<string> nameTableFromQuery, LinkedList<string> nameColumnFromQuery, stringstream& stream)
+bool CSVSelect::ParseCommandForSelect(LinkedList<string>& nameTableFromQuery, LinkedList<string>& nameColumnFromQuery, stringstream& stream)
 {
     stream.ignore(1);
     string lineBeforCommandFROM;
     getline(stream, lineBeforCommandFROM,'F');
-
+    stream.putback('F');
     regex pattern(R"((\w+)\.(\w+))"); 
     smatch matches;
 
@@ -171,11 +227,11 @@ bool CSVSelect::ParseCommandForSelect(LinkedList<string> nameTableFromQuery, Lin
 }
 
 
-bool CSVSelect::ParsePostQuery(LinkedList<string> nameTableFromQuery, stringstream& stream)
+bool CSVSelect::ParsePostQuery(LinkedList<string>& nameTableFromQuery, stringstream& stream)
 {
     LinkedList <string> nameTablePostQuery;
     string nameTableAfterFROM;
-
+    stream.ignore(1);
     while(getline(stream,nameTableAfterFROM,' ') || getline(stream,nameTableAfterFROM,'W'))
     {
         nameTablePostQuery.push_back(nameTableAfterFROM);
@@ -187,7 +243,10 @@ bool CSVSelect::ParsePostQuery(LinkedList<string> nameTableFromQuery, stringstre
     {
         if(nameTableFromQuery[i] == nameTablePostQuery[i]) isValidTableInOrder++;
     }  
-    if(isValidTableInOrder == nameTableFromQuery.getSize()) return true;
-    
+    if(isValidTableInOrder == nameTableFromQuery.getSize())
+    {
+        return true;
+    } 
+ 
     return false;
 }

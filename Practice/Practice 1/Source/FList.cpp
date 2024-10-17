@@ -1,274 +1,194 @@
 #include "../Headers/FList.h"
 
-template< typename T>
+template <typename T>
 T& LinkedList<T>::operator[](int index) 
 {
-        Node* temp = head;
-        for (int i = 0; i < index; ++i) 
-        {
-            if (temp == nullptr) {
-                throw std::out_of_range("Index out of range");
-            }
-            temp = temp->next;
-        }
-        if (temp == nullptr) 
-        {
-            throw std::out_of_range("Index out of range");
-        }
-        return temp->value;
+    if (index < 0 || index >= sizeList) 
+    {
+        throw std::out_of_range("Index out of range");
     }
+
+    Node* temp = head;
+    for (int i = 0; i < index; ++i) 
+    {
+        temp = temp->next;
+    }
+    return temp->value;
+}
 
 template <typename T>
 LinkedList<T>::~LinkedList() 
-{
-    Node* current = head;
-    while (current != nullptr) 
+{ 
+    while (head != nullptr) 
     {
-        Node* next = current->next; 
-        delete current;              
-        current = next;              
+        pop_front();
     }
-    head = nullptr; 
-    sizeList = 0;   
-}
-
-
-
-
-template <typename T>
-
-T LinkedList<T>::getHead()
- {
-        if (head == nullptr) 
-        {
-            throw std::runtime_error("List is empty"); 
-        }
-        return head->value; 
 }
 
 template <typename T>
-
-T LinkedList<T>::Get_by_index(int indexValue)
+T LinkedList<T>::getHead() 
 {
     if (head == nullptr) 
     {
         throw std::runtime_error("List is empty");
     }
-
-    Node* current = head;
-
-    for (int i = 0; i < getSize(); i++)
-    {
-        if (i == indexValue)
-        {
-            return current->value;
-        }
-        current = current->next; 
-    }
-    throw std::runtime_error("List is empty");
+    return head->value;
 }
 
 template <typename T>
-
-void LinkedList<T>::printList()
+T LinkedList<T>::Get_by_index(int indexValue) 
+{
+    if (indexValue < 0 || indexValue >= sizeList) 
     {
-        Node* current = head;
-
-        if (current == nullptr)
-        {
-            cout << "Empty list" << endl;
-
-        }
-        while (current != nullptr)
-        {
-            cout << current->value << " ";
-            current = current->next;
-
-        }
-        cout << endl;
+        throw std::out_of_range("Index out of range");
     }
 
-
-template <typename T>
-
-void LinkedList<T>::delete_by_value(T item)
+    Node* current = head;
+    for (int i = 0; i < indexValue; ++i) 
     {
-        if (!isValidValue(item))
-        {
-            cerr << "Error. Value not found" << endl;
-            return;
-        }
-
-        Node* currentPtr = head;
-        Node* prevPtr = nullptr;
-
-        if (currentPtr == nullptr)
-        {
-            cerr << "Empty list" << endl;
-            return;
-        }
-
-        while (currentPtr != nullptr && currentPtr->value == item)
-        {
-            Node* temp = currentPtr;
-            currentPtr = currentPtr->next;
-            delete temp;
-            head = currentPtr;
-            sizeList--;
-        }
-
-
-        prevPtr = head;
-        while (currentPtr != nullptr)
-        {
-            if (currentPtr->value == item)
-            {
-                prevPtr->next = currentPtr->next;
-                delete currentPtr;
-                currentPtr = prevPtr->next;
-                sizeList--;
-            }
-            else
-            {
-                prevPtr = currentPtr;
-                currentPtr = currentPtr->next;
-            }
-        }
+        current = current->next;
     }
+    return current->value;
+}
 
 template <typename T>
-
-void LinkedList<T>::pop_front()
+void LinkedList<T>::printList() 
+{
+    Node* current = head;
+    if (current == nullptr)
+     {
+        cout << "Empty list" << endl;
+        return;
+    }
+    while (current != nullptr) 
     {
-        Node* currentPtr = head;
+        cout << current->value << " ";
+        current = current->next;
+    }
+    cout << endl;
+}
 
-        if (currentPtr == nullptr)
-        {
-            cerr << "Error. Empty list" << endl;
-            return;
-        }
-        Node* nextHead = currentPtr->next;
+template <typename T>
+void LinkedList<T>::delete_by_value(T item) 
+{
+    Node* currentPtr = head;
+    Node* prevPtr = nullptr;
 
-        head = nextHead;
-        delete currentPtr;
+    while (currentPtr != nullptr && currentPtr->value == item) 
+    {
+        Node* temp = currentPtr;
+        currentPtr = currentPtr->next;
+        delete temp;
+        head = currentPtr;
         sizeList--;
     }
 
-template <typename T>
-
-void LinkedList<T>::pop_back()
+    prevPtr = head;
+    while (currentPtr != nullptr) 
     {
-        Node* currentPtr = head;
-        Node* prevPtr = nullptr;
-        if (currentPtr == nullptr)
+        if (currentPtr->value == item) 
         {
-            cerr << "Error. Empty list" << endl;
-            return;
-        }
-        else if (currentPtr->next == nullptr)
-        {
+            prevPtr->next = currentPtr->next;
             delete currentPtr;
-            head = nullptr;
+            currentPtr = prevPtr->next;
             sizeList--;
-            return;
-        }
-        while (currentPtr->next != nullptr)
+        } else 
         {
             prevPtr = currentPtr;
             currentPtr = currentPtr->next;
         }
-        free(currentPtr);
-        prevPtr->next = nullptr;
+    }
+}
+
+template <typename T>
+void LinkedList<T>::pop_front() 
+{
+    if (head == nullptr) 
+    {
+        cerr << "Error. Empty list" << endl;
+        return;
+    }
+    Node* temp = head;
+    head = head->next;
+    delete temp;
+    sizeList--;
+}
+
+template <typename T>
+void LinkedList<T>::pop_back() 
+{
+    if (head == nullptr) 
+    {
+        cerr << "Error. Empty list" << endl;
+        return;
+    }
+
+    if (head->next == nullptr) 
+    {
+        delete head;
+        head = nullptr;
         sizeList--;
+        return;
     }
 
-template <typename T>
-
-int LinkedList<T>::search_by_value(T item)
+    Node* currentPtr = head;
+    while (currentPtr->next->next != nullptr) 
     {
+        currentPtr = currentPtr->next;
+    }
+    delete currentPtr->next;
+    currentPtr->next = nullptr;
+    sizeList--;
+}
 
+template <typename T>
+int LinkedList<T>::search_by_value(T item) 
+{
+    Node* current = head;
+    int index = 0;
+    while (current != nullptr) 
+    {
+        if (current->value == item) 
+        {
+            return index;
+        }
+        current = current->next;
+        index++;
+    }
+    return -1; // Возвращаем -1, если значение не найдено
+}
+
+template <typename T>
+void LinkedList<T>::push_front(T item) 
+{
+    Node* newNode = new Node(item);
+    newNode->next = head;
+    head = newNode;
+    sizeList++;
+}
+
+template <typename T>
+void LinkedList<T>::push_back(T item) 
+{
+    Node* newNode = new Node(item);
+    if (head == nullptr) 
+    {
+        head = newNode;
+    } 
+    else 
+    {
         Node* current = head;
-        while (current != nullptr)
+        while (current->next != nullptr) 
         {
-            if (current->value == item)
-            {
-               return index;
-            }
             current = current->next;
-            index++;
         }
-        return index;
+        current->next = newNode;
     }
+    sizeList++;
+}
 
 template <typename T>
-
-void LinkedList<T>::push_front(T item)
-    {
-        if (head == nullptr)
-        {
-            head = new Node(item);
-            sizeList++;
-        }
-        else
-        {
-            Node* newNode = new Node(item);
-            newNode->next = head;
-            head = newNode;
-            sizeList++;
-        }
-
-    }
-
-template <typename T>
-
-void LinkedList<T>::push_back(T item)
-    {
-        if (head == nullptr)
-        {
-            head = new Node(item);
-            sizeList++;
-        }
-        else
-        {
-            Node* current = head;
-            while (current->next != nullptr)
-            {
-                current = current->next;
-
-            }
-            current->next = new Node(item);
-            sizeList++;
-        }
-    }
-
-template <typename T>
-
-int LinkedList<T>::GetIndex()
-    {
-        return index;
-    }
-
-template <typename T>
-
-int LinkedList<T>::getSize()
-    {
-        return sizeList;
-    }
-
-template <typename T>
-
-bool LinkedList<T>::isValidValue(T item)
-    {
-
-        Node* currentPtr = head;
-
-        while (currentPtr != nullptr)
-        {
-            if (currentPtr->value == item)
-            {
-                return true;
-            }
-            currentPtr = currentPtr->next;
-        }
-        return false;
-    }
+int LinkedList<T>::getSize() 
+{
+    return sizeList;
+}
