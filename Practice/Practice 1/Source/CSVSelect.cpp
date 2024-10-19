@@ -32,7 +32,7 @@ void CSVSelect::SelectFromCSV(LinkedList<string>& nameTableFromQuery, LinkedList
         string pathToCSV = "../Source/"+JSON.GetNameMainDir() + "/"+ nameTableFromQuery[i]+"/1.csv";
         listPathToCSV.push_back(pathToCSV);
     }
-    string pathToOutput = "../Source/" + JSON.GetNameMainDir() + "/" + nameTableFromQuery[0] + "_" + nameColumnFromQuery[0] + "_cj.csv";
+    string pathToOutput = "../Source/" + JSON.GetNameMainDir() + "/" + nameTableFromQuery[0] + "-" + nameTableFromQuery[nameTableFromQuery.getSize()-1]+ nameColumnFromQuery[0] + "_cj.csv";
 
     ifstream inFile1(listPathToCSV[0]);
     if (!inFile1.is_open()) 
@@ -57,15 +57,7 @@ void CSVSelect::SelectFromCSV(LinkedList<string>& nameTableFromQuery, LinkedList
     columnIndex2 = findColumnIndex(header,nameColumnFromQuery[1]);
    
    
-    if (columnIndex1 == -1 || columnIndex2 == -1) 
-    {
-        cerr << "Одна или обе колонки не найдены." << endl;
-        return;
-    }
-   
-    
-    string pathToIntermediate = "../Source/" + JSON.GetNameMainDir() + "/intermediate.csv";
-    ofstream intermediateFile(pathToIntermediate); 
+    ofstream intermediateFile(pathToOutput); 
     intermediateFile << nameTableFromQuery[0]<< nameColumnFromQuery[0]<<","<< nameTableFromQuery[1]<<nameColumnFromQuery[1] << ","<< endl;
 
     LinkedList <string> valuesFromTable1;
@@ -120,7 +112,7 @@ void CSVSelect::SelectFromCSV(LinkedList<string>& nameTableFromQuery, LinkedList
     for(int i = 2; i < listPathToCSV.getSize(); i++)
     {
 
-        ifstream intermediateFile(pathToIntermediate);
+        ifstream intermediateFile(pathToOutput);
         while(getline(intermediateFile, header))
         {
             valuesFromTable1.push_back(header);
@@ -157,7 +149,7 @@ void CSVSelect::SelectFromCSV(LinkedList<string>& nameTableFromQuery, LinkedList
         }
         inFile.close();
 
-        ofstream intermediateFile1(pathToIntermediate);
+        ofstream intermediateFile1(pathToOutput);
         intermediateFile1<<valuesFromTable1[0]<<nameTableFromQuery[i]<<nameColumnFromQuery[i]<<","<<endl;
 
         for (int i =1; i < valuesFromTable1.getSize(); i++) 
@@ -222,31 +214,37 @@ bool CSVSelect::ParseCommandForSelect(LinkedList<string>& nameTableFromQuery, Li
         cerr<<"Ожидалась команда FROM, получена "<< action<<endl;
     }
 
-    if(ParsePostQuery(nameTableFromQuery,stream) == false) return false;
+    if(IsValidAfterFROM(nameTableFromQuery,stream) == false) return false;
     return true;
 }
 
 
-bool CSVSelect::ParsePostQuery(LinkedList<string>& nameTableFromQuery, stringstream& stream)
+bool CSVSelect::IsValidAfterFROM(LinkedList<string>& nameTableFromQuery, stringstream& stream)
 {
-    LinkedList <string> nameTablePostQuery;
+    string whereClause;
     string nameTableAfterFROM;
     stream.ignore(1);
-    while(getline(stream,nameTableAfterFROM,' ') || getline(stream,nameTableAfterFROM,'W'))
-    {
-        nameTablePostQuery.push_back(nameTableAfterFROM);
+
+   while (stream >> nameTableAfterFROM) 
+   { 
+        if (nameTableAfterFROM == "WHERE") 
+        {
+            getline(stream, whereClause);
+            whereClause = "WHERE" + whereClause;
+            stream.clear();
+            stream.str("");
+            stream << whereClause;
+            break;
+        }
+
+        if (!JSON.IsValidTable(nameTableAfterFROM)) 
+        {
+            std::cerr << "Ошибка. Неизвестная таблица " << nameTableAfterFROM << " после FROM " << std::endl;
+            return false;
+        }
+
+        
     }
 
-    int isValidTableInOrder = 0; // счетчик для проверки совпадания таблиц после FROM
-
-    for(int i = 0; i < nameTableFromQuery.getSize(); i++)
-    {
-        if(nameTableFromQuery[i] == nameTablePostQuery[i]) isValidTableInOrder++;
-    }  
-    if(isValidTableInOrder == nameTableFromQuery.getSize())
-    {
-        return true;
-    } 
- 
-    return false;
+    return true;
 }

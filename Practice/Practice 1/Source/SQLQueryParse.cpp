@@ -60,12 +60,11 @@ void SQLQueryParse::SelectAndWhereStart(stringstream& stream)
     {
         return;
     }
-    // else if(SearcWhereInQuery(stream,"WHERE") == true)
-    // {
-    //     string action;
-    //     stream >> action;
-    //     csvWhere.StartWhere(nameTableFromQuery, nameColumnFromQuery,stream);
-    // } 
+    else if(SearcWhereInQuery(stream) == true)
+    {
+        csvWhere.StartWhere(nameTableFromQuery, nameColumnFromQuery,stream);
+        
+    } 
     else if(IsValidQueryForSelect(stream) == true)
     {
         csvSelect.SelectFromCSV(nameTableFromQuery, nameColumnFromQuery);
@@ -74,10 +73,12 @@ void SQLQueryParse::SelectAndWhereStart(stringstream& stream)
     nameTableFromQuery.~LinkedList();
 
 }
-bool SQLQueryParse::SearcWhereInQuery(stringstream& stream, const string searchString)
+bool SQLQueryParse::SearcWhereInQuery(stringstream& stream)
 {
-    string content = stream.str();
-    return content.find(searchString) != string::npos;
+    string action;
+    stream >> action;
+    if(action == "WHERE") return true;
+    return false;
 
 }
 
@@ -129,6 +130,10 @@ void SQLQueryParse::Start()
             {
                 SQLDelete(stream);
             }
+        }
+        else if (action == "EXIT")
+        {
+            return;
         }
         else
         {

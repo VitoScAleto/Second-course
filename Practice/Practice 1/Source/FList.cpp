@@ -142,7 +142,7 @@ void LinkedList<T>::pop_back()
 }
 
 template <typename T>
-int LinkedList<T>::search_by_value(T item) 
+bool LinkedList<T>::search_by_value(T item) 
 {
     Node* current = head;
     int index = 0;
@@ -150,12 +150,12 @@ int LinkedList<T>::search_by_value(T item)
     {
         if (current->value == item) 
         {
-            return index;
+            return true;
         }
         current = current->next;
         index++;
     }
-    return -1; // Возвращаем -1, если значение не найдено
+    return false; // Возвращаем -1, если значение не найдено
 }
 
 template <typename T>
