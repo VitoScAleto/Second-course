@@ -1,24 +1,30 @@
-INSERT INTO table1 VALUES ('FSFSF','dfdfdf','FSFSF','dfdfdf','FSFSF','dfdfdf','FSFSF','dfdfdf')
-INSERT INTO table2 VALUES ('a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh')
+INSERT INTO table3 VALUES ('FSFSF','dfdfdf','FSFSF','dfdfdf','FSFSF','dfdfdf','FSFSF','dfdfdf')
+INSERT INTO table2 VALUES ('f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh')
 INSERT INTO table1 VALUES ('a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh','a','b','c','d','f','j','k','q','fh')
+INSERT INTO table2 VALUES ('a')
+INSERT INTO table4 VALUES ('a','b','d')
 
-INSERT INTO table2 VALUES ('a','b','c','d','f','j')
-
-INSERT INTO table1 VALUES ('a')
-
+INSERT INTO table2 VALUES ('a')
+INSERT INTO table2 VALUES ('a')
+INSERT INTO table3 VALUES ('b')
+INSERT INTO table4 VALUES ('c')
 DELETE FROM table1 WHERE table1.column1 = 'a'
 
 
 DELETE FROM table2 WHERE table2.column1 = 'FSFSF'
 
 
+SELECT table1.column1 table2.column1  FROM table1 table2 
 
-SELECT table1.column3 table2.column2 FROM table1 table2 WHERE 
+SELECT table1.column1 table2.column1 table2.column2 FROM table1 table2
+SELECT table1.column1 table2.column1 table2.column2 table2.column3 FROM table1 table2
 
-
+SELECT table1.column1 table2.column1 table3.column1  FROM table1 table2 table3 
+SELECT table1.column1 table2.column1 FROM table1 table2
 INSERT INTO table2 VALUES ('A','B','C','D','F','G','H','I')
 
-SELECT table1.column4 table2.column2 FROM table1 table2 WHERE table1.column1 = table2.column2 AND table1.column2 = 'value' OR table1.column3 = 'another_value'
-
-
-"table1.column1 = table2.column2 AND table1.column2 = 'value' OR table.column3 = 'another_value'"
+SELECT table1.column1 FROM table1 WHERE table1.column1 = 'b' OR table1.column1 = 'j' OR table1.column1 = 'v' AND table1.column1 = 'v'
+SELECT table1.column1 FROM table1 table2 WHERE table1.column1 = 'fh'
+SELECT table2.column2  FROM table1 table2 WHERE table1.column1 = table2.column1
+table1.column1 = table2.column2 table1.column2 = 'value' table.column3 = 'another_value' 
+SELECT table1.column1 table1.column3 table2.column1 table2.column4 FROM table1 table2 WHERE table1.column1 = table2.column4 AND table2.column1 = table1.column3 AND table1.column1 = table2.column4 AND table2.column1 = table1.column3 

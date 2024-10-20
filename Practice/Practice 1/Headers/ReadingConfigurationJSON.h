@@ -12,12 +12,9 @@ private:
     string nameMainDirJSON;
     
     int tuples_limit;
-    
-    string pathToTable1;
-    string pathToTable2;
 
-    LinkedList <string> nameTables;
-    LinkedList <string> nameColumns;
+    LinkedList <string> nameTablesJSON;
+    LinkedList <string> nameColumnsJSON;
    
     void CreateMainDir(json& j);
     void CreateTable(json& j);
@@ -25,20 +22,22 @@ private:
 
     json ParseJSON();
 
-    string listFilesInDirectory(const string nameTable);
-    
-    void FillingTheListFromTheSchema();
+
+    void FillingTheListTableFromTheSchema();
+    void FillingTheListColumnsFromTheSchema(string nameTable);
+
 public:
     
     string GetNameMainDir();
 
     void ReadingConfigurationJSON(const string pathShemaJSON);
 
-    string IsValidTuplesLimitInCSV(string nameTable);
+    bool IsValidTable(const string nameTable);   
 
+    bool IsValidColumns(const string nameTable, const string nameColumn);
+    
     template <typename T>
-    Queue<T> GetColumnsFromSchema(const string nameTable);
-    bool IsValidTable(const string nameTable) ;   
+    void GetColumnsFromSchema(LinkedList<T>& List,const string nameTable);
 };
 
 

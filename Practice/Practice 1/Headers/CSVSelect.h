@@ -13,14 +13,16 @@ class CSVSelect
 
     ReadingJSON& JSON;
 
-    bool ParsePostQuery(const string nameTable1, const string nameTable2,stringstream& stream);
-
+    bool IsValidAfterFROM(LinkedList<string>&  nameTableFromQuery,stringstream& stream);
+    int findColumnIndex(const string& header, const string& columnName);
+    
     public:
 
     CSVSelect(ReadingJSON& JSON);
 
-    bool ParseCommandForSelect(string& nameTable1,string& nameTable2,string& nameColumn1, string& nameColumn2,stringstream& stream);
-    void SelectFromCSV(string& nameTable1,string& nameTable2,string& nameColumn1, string& nameColumn2);
+    bool ParseCommandForSelect(LinkedList<string>& nameTableFromQuery, LinkedList<string>& nameColumnFromQuery, stringstream& stream);
+    void SelectFromCSV(LinkedList<string>&  nameTableFromQuery, LinkedList<string>& nameColumnFromQuery);
+
    
 };
 

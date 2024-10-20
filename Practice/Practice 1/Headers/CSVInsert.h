@@ -22,7 +22,7 @@ class CSVInsert
     void GetNameTableFromQuery(string nameTable);
 
     template <typename T>
-    Queue<T> extractDataFromQuery(string input);
+    void extractDataFromQuery(LinkedList<T>& listQuery, string input) ;
 
     void InsertValuesFromQuery(string data);
 

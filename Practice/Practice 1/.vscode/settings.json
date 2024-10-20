@@ -58,6 +58,8 @@
     "numbers": "cpp",
     "sstream": "cpp",
     "streambuf": "cpp",
-    "valarray": "cpp"
+    "valarray": "cpp",
+    "bitset": "cpp",
+    "regex": "cpp"
   }
 }

@@ -18,10 +18,13 @@ class SQLQueryParse
     CSVSelect& csvSelect;
     CSVWhere& csvWhere;
 
-    bool SearcWhereInQuery(stringstream& stream,const string searchString);
+    bool SearcWhereInQuery(stringstream& stream);
     bool IsValidQueryForSelect(stringstream& stream);
     
     public:
+    
+    LinkedList<string> nameTableFromQuery;
+    LinkedList<string> nameColumnFromQuery;
 
     SQLQueryParse(ReadingJSON& JSON, CSVInsert& csvInsert, CSVDelete& csvDelete, CSVSelect& csvSelect, CSVWhere& csvWhere);
     
