@@ -52,6 +52,47 @@ T LinkedList<T>::Get_by_index(int indexValue)
 }
 
 template <typename T>
+
+void LinkedList<T>::delete_by_index(int index) 
+{
+    if (index < 0 || !head) 
+    {
+        std::cerr << "Индекс вне диапазона." << std::endl;
+        return;
+    }
+
+    Node* current = head;
+
+    // Если нужно удалить первый элемент
+    if (index == 0) 
+    {
+        head = current->next; // Сдвигаем голову
+        delete current;       // Освобождаем память
+        sizeList--;
+        return;
+    }
+
+    // Ищем элемент перед тем, который нужно удалить
+    for (int i = 0; current != nullptr && i < index - 1; ++i) 
+    {
+        current = current->next;
+    }
+
+    // Если индекс больше, чем количество узлов
+    if (current == nullptr || current->next == nullptr) 
+    {
+        std::cerr << "Индекс вне диапазона." << std::endl;
+        return;
+    }
+
+    // Удаляем узел
+    Node* nextNode = current->next->next; 
+    delete current->next;                  
+    current->next = nextNode;      
+    sizeList--;       
+}
+
+template <typename T>
 void LinkedList<T>::printList() 
 {
     Node* current = head;
@@ -83,21 +124,21 @@ void LinkedList<T>::delete_by_value(T item)
         sizeList--;
     }
 
-    prevPtr = head;
-    while (currentPtr != nullptr) 
-    {
-        if (currentPtr->value == item) 
-        {
-            prevPtr->next = currentPtr->next;
-            delete currentPtr;
-            currentPtr = prevPtr->next;
-            sizeList--;
-        } else 
-        {
-            prevPtr = currentPtr;
-            currentPtr = currentPtr->next;
-        }
-    }
+    // prevPtr = head;
+    // while (currentPtr != nullptr) 
+    // {
+    //     if (currentPtr->value == item) 
+    //     {
+    //         prevPtr->next = currentPtr->next;
+    //         delete currentPtr;
+    //         currentPtr = prevPtr->next;
+    //         sizeList--;
+    //     } else 
+    //     {
+    //         prevPtr = currentPtr;
+    //         currentPtr = currentPtr->next;
+    //     }
+    // }
 }
 
 template <typename T>
@@ -142,7 +183,7 @@ void LinkedList<T>::pop_back()
 }
 
 template <typename T>
-bool LinkedList<T>::search_by_value(T item) 
+bool LinkedList<T>::search_by_value_bool(T item) 
 {
     Node* current = head;
     int index = 0;
@@ -155,7 +196,24 @@ bool LinkedList<T>::search_by_value(T item)
         current = current->next;
         index++;
     }
-    return false; // Возвращаем -1, если значение не найдено
+    return false; 
+}
+
+template <typename T>
+int LinkedList<T>::search_by_value_return_index(T item) 
+{
+    Node* current = head;
+    int index = 0;
+    while (current != nullptr) 
+    {
+        if (current->value == item) 
+        {
+            return index;
+        }
+        current = current->next;
+        index++;
+    }
+    return -1; 
 }
 
 template <typename T>

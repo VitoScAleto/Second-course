@@ -185,6 +185,7 @@ void ReadingJSON::CreateCSVFile(json& j)
             for(int i = 0; i < nameColumnsJSON.getSize(); i++)
             {
                 outFile<<nameColumnsJSON[i]<<",";
+                
             }
             outFile.close();
             

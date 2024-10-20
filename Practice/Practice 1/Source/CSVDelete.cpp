@@ -105,7 +105,7 @@ void CSVDelete::DeleteFromCSV(string nameTable, string nameColumn, string values
             row.push_back(cell);
         }
 
-        if (columnIndex != -1 && row.search_by_value(valuesToDelete) == columnIndex) 
+        if (columnIndex != -1 && row.search_by_value_bool(valuesToDelete) == columnIndex) 
         {
             row.~LinkedList(); 
         }
@@ -117,7 +117,7 @@ void CSVDelete::DeleteFromCSV(string nameTable, string nameColumn, string values
             outFile<<row.getHead()<<",";
             row.pop_front();
         }
-        if (!(columnIndex != -1 && row.search_by_value(valuesToDelete) == columnIndex)) outFile<<endl;
+        if (!(columnIndex != -1 && row.search_by_value_bool(valuesToDelete) == columnIndex)) outFile<<endl;
     }
     inFile.close();
     outFile.close();

@@ -42,7 +42,6 @@ void CSVWhere::FunParseConditionValues(const string& condition, ParseConditionVa
     regex pattern(R"((\w+)\.(\w+)\s*=\s*'([^']+)')");
     smatch matches;
 
-
     if (regex_match(condition, matches, pattern)) 
     {
         parsed.table = matches[1];   
@@ -73,16 +72,20 @@ void CSVWhere::StartWhere(LinkedList<string>&  nameTableFromQuery,
     }
     else
     {
-        Filtration(nameTableFromQuery, nameColumnFromQuery);
+        Filtration();
     }
 }
 
-void CSVWhere::Filtration(LinkedList<string>&  nameTableFromQuery, LinkedList<string>& nameColumnFromQuery)
+void CSVWhere::Filtration()
 {
     ParseConditionNotValue parseNotValue;
     ParseConditionValue parseWithValue;
+    LinkedList<string> first;
+    LinkedList<string> second;
+    LinkedList<string> tri;
+    LinkedList<string> chert;
 
-    string nameDirForFiltration =  "Filtration";
+    string nameDirForFiltration =  JSON.GetNameMainDir()+"/Filtration";
     try 
     {
         fs::create_directory(nameDirForFiltration);
@@ -95,73 +98,105 @@ void CSVWhere::Filtration(LinkedList<string>&  nameTableFromQuery, LinkedList<st
     string pathToFinishFiltrationFile = "../Source/"+nameDirForFiltration+"/" + "1filt.csv";
     
     ofstream fileOutput(pathToFinishFiltrationFile);
+
     if(!(fileOutput.is_open()))
     {
         cout << pathToFinishFiltrationFile<<endl;
         cerr<<"File is not open";
     }
-        for(int i = 0; i < operators.getSize(); i++)
+    while(ss.search_by_value_bool("AND")==true)
+    {
+        int indexAND = ss.search_by_value_return_index("AND");
+
+        ss.delete_by_index(indexAND);
+
+        indexAND--;
+
+        for(int i = 0; i < 2; i++)
         {
-            if(operators[i] == "AND")
+            indexAND += i;
+            if(FunParseConditionNotValues(ss[indexAND], parseNotValue) == true)
             {
+                string pathFileToRead1 = "../Source/"+JSON.GetNameMainDir()+"/"+parseNotValue.leftTable+"/1.csv";
+                string pathFileToRead2 = "../Source/"+JSON.GetNameMainDir()+"/"+parseNotValue.rightTable+"/1.csv";
 
+                ifstream inFile1(pathFileToRead1);
+                ifstream inFile2(pathFileToRead2);
 
-            }
-            if(operators[i] == "OR")
-            {
+                string header1, header2;
+
+                getline(inFile1, header1);
+                int columnIndex1 = findColumnIndex(header1, parseNotValue.leftColumn);
+
+                getline(inFile2, header2);
+                int columnIndex2 = findColumnIndex(header2, parseNotValue.rightColumn);
+
+                first.push_back(header1);
+                second.push_back(header2);
                 
 
-
-            }
-
-
-        }
-        if(operators.getSize() == 0)
-        {
-            for(int i = 0; i < conditions.getSize(); i++)
-            {
-                if(FunParseConditionNotValues(conditions[i], parseNotValue)==true)
-                {   
-                    
-
-                }
-                else
+                while(getline(inFile1, header1) && getline(inFile2, header2))
                 {
-                    FunParseConditionValues(conditions[i], parseWithValue);
+                    stringstream lineStream1(header1);
+                    string cell1;
+                    int currentIndex1 = 0;
 
-                    string pathToCSV = "../Source/"+JSON.GetNameMainDir()+"/"+ parseWithValue.table+"/1.csv";
-                    string line;
-                    ifstream inFile(pathToCSV);
-                    getline(inFile, line);
-                    int indexColumn = 0;
-
-                    indexColumn = findColumnIndex(line, parseWithValue.column);
-
-                    while (getline(inFile, line)) 
+                    while (getline(lineStream1, cell1, ',')) 
                     {
-                        stringstream lineStream(line);
-                        string cell;
-                        int currentIndex = 0;
-
-                        while (getline(lineStream, cell, ',')) 
+                        if (currentIndex1 == columnIndex1) 
                         {
-                            if (currentIndex == indexColumn && cell == parseWithValue.value) 
-                            {
-                               fileOutput<<line<<"\n";
-                            }
-                            currentIndex++;
+                            break;
                         }
+                        currentIndex1++;
+                    }
+                    stringstream lineStream2(header2);
+                    string cell2;
+                    int currentIndex2 = 0;
+
+                    while (getline(lineStream2, cell2, ',')) 
+                    {
+                        if (currentIndex2 == columnIndex2) 
+                        {
+                            break;
+                        }
+                        currentIndex2++;
+                    }
+                    if(cell1 == cell2)
+                    {
+                        first.push_back(header1);
+                        second.push_back(header2);
                     }
 
                 }
+                for(int i  = 0; i < first.getSize();i++)
+                {
+                    fileOutput<<first[i]<<"\t"<<second[i]<<"\n";
+                }
+               
+                first.~LinkedList();
+                second.~LinkedList();
+               
+            }
+            else
+            {
+                FunParseConditionValues(ss[indexAND], parseWithValue);
+
+
             }
 
 
         }
+        
+
+    }
+
+    
+
 
     fileOutput.close();
 
 }
+
 
 
 
@@ -180,13 +215,16 @@ bool CSVWhere::IsValidCommandPostWhere(LinkedList<string>&  nameTableFromQuery, 
         {
             nameTableAfterWhere = matches[1].str();  
             nameColumnAfterWhere = matches[2].str();
-            if(nameTableFromQuery.search_by_value(nameTableAfterWhere) == false) return false;
-            if(nameColumnFromQuery.search_by_value(nameColumnAfterWhere) == false) return false;
+            if(nameTableFromQuery.search_by_value_bool(nameTableAfterWhere) == false) return false;
+            if(nameColumnFromQuery.search_by_value_bool(nameColumnAfterWhere) == false) return false;
             it = matches[0].second;               
         }
     }
     return true;
 }
+
+
+
 
 
 
@@ -212,12 +250,38 @@ void CSVWhere::ParseWhereQuery(string whereClause)
     {
         operators.push_back(*iter++);
     }
+
+    
+    
+    auto conditionBegin = sregex_iterator(whereClause.begin(), whereClause.end(), conditionPattern);
+    auto conditionEnd = sregex_iterator();
+    
+    auto operatorBegin = sregex_iterator(whereClause.begin(), whereClause.end(), operatorPattern);
+    auto operatorEnd = sregex_iterator();
+    
+    // Добавляем условия и операторы поочередно
+    auto condIt = conditionBegin;
+    auto opIt = operatorBegin;
+
+    while (condIt != conditionEnd || opIt != operatorEnd) {
+        if (condIt != conditionEnd) {
+            ss.push_back(condIt->str());
+            ++condIt;
+        }
+        if (opIt != operatorEnd) {
+            ss.push_back(opIt->str());
+            ++opIt;
+        }
+    }
+   
 }
+
+
 
 bool CSVWhere::IsValidCondition(string condition) 
 {
    
-    regex conditionRegex(R"(\s*(\w+\.\w+\s*=\s*('[^']*'|\w+\.\w+))(\s+(AND|OR)\s+(\w+\.\w+\s*=\s*('[^']*'|\w+\.\w+)))*$)");
+    regex conditionRegex(R"(\s*(\w+\.\w+\s*=\s*('[^']*'|\w+\.\w+))(\s+(AND|OR)\s+(\w+\.\w+\s*=\s*('[^']*'|\w+\.\w+)))*\s*$)");
     
     if (!regex_match(condition, conditionRegex)) 
     {
@@ -245,6 +309,7 @@ bool CSVWhere::IsValidCondition(string condition)
         }
         andPos = modifiedCondition.find(" AND ", andPos + 5);
     }
-
+    
+    
     return true; 
 }

@@ -243,7 +243,12 @@ bool CSVSelect::IsValidAfterFROM(LinkedList<string>& nameTableFromQuery, strings
             return false;
         }
 
-        
+        if(nameTableFromQuery.search_by_value_bool(nameTableAfterFROM) == false)
+        {
+            cerr<<"Данная таблица " << nameTableAfterFROM << " не указана в SELECT"<<endl;
+            return false;
+
+        }
     }
 
     return true;
