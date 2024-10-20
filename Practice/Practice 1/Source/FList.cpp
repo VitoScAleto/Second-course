@@ -52,6 +52,22 @@ T LinkedList<T>::Get_by_index(int indexValue)
 }
 
 template <typename T>
+void LinkedList<T>::remove_by_index(int indexValue, T value1) 
+{
+    if (indexValue < 0 || indexValue >= sizeList) 
+    {
+        throw std::out_of_range("Index out of range");
+    }
+
+    Node* current = head;
+    for (int i = 0; i < indexValue; ++i) 
+    {
+        current = current->next;
+    }
+    current->value = value1;
+}
+
+template <typename T>
 
 void LinkedList<T>::delete_by_index(int index) 
 {

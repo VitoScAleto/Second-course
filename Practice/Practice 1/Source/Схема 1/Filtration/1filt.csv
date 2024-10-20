@@ -1,48 +1,24 @@
 table1_pk,column1,column2,column3,	table2_pk,column1,column2,column3,column4,
-3,k,q,fh,	3,d,f,j,k,
-12,k,q,fh,	12,d,f,j,k,
-21,k,q,fh,	21,d,f,j,k,
-26,d,f,j,	26,a,b,c,d,
-35,d,f,j,	35,a,b,c,d,
-49,a,b,c,	49,k,q,fh,a,
-58,a,b,c,	58,k,q,fh,a,
-table2_pk,column1,column2,column3,column4,	table1_pk,column1,column2,column3,
-8,j,k,q,fh,	8,d,f,j,
-17,j,k,q,fh,	17,d,f,j,
-31,c,d,f,j,	31,a,b,c,
-40,c,d,f,j,	40,a,b,c,
-45,fh,a,b,c,	45,k,q,fh,
-54,fh,a,b,c,	54,k,q,fh,
-63,fh,a,b,c,	63,k,q,fh,
-table2_pk,column1,column2,column3,column4,	table1_pk,column1,column2,column3,
-8,j,k,q,fh,	8,d,f,j,
-17,j,k,q,fh,	17,d,f,j,
-31,c,d,f,j,	31,a,b,c,
-40,c,d,f,j,	40,a,b,c,
-45,fh,a,b,c,	45,k,q,fh,
-54,fh,a,b,c,	54,k,q,fh,
-63,fh,a,b,c,	63,k,q,fh,
-table1_pk,column1,column2,column3,	table2_pk,column1,column2,column3,column4,
-3,k,q,fh,	3,d,f,j,k,
-12,k,q,fh,	12,d,f,j,k,
-21,k,q,fh,	21,d,f,j,k,
-26,d,f,j,	26,a,b,c,d,
-35,d,f,j,	35,a,b,c,d,
-49,a,b,c,	49,k,q,fh,a,
-58,a,b,c,	58,k,q,fh,a,
-table1_pk,column1,column2,column3,	table2_pk,column1,column2,column3,column4,
-3,k,q,fh,	3,d,f,j,k,
-12,k,q,fh,	12,d,f,j,k,
-21,k,q,fh,	21,d,f,j,k,
-26,d,f,j,	26,a,b,c,d,
-35,d,f,j,	35,a,b,c,d,
-49,a,b,c,	49,k,q,fh,a,
-58,a,b,c,	58,k,q,fh,a,
-table2_pk,column1,column2,column3,column4,	table1_pk,column1,column2,column3,
-8,j,k,q,fh,	8,d,f,j,
-17,j,k,q,fh,	17,d,f,j,
-31,c,d,f,j,	31,a,b,c,
-40,c,d,f,j,	40,a,b,c,
-45,fh,a,b,c,	45,k,q,fh,
-54,fh,a,b,c,	54,k,q,fh,
-63,fh,a,b,c,	63,k,q,fh,
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

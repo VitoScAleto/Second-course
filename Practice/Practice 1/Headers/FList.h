@@ -32,6 +32,7 @@ public:
     void printList();
     T Get_by_index(int indexValue);
     void delete_by_index(int index);
+    void remove_by_index(int indexValue, T value);
 };
 
 
