@@ -36,9 +36,17 @@ class CSVWhere
     };
 
     bool FunParseConditionNotValues(const string& condition, ParseConditionNotValue& parsed);
-    void FunParseConditionValues(const string& condition, ParseConditionValue& parsed);
+    bool FunParseConditionValues(const string& condition, ParseConditionValue& parsed);
 
-                              
+    void FunTable_Table(string& pathToFinishFiltrationFile, ParseConditionNotValue& parseNotValue);     
+
+    void FunTable_value(string& pathToFinishFiltrationFile,
+                             ParseConditionNotValue& parseNotValue, 
+                                ParseConditionValue& parseWithValue);     
+                                
+    void FunValue_value(string& pathToFinishFiltrationFile, 
+                                ParseConditionValue& parseWithValue1,
+                                ParseConditionValue& parseWithValue2);                
     public:
 
     LinkedList<string> conditions;

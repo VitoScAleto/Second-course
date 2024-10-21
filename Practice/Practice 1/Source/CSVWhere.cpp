@@ -36,7 +36,7 @@ bool CSVWhere::FunParseConditionNotValues(const string& condition, ParseConditio
     return false; 
 }
 
-void CSVWhere::FunParseConditionValues(const string& condition, ParseConditionValue& parsed) 
+bool CSVWhere::FunParseConditionValues(const string& condition, ParseConditionValue& parsed) 
 {
     
     regex pattern(R"((\w+)\.(\w+)\s*=\s*'([^']+)')");
@@ -46,8 +46,10 @@ void CSVWhere::FunParseConditionValues(const string& condition, ParseConditionVa
     {
         parsed.table = matches[1];   
         parsed.column = matches[2];   
-        parsed.value = matches[3];    
+        parsed.value = matches[3];  
+        return true;  
     }
+    return false;
 }
 
 
@@ -76,15 +78,294 @@ void CSVWhere::StartWhere(LinkedList<string>&  nameTableFromQuery,
     }
 }
 
-void CSVWhere::Filtration()
+void CSVWhere::FunTable_Table(string& pathToFinishFiltrationFile, ParseConditionNotValue& parseNotValue)
 {
-    ParseConditionNotValue parseNotValue;
-    ParseConditionValue parseWithValue;
+    LinkedList<string> first;
+    LinkedList<string> second;
+
+    ofstream fileOutput(pathToFinishFiltrationFile, ios::app);
+
+    string pathFileToRead1 = "../Source/"+JSON.GetNameMainDir()+"/"+parseNotValue.leftTable+"/1.csv";
+    string pathFileToRead2 = "../Source/"+JSON.GetNameMainDir()+"/"+parseNotValue.rightTable+"/1.csv";
+
+    ifstream inFile1(pathFileToRead1);
+    ifstream inFile2(pathFileToRead2);
+
+    string header1, header2;
+
+    getline(inFile1, header1);
+    int columnIndex1 = findColumnIndex(header1, parseNotValue.leftColumn);
+
+    getline(inFile2, header2);
+    int columnIndex2 = findColumnIndex(header2, parseNotValue.rightColumn);
+
+    first.push_back(header1);
+    second.push_back(header2);
+    
+
+    while(getline(inFile1, header1) && getline(inFile2, header2))
+    {
+        stringstream lineStream1(header1);
+        string cell1;
+        int currentIndex1 = 0;
+
+        while (getline(lineStream1, cell1, ',')) 
+        {
+            if (currentIndex1 == columnIndex1) 
+            {
+                break;
+            }
+            currentIndex1++;
+        }
+        stringstream lineStream2(header2);
+        string cell2;
+        int currentIndex2 = 0;
+
+        while (getline(lineStream2, cell2, ',')) 
+        {
+            if (currentIndex2 == columnIndex2) 
+            {
+                break;
+            }
+            currentIndex2++;
+        }
+        if(cell1 == cell2)
+        {
+            first.push_back(header1);
+            second.push_back(header2);
+        }
+        
+    }
+    for(int i  = 0; i < first.getSize();i++)
+    {
+        fileOutput<<first[i]<<"\t"<<second[i]<<"\n";
+    }
+    parseNotValue.~ParseConditionNotValue();
+    fileOutput.close();
+
+}
+
+
+void CSVWhere::FunTable_value(string& pathToFinishFiltrationFile,
+                             ParseConditionNotValue& parseNotValue, 
+                                ParseConditionValue& parseWithValue)
+{       
 
     LinkedList<string> first;
     LinkedList<string> second;
-    LinkedList<string> tri;
-    LinkedList<string> four;
+
+    string pathFileToRead1 = "../Source/"+JSON.GetNameMainDir()+"/"+parseNotValue.leftTable+"/1.csv";
+    string pathFileToRead2 = "../Source/"+JSON.GetNameMainDir()+"/"+parseNotValue.rightTable+"/1.csv";
+
+    ifstream inFile1(pathFileToRead1);
+    ifstream inFile2(pathFileToRead2);
+
+    string header1, header2;
+
+    getline(inFile1, header1);
+    int columnIndex1 = findColumnIndex(header1, parseNotValue.leftColumn);
+
+    getline(inFile2, header2);
+    int columnIndex2 = findColumnIndex(header2, parseNotValue.rightColumn);
+
+    first.push_back(header1);
+    second.push_back(header2);
+    
+
+    while(getline(inFile1, header1) && getline(inFile2, header2))
+    {
+        stringstream lineStream1(header1);
+        string cell1;
+        int currentIndex1 = 0;
+
+        while (getline(lineStream1, cell1, ',')) 
+        {
+            if (currentIndex1 == columnIndex1) 
+            {
+                break;
+            }
+            currentIndex1++;
+        }
+        stringstream lineStream2(header2);
+        string cell2;
+        int currentIndex2 = 0;
+
+        while (getline(lineStream2, cell2, ',')) 
+        {
+            if (currentIndex2 == columnIndex2) 
+            {
+                break;
+            }
+            currentIndex2++;
+        }
+        if(cell1 == cell2)
+        {
+            first.push_back(header1);
+            second.push_back(header2);
+        }
+    }
+    inFile1.close();
+    inFile2.close();
+
+    ofstream fileOutput(pathToFinishFiltrationFile, ios::app);
+
+    if(parseNotValue.leftTable == parseWithValue.table)
+    {
+        string header;
+        int columnIndex = findColumnIndex(first[0], parseWithValue.column);
+
+        for(int i = 0; i < first.getSize(); i++)
+        {
+            header = first[i];
+
+            stringstream lineStream1(header);
+
+            string cell;
+            int currentIndex = 0;
+
+            while (getline(lineStream1, cell, ',')) 
+            {
+                if (currentIndex == columnIndex && cell == parseWithValue.value) 
+                {
+                    break;
+                }
+                else if(i > 0 && currentIndex == 4)
+                {
+                    first.remove_by_index(i, "");
+                    second.remove_by_index(i, "");
+                }
+                currentIndex++;
+            }
+        }
+    }
+    else if(parseNotValue.rightTable == parseWithValue.table)
+    {
+        string header;
+
+        int columnIndex = findColumnIndex(second[0], parseWithValue.column);
+
+        for(int i =0; i < second.getSize(); i++)
+        {
+            header = second[i];
+
+            stringstream lineStream1(header);
+
+            string cell;
+            int currentIndex = 0;
+
+            while (getline(lineStream1, cell, ',')) 
+            {
+                if (currentIndex == columnIndex && cell == parseWithValue.value) 
+                {
+                    break;
+                }
+                else if(i > 0 && currentIndex == 3)
+                {
+                    
+                    first.remove_by_index(i, "");
+                    second.remove_by_index(i, "");
+                }
+                currentIndex++;
+            }
+        }
+    }
+    else
+    {
+        cerr<<"Невозможно для данной таблицы "<<parseWithValue.table<<" сделать фильтрацию"<<endl;
+        return;
+    }
+
+    for(int i = 0; i < first.getSize(); i++)
+    {
+        fileOutput<<first[i] << "\t" << second[i]<<"\n";
+    }
+    first.~LinkedList();
+    second.~LinkedList();
+    fileOutput.close();
+    
+
+}
+
+
+void CSVWhere::FunValue_value(string& pathToFinishFiltrationFile, 
+                                ParseConditionValue& parseWithValue1,
+                                ParseConditionValue& parseWithValue2)
+{
+    LinkedList<string> first;
+    LinkedList<string> second;
+
+    ofstream fileOutput(pathToFinishFiltrationFile, ios::app);
+
+    string pathFileToRead1 = "../Source/"+JSON.GetNameMainDir()+"/"+parseWithValue1.table+"/1.csv";
+    string pathFileToRead2 = "../Source/"+JSON.GetNameMainDir()+"/"+parseWithValue2.table+"/1.csv";
+
+    ifstream inFile1(pathFileToRead1);
+    ifstream inFile2(pathFileToRead2);
+
+    string header1, header2;
+
+    getline(inFile1, header1);
+    int columnIndex1 = findColumnIndex(header1, parseWithValue1.column);
+
+    getline(inFile2, header2);
+    int columnIndex2 = findColumnIndex(header2, parseWithValue2.column);
+
+    first.push_back(header1);
+    second.push_back(header2);
+
+    while(getline(inFile1, header1) && getline(inFile2, header2))
+    {
+        stringstream lineStream1(header1);
+        string cell1;
+        int currentIndex1 = 0;
+
+        while (getline(lineStream1, cell1, ',')) 
+        {
+            if (currentIndex1 == columnIndex1 && cell1 == parseWithValue1.value) 
+            {
+                break;
+            }
+            currentIndex1++;
+        }
+        stringstream lineStream2(header2);
+        string cell2;
+        int currentIndex2 = 0;
+
+        while (getline(lineStream2, cell2, ',')) 
+        {
+            if (currentIndex2 == columnIndex2 && cell2 == parseWithValue2.value) 
+            {
+                break;
+            }
+            currentIndex2++;
+        }
+        if(cell1 == parseWithValue1.value && cell2 == parseWithValue2.value)
+        {
+            first.push_back(header1);
+            second.push_back(header2);
+        }
+        
+    }
+    for(int i  = 0; i < first.getSize();i++)
+    {
+        fileOutput<<first[i]<<"\t"<<second[i]<<"\n";
+    }
+
+
+
+}
+
+
+void CSVWhere::Filtration()
+{
+    ParseConditionNotValue parseNotValue1;
+    ParseConditionNotValue parseNotValue2;
+    ParseConditionValue parseWithValue;
+    ParseConditionValue parseWithValue2;
+
+   
+    LinkedList<string> copyFirstList;
+    LinkedList<string> copySecondList;
     
     string nameDirForFiltration =  JSON.GetNameMainDir()+"/Filtration";
     try 
@@ -103,235 +384,57 @@ void CSVWhere::Filtration()
         int indexAND = ss.search_by_value_return_index("AND");
 
         ss.delete_by_index(indexAND);
-
         indexAND--;
 
-        for(int i = 0; i < 2; i++)
-        {
-           
-            if(FunParseConditionNotValues(ss[indexAND], parseNotValue) == true)
+        int indexANDprev = indexAND;
+        int indexANDNext = indexAND+1;
+            if(FunParseConditionNotValues(ss[indexANDprev], parseNotValue1) == true && 
+                FunParseConditionNotValues(ss[indexANDNext], parseNotValue2) == true)
             {
                 ofstream fileOutput(pathToFinishFiltrationFile, ios::app);
-
-                string pathFileToRead1 = "../Source/"+JSON.GetNameMainDir()+"/"+parseNotValue.leftTable+"/1.csv";
-                string pathFileToRead2 = "../Source/"+JSON.GetNameMainDir()+"/"+parseNotValue.rightTable+"/1.csv";
-
-                ifstream inFile1(pathFileToRead1);
-                ifstream inFile2(pathFileToRead2);
-
-                string header1, header2;
-
-                getline(inFile1, header1);
-                int columnIndex1 = findColumnIndex(header1, parseNotValue.leftColumn);
-
-                getline(inFile2, header2);
-                int columnIndex2 = findColumnIndex(header2, parseNotValue.rightColumn);
-
-                first.push_back(header1);
-                second.push_back(header2);
-                
-
-                while(getline(inFile1, header1) && getline(inFile2, header2))
-                {
-                    stringstream lineStream1(header1);
-                    string cell1;
-                    int currentIndex1 = 0;
-
-                    while (getline(lineStream1, cell1, ',')) 
-                    {
-                        if (currentIndex1 == columnIndex1) 
-                        {
-                            break;
-                        }
-                        currentIndex1++;
-                    }
-                    stringstream lineStream2(header2);
-                    string cell2;
-                    int currentIndex2 = 0;
-
-                    while (getline(lineStream2, cell2, ',')) 
-                    {
-                        if (currentIndex2 == columnIndex2) 
-                        {
-                            break;
-                        }
-                        currentIndex2++;
-                    }
-                    if(cell1 == cell2)
-                    {
-                        first.push_back(header1);
-                        second.push_back(header2);
-                    }
-                    
-                }
-                for(int i  = 0; i < first.getSize();i++)
-                {
-                    fileOutput<<first[i]<<"\t"<<second[i]<<"\n";
-                }
+                fileOutput<<ss[indexANDprev]<<"\n";
                 fileOutput.close();
-                 for(int i  = 0; i < first.getSize();i++)
-                {
-                   tri.push_back(first[i]);
-                   four.push_back(second[i]);
-                }
-                first.~LinkedList();
-                second.~LinkedList();
-                ss.delete_by_index(indexAND);
+
+                FunTable_Table(pathToFinishFiltrationFile, parseNotValue1);
+                ofstream fileOutput1(pathToFinishFiltrationFile, ios::app);
+                fileOutput1<<ss[indexANDNext]<<"\n";
+                fileOutput.close();
+
+                FunTable_Table(pathToFinishFiltrationFile, parseNotValue2);
+            
+                ss.delete_by_index(indexANDprev); 
+                ss.delete_by_index(indexANDprev);
+            
             }
-            else
+            if(FunParseConditionNotValues(ss[indexANDprev],parseNotValue1) == true && 
+                FunParseConditionValues(ss[indexANDNext], parseWithValue) == true)
             {
-                ofstream fileOutput(pathToFinishFiltrationFile);
-                FunParseConditionValues(ss[indexAND], parseWithValue);
-                if(parseNotValue.leftTable == parseWithValue.table)
-                {
-                    string header;
-                    int columnIndex = findColumnIndex(tri[0], parseWithValue.column);
+                ofstream fileOutput(pathToFinishFiltrationFile, ios::app);
+                fileOutput<<ss[indexANDprev]<<"\t"<<ss[indexANDNext]<<"\n";
+                fileOutput.close();
 
-                    for(int i = 0; i < tri.getSize(); i++)
-                    {
-                        header = tri[i];
-
-                        stringstream lineStream1(header);
-
-                        string cell;
-                        int currentIndex = 0;
-
-                        while (getline(lineStream1, cell, ',')) 
-                        {
-                            if (currentIndex == columnIndex && cell == parseWithValue.value) 
-                            {
-                                break;
-                            }
-                             if(i != 0)
-                            {
-                             tri.remove_by_index(i, "");
-                               four.remove_by_index(i, "");
-                            }
-                            currentIndex++;
-                        }
-                    }
-
-
-                }
-                if(parseNotValue.rightTable == parseWithValue.table)
-                {
-                    string header;
-
-                    int columnIndex = findColumnIndex(four[0], parseWithValue.column);
-
-                    for(int i =0; i < four.getSize(); i++)
-                    {
-                        header = four[i];
-
-                        stringstream lineStream1(header);
-
-                        string cell;
-                        int currentIndex = 0;
-
-                        while (getline(lineStream1, cell, ',')) 
-                        {
-                            if (currentIndex == columnIndex && cell == parseWithValue.value) 
-                            {
-                                break;
-                            }
-                            else if(i > 0 && currentIndex == 3)
-                            {
-                                
-                               tri.remove_by_index(i, "");
-                               four.remove_by_index(i, "");
-                            }
-                            currentIndex++;
-                        }
-                    }
-
-
-
-                }
-                else
-                {
-                    cerr<<"Невозможно для данной таблицы "<<parseWithValue.table<<" сделать фильтрацию"<<endl;
-                    return;
-                }
-
-                for(int i = 0; i < tri.getSize(); i++)
-                {
-                    fileOutput<<tri[i] << "\t" << four[i]<<"\n";
-                }
+                FunTable_value(pathToFinishFiltrationFile, parseNotValue1, parseWithValue);
             }
-        }
-    }
-    while(ss.search_by_value_bool("OR")== true)
-    {
-        int indexOR = ss.search_by_value_return_index("AND");
-
-        ss.delete_by_index(indexOR);
-
-        indexOR--;
-        ofstream fileOutput(pathToFinishFiltrationFile, ios::app);
-
-        if(FunParseConditionNotValues(ss[indexOR], parseNotValue) == true)
-        {   
-            string pathFileToRead1 = "../Source/"+JSON.GetNameMainDir()+"/"+parseNotValue.leftTable+"/1.csv";
-            string pathFileToRead2 = "../Source/"+JSON.GetNameMainDir()+"/"+parseNotValue.rightTable+"/1.csv";
-            ifstream inFile1(pathFileToRead1);
-            ifstream inFile2(pathFileToRead2);
-
-            string header1, header2;
-
-            getline(inFile1, header1);
-            int columnIndex1 = findColumnIndex(header1, parseNotValue.leftColumn);
-
-            getline(inFile2, header2);
-            int columnIndex2 = findColumnIndex(header2, parseNotValue.rightColumn);
-
-            fileOutput << "\n" <<header1<< header2<<"\n";
-
-            while(getline(inFile1, header1) && getline(inFile2, header2))
+            if(FunParseConditionValues(ss[indexANDprev], parseWithValue) == true &&
+                FunParseConditionNotValues(ss[indexANDNext],parseNotValue1) == true)
             {
-                stringstream lineStream1(header1);
-                string cell1;
-                int currentIndex1 = 0;
-
-                while (getline(lineStream1, cell1, ',')) 
-                {
-                    if (currentIndex1 == columnIndex1) 
-                    {
-                        break;
-                    }
-                    currentIndex1++;
-                }
-                stringstream lineStream2(header2);
-                string cell2;
-                int currentIndex2 = 0;
-
-                while (getline(lineStream2, cell2, ',')) 
-                {
-                    if (currentIndex2 == columnIndex2) 
-                    {
-                        break;
-                    }
-                    currentIndex2++;
-                }
-                if(cell1 == cell2)
-                {
-                    fileOutput<<header1<<header2<<"\n";
-                }
-                
+                ofstream fileOutput(pathToFinishFiltrationFile, ios::app);
+                fileOutput<<ss[indexANDprev]<<"\t"<<ss[indexANDNext]<<"\n";
+                fileOutput.close();
+                FunTable_value(pathToFinishFiltrationFile, parseNotValue1, parseWithValue);
             }
-            ss.delete_by_index(indexOR);
-
-        }
-        else
-        {
-                    
-            FunParseConditionValues(ss[indexOR], parseWithValue);
-            string pathFileToRead = "../Source/"+JSON.GetNameMainDir()+"/"+parseWithValue.table+"/1.csv";        
-        }
+            if(FunParseConditionValues(ss[indexANDprev],parseWithValue) == true && 
+                FunParseConditionValues(ss[indexANDNext], parseWithValue2) == true)
+            {
+                ofstream fileOutput(pathToFinishFiltrationFile, ios::app);
+                fileOutput<<ss[indexANDprev]<<"\t"<<ss[indexANDNext]<<"\n";
+                fileOutput.close();
+                FunValue_value(pathToFinishFiltrationFile,parseWithValue, parseWithValue2);
+            }
+            
     }
+    
 }
-
-
-
 
 
 bool CSVWhere::IsValidCommandPostWhere(LinkedList<string>&  nameTableFromQuery, LinkedList<string>& nameColumnFromQuery) 
@@ -357,10 +460,6 @@ bool CSVWhere::IsValidCommandPostWhere(LinkedList<string>&  nameTableFromQuery, 
 }
 
 
-
-
-
-
 void CSVWhere::ParseWhereQuery(string whereClause)
 {
    
@@ -384,8 +483,6 @@ void CSVWhere::ParseWhereQuery(string whereClause)
         operators.push_back(*iter++);
     }
 
-    
-    
     auto conditionBegin = sregex_iterator(whereClause.begin(), whereClause.end(), conditionPattern);
     auto conditionEnd = sregex_iterator();
     
@@ -408,7 +505,6 @@ void CSVWhere::ParseWhereQuery(string whereClause)
     }
    
 }
-
 
 
 bool CSVWhere::IsValidCondition(string condition) 
@@ -441,14 +537,6 @@ bool CSVWhere::IsValidCondition(string condition)
             return false; // AND не обрамлено условиями
         }
         
-        // Проверяем, что слева от AND нет строковых условий
-        string leftCondition = modifiedCondition.substr(0, andPos);
-        if (regex_search(leftCondition, regex(R"(\w+\.\w+\s*=\s*'[^']*'(\s+|$))"))) 
-        {
-            cerr << "Строки формата *.* = 'value' могут быть только справа от AND " << endl;
-            return false; // Строки не должны быть слева от AND
-        }
-
         andPos = modifiedCondition.find(" AND ", andPos + 5);
     }
 
